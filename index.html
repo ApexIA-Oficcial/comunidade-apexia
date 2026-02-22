@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ApexiA Community | QG de Criadores</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    
+    <!-- Motores do Chat em Tempo Real -->
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root { --primary: #00FF00; --bg: #030303; --border: rgba(0, 255, 0, 0.2); --msg-received: rgba(255, 255, 255, 0.05); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #000; color: #fff; height: 100dvh; overflow: hidden; }
+
+        /* Fundo Galáxia ApexiA */
+        #galaxy { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar linear infinite; }
+        @keyframes moveStar { from { transform: translateY(0); } to { transform: translateY(-1000px); } }
+
+        /* Layout */
+        #app { display: flex; flex-direction: column; height: 100dvh; max-width: 800px; margin: 0 auto; border-left: 1px solid var(--border); border-right: 1px solid var(--border); background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); }
+        
+        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); }
+        header h1 { font-size: 1rem; font-weight: 900; letter-spacing: 1px; }
+        header h1 span { color: var(--primary); }
+
+        /* Janela de Mensagens */
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
+        
+        .message { max-width: 85%; padding: 12px 16px; border-radius: 18px; font-size: 0.9rem; line-height: 1.4; animation: slideUp 0.3s ease; position: relative; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .received { align-self: flex-start; background: var(--msg-received); border-left: 3px solid var(--primary); border-radius: 2px 18px 18px 18px; }
+        .sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 18px 18px 2px 18px; box-shadow: 0 0 15px rgba(0,255,0,0.1); }
+        
+        .user-name { font-size: 0.65rem; font-weight: 900; margin-bottom: 4px; display: block; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sent .user-name { color: rgba(0,0,0,0.5); }
+
+        /* Barra de Envio Neon */
+        .input-area { padding: 20px; border-top: 1px solid var(--border); background: #000; }
+        .input-wrapper { 
+            display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; 
+            border: 1px solid var(--primary); box-shadow: 0 0 20px rgba(0,255,0,0.1); position: relative; overflow: hidden;
+        }
+        .input-wrapper::after {
+            content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(0,255,0,0.1), transparent);
+            animation: moveNeon 3s infinite linear; pointer-events: none;
+        }
+        @keyframes moveNeon { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 1rem; z-index: 2; }
+        .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: 900; color: #000; z-index: 2; }
+
+        /* Tela de Login Interna */
+        #login-overlay { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .login-card { max-width: 350px; width: 100%; }
+        .login-card img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px; box-shadow: 0 0 30px rgba(0,255,0,0.3); }
+        .login-card h2 { font-weight: 900; margin-bottom: 10px; }
+        .login-card h2 span { color: var(--primary); }
+        .login-card input { background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 12px; width: 100%; text-align: center; margin-top: 20px; margin-bottom: 20px; }
+        .btn-enter { background: var(--primary); color: #000; padding: 16px 40px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; width: 100%; font-size: 1rem; }
+    </style>
+</head>
+<body>
+    <div id="galaxy"></div>
+
+    <!-- Tela de Entrada -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png">
+            <h2>QG <span>COMMUNITY</span></h2>
+            <p style="color:#666; font-size: 0.8rem;">Conecte-se com a elite dos criadores.</p>
+            <input type="text" id="nickname" placeholder="Nome do seu Canal">
+            <button class="btn-enter" onclick="entrar()">ENTRAR NO QG</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <header>
+            <h1>APEXIA <span>COMMUNITY</span></h1>
+            <div id="online-tag" style="font-size: 0.6rem; color: var(--primary); font-weight: 800; background: rgba(0,255,0,0.1); padding: 5px 12px; border-radius: 20px;">QG ATIVO</div>
+        </header>
+
+        <div id="chat-window">
+            <!-- Mensagens aparecem aqui -->
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="chat-input" placeholder="Escreva para a comunidade...">
+                <button class="send-btn" onclick="enviar()">→</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DO SEU PROJETO (Retirado da sua foto)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
+            authDomain: "comunidade-apexia.firebaseapp.com",
+            projectId: "comunidade-apexia",
+            storageBucket: "comunidade-apexia.firebasestorage.app",
+            messagingSenderId: "668289488372",
+            appId: "1:668289488372:web:cf29801db6489d09a695a1",
+            databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com/" // Geralmente segue esse padrão
+        };
+
+        // Inicializar Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let meuNome = "";
+
+        function entrar() {
+            const nick = document.getElementById('nickname').value.trim();
+            if(nick) {
+                meuNome = nick;
+                document.getElementById('login-overlay').style.display = 'none';
+                confetti({ particleCount: 150, origin: { y: 0.6 }, colors: ['#00FF00', '#ffffff'] });
+                ouvirMensagens();
+            }
+        }
+
+        function enviar() {
+            const input = document.getElementById('chat-input');
+            const texto = input.value.trim();
+            if(texto && meuNome) {
+                db.ref("mensagens").push({
+                    nome: meuNome,
+                    texto: texto,
+                    timestamp: Date.now()
+                });
+                input.value = "";
+            }
+        }
+
+        function ouvirMensagens() {
+            db.ref("mensagens").limitToLast(50).on("child_added", (snapshot) => {
+                const data = snapshot.val();
+                const win = document.getElementById('chat-window');
+                const div = document.createElement('div');
+                div.className = `message ${data.nome === meuNome ? 'sent' : 'received'}`;
+                div.innerHTML = `<span class="user-name">${data.nome}</span>${data.texto}`;
+                win.appendChild(div);
+                win.scrollTop = win.scrollHeight;
+            });
+        }
+
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') enviar(); });
+
+        // Gerar Estrelas
+        const g = document.getElementById('galaxy');
+        for (let i = 0; i < 70; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.animationDuration = (Math.random() * 50 + 50) + 's';
+            g.appendChild(s);
+        }
+    </script>
+</body>
+</html>
