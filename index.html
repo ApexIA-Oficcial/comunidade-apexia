@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     
-    <!-- Motores do Firebase -->
+    <!-- SDKs do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -19,11 +19,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         body { background: #000; color: #fff; height: 100dvh; overflow: hidden; display: flex; }
 
-        /* Sidebar de Membros Online */
-        #members-sidebar { 
-            width: 260px; background: #050505; border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; transition: 0.3s;
-        }
+        /* Sidebar de Membros */
+        #members-sidebar { width: 260px; background: #050505; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
         .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 900; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; }
         #members-list { flex: 1; overflow-y: auto; padding: 10px; }
         .member-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 5px; background: rgba(255,255,255,0.02); }
@@ -31,45 +28,46 @@
         .online-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); }
 
         /* Área do Chat */
-        #chat-area { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); }
+        #chat-area { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); position: relative; }
         header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
         
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; animation: fadeIn 0.3s ease; display: flex; flex-direction: column; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; display: flex; flex-direction: column; }
+        .msg img { max-width: 150px; border-radius: 8px; margin-top: 5px; }
         
         .msg.sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 15px 15px 2px 15px; }
         .msg.received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 15px 15px 15px; }
         
         .msg-info { font-size: 0.65rem; font-weight: 900; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; opacity: 0.8; }
 
-        /* Barra de Envio Neon */
+        /* Input Neon */
         .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
-        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 8px 15px; border-radius: 30px; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0,255,0,0.1); }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0,255,0,0.1); }
         input { flex: 1; background: transparent; border: none; color: #fff; outline: none; }
-        .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; font-weight: 900; color: #000; }
+        .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #000; font-weight: 900; }
 
-        /* Login */
+        /* Login Screen */
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .btn-google { background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
-        
+        .btn-google { background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+
+        #galaxy { position: fixed; inset: 0; z-index: -1; }
         @media (max-width: 768px) { #members-sidebar { display: none; } }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width: 100px; margin-bottom: 20px; border-radius: 50%; border: 3px solid var(--primary);">
+        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px;">
         <h1 style="margin-bottom: 10px;">QG <span>APEXIA</span></h1>
-        <p id="login-msg" style="color: #666; margin-bottom: 30px;">Clique abaixo para entrar com sua conta Google.</p>
-        <button class="btn-google" id="btn-login" onclick="login()">
+        <p style="color:#666; margin-bottom: 30px;">Login obrigatório para validar membros reais.</p>
+        <button class="btn-google" onclick="login()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             ENTRAR COM GOOGLE
         </button>
     </div>
 
     <nav id="members-sidebar">
-        <div class="sidebar-header">Online Agora (<span id="count">0</span>)</div>
+        <div class="sidebar-header">Online (<span id="count">0</span>)</div>
         <div id="members-list"></div>
     </nav>
 
@@ -81,123 +79,66 @@
         <div id="chat-window"></div>
         <div class="input-area">
             <div class="input-wrapper">
-                <input type="text" id="chat-input" placeholder="Digite uma mensagem...">
+                <input type="text" id="chat-input" placeholder="Escreva sua mensagem...">
                 <button class="send-btn" onclick="send()">→</button>
             </div>
         </div>
     </main>
 
     <script>
-        // CONFIGURAÇÕES DO FIREBASE (IDÊNTICAS ÀS SUAS)
+        // CONFIGURAÇÃO CORRIGIDA
         const firebaseConfig = {
             apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
             authDomain: "comunidade-apexia.firebaseapp.com",
             projectId: "comunidade-apexia",
+            databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
             storageBucket: "comunidade-apexia.firebasestorage.app",
             messagingSenderId: "668289488372",
-            appId: "1:668289488372:web:cf29801db6489d09a695a1",
-            databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com"
+            appId: "1:668289488372:web:cf29801db6489d09a695a1"
         };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
+        let currentUser = null;
 
-        let user = null;
-
-        // FUNÇÃO DE LOGIN REPARADA (MÉTODO REDIRECT)
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            document.getElementById('btn-login').innerText = "CONECTANDO...";
-            // Usamos redirect porque o Popup é bloqueado por muitos navegadores
+            // Mudamos para Redirect para evitar bloqueio de janelas pop-up
             auth.signInWithRedirect(provider);
         }
 
         function logout() { auth.signOut(); location.reload(); }
 
-        // CHECAR RESULTADO DO LOGIN APÓS VOLTAR DO GOOGLE
-        auth.getRedirectResult().catch((error) => {
-            if(error.code === 'auth/unauthorized-domain') {
-                alert("ERRO: O domínio apexia-oficcial.github.io precisa ser autorizado no Firebase!");
-            } else {
-                console.error("Erro no login:", error);
-            }
-        });
-
-        // MONITORAR LOGIN
-        auth.onAuthStateChanged((u) => {
-            if (u) {
-                user = u;
-                document.getElementById('login-screen').style.display = 'none';
-                confetti({ particleCount: 150, origin: { y: 0.7 } });
-                setupPresence();
-                loadMessages();
-            }
+        // ESSENCIAL: Aguarda carregar o DOM antes de mexer nos IDs
+        window.addEventListener('DOMContentLoaded', () => {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('login-screen').style.display = 'none';
+                    setupPresence();
+                    loadMessages();
+                }
+            });
         });
 
         function setupPresence() {
-            const onlineRef = db.ref(`.info/connected`);
-            const statusRef = db.ref(`status/${user.uid}`);
-
-            onlineRef.on('value', (snapshot) => {
-                if (snapshot.val() === false) return;
-                statusRef.onDisconnect().remove().then(() => {
-                    statusRef.set({ nome: user.displayName, foto: user.photoURL });
-                });
+            const statusRef = db.ref(`status/${currentUser.uid}`);
+            db.ref(`.info/connected`).on('value', (snap) => {
+                if (snap.val() === true) {
+                    statusRef.onDisconnect().remove().then(() => {
+                        statusRef.set({ nome: currentUser.displayName, foto: currentUser.photoURL });
+                    });
+                }
             });
 
             db.ref('status').on('value', (s) => {
                 const list = document.getElementById('members-list');
                 const count = document.getElementById('count');
+                if(!list) return;
                 list.innerHTML = "";
                 let onlineCount = 0;
                 s.forEach((child) => {
                     const data = child.val();
                     list.innerHTML += `<div class="member-item"><img src="${data.foto}"> ${data.nome} <div class="online-dot"></div></div>`;
                     onlineCount++;
-                });
-                count.innerText = onlineCount;
-            });
-        }
-
-        function send() {
-            const input = document.getElementById('chat-input');
-            if (input.value.trim() && user) {
-                db.ref('chat').push({
-                    uid: user.uid,
-                    nome: user.displayName,
-                    texto: input.value.trim(),
-                    timestamp: Date.now()
-                });
-                input.value = "";
-            }
-        }
-
-        function loadMessages() {
-            db.ref('chat').limitToLast(50).on('child_added', (s) => {
-                const data = s.val();
-                const win = document.getElementById('chat-window');
-                const div = document.createElement('div');
-                div.className = `msg ${data.uid === user.uid ? 'sent' : 'received'}`;
-                div.innerHTML = `<span class="user-name">${data.nome}</span>${data.texto}`;
-                win.appendChild(div);
-                win.scrollTop = win.scrollHeight;
-            });
-        }
-
-        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
-
-        // Gerar Estrelas
-        const g = document.getElementById('galaxy');
-        for (let i = 0; i < 50; i++) {
-            const s = document.createElement('div');
-            s.className = 'star';
-            s.style.width = s.style.height = Math.random() * 3 + 'px';
-            s.style.left = Math.random() * 100 + '%';
-            s.style.top = Math.random() * 100 + '%';
-            s.style.animationDuration = (Math.random() * 50 + 50) + 's';
-            g.appendChild(s);
-        }
-    </script>
-</body>
-</html>
