@@ -61,8 +61,8 @@
     <div id="login-screen">
         <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width: 100px; margin-bottom: 20px; border-radius: 50%; border: 3px solid var(--primary);">
         <h1 style="margin-bottom: 10px;">QG <span>APEXIA</span></h1>
-        <p style="color: #666; margin-bottom: 30px;">Identidade protegida pelo Google.</p>
-        <button class="btn-google" onclick="login()">
+        <p id="login-msg" style="color: #666; margin-bottom: 30px;">Clique abaixo para entrar com sua conta Google.</p>
+        <button class="btn-google" id="btn-login" onclick="login()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             ENTRAR COM GOOGLE
         </button>
@@ -88,7 +88,7 @@
     </main>
 
     <script>
-        // CONFIGURAÇÕES DA SUA FOTO
+        // CONFIGURAÇÕES DO FIREBASE (IDÊNTICAS ÀS SUAS)
         const firebaseConfig = {
             apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
             authDomain: "comunidade-apexia.firebaseapp.com",
@@ -105,18 +105,31 @@
 
         let user = null;
 
+        // FUNÇÃO DE LOGIN REPARADA (MÉTODO REDIRECT)
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider);
+            document.getElementById('btn-login').innerText = "CONECTANDO...";
+            // Usamos redirect porque o Popup é bloqueado por muitos navegadores
+            auth.signInWithRedirect(provider);
         }
 
         function logout() { auth.signOut(); location.reload(); }
 
+        // CHECAR RESULTADO DO LOGIN APÓS VOLTAR DO GOOGLE
+        auth.getRedirectResult().catch((error) => {
+            if(error.code === 'auth/unauthorized-domain') {
+                alert("ERRO: O domínio apexia-oficcial.github.io precisa ser autorizado no Firebase!");
+            } else {
+                console.error("Erro no login:", error);
+            }
+        });
+
+        // MONITORAR LOGIN
         auth.onAuthStateChanged((u) => {
             if (u) {
                 user = u;
                 document.getElementById('login-screen').style.display = 'none';
-                confetti({ particleCount: 100, origin: { y: 0.7 } });
+                confetti({ particleCount: 150, origin: { y: 0.7 } });
                 setupPresence();
                 loadMessages();
             }
@@ -173,6 +186,18 @@
         }
 
         document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
+
+        // Gerar Estrelas
+        const g = document.getElementById('galaxy');
+        for (let i = 0; i < 50; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = Math.random() * 3 + 'px';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.animationDuration = (Math.random() * 50 + 50) + 's';
+            g.appendChild(s);
+        }
     </script>
 </body>
 </html>
