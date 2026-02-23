@@ -1,250 +1,345 @@
-<!-- TELA DE ESPERA BONITA -->
-<div id="waiting-screen">
-    <div class="waiting-card">
-        <div class="loader-ring"></div>
-        <h2 style="font-weight: 900; margin-bottom: 10px;">VALIDANDO <span style="color:var(--primary)">IDENTIDADE</span></h2>
-        <p style="color: #aaa; font-size: 0.9rem; line-height: 1.5;">O Administrador está analisando o seu print de membro. Esse processo garante uma comunidade livre de intrusos.</p>
-        
-        <div class="timer-box">⏰ Resposta estimada: <span style="color:#fff">em algumas horas</span></div>
-        <p style="font-size: 0.7rem; color: #444; margin-top: 10px;">(Prazo máximo: 24h)</p>
-
-        <button onclick="falarComAdmin()" style="margin-top: 30px; background: transparent; border: 1px solid #333; color: #666; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-size: 0.75rem; font-weight: 800;">
-            DEMOROU MAIS DE 24H? CLIQUE AQUI
-        </button>
-        <br>
-        <button onclick="localStorage.clear(); location.reload();" style="margin-top: 15px; background: none; border: none; color: #333; font-size: 0.6rem; cursor: pointer; text-decoration: underline;">CANCELAR PEDIDO</button>
-    </div>
-</div>
-
-<!-- TELA DE REGISTRO -->
-<div id="onboarding">
-    <div class="form-box">
-        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; margin-bottom:15px; border-radius:50%; border:2px solid var(--primary);">
-        <h2 style="margin-bottom:10px;">COMUNIDADE <span>APEXIA</span></h2>
-        <p style="color:#aaa; font-size:0.75rem; margin-bottom:20px;">Exclusivo para membros do canal.</p>
-        
-        <input type="text" id="reg-name" placeholder="Seu Nome">
-        <input type="text" id="reg-channel" placeholder="Nome do seu Canal">
-        <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ex: 244...)">
-        
-        <p style="font-size: 0.65rem; color: var(--primary); margin-bottom: 5px; text-align: left; padding-left: 10px;">Anexe o print do YouTube Studio (Membro):</p>
-        <label for="reg-photo" class="file-btn" id="file-label">Selecionar arquivo...</label>
-        <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewFile()">
-        
-        <button class="btn-join" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
-    </div>
-</div>
-
-<!-- PAINEL ADMIN -->
-<div id="admin-drawer">
-    <h3 style="color:var(--primary); font-size: 0.8rem; margin-bottom: 20px; font-weight: 900; text-transform: uppercase;">Aprovações Pendentes</h3>
-    <div id="pending-list"></div>
-    <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:#fff; border-radius:15px; margin-top:10px; cursor:pointer; font-weight: 800;">FECHAR PAINEL</button>
-</div>
-
-<!-- APP PRINCIPAL -->
-<div id="app" style="display:none; width: 100%; display: flex;">
-    <nav id="sidebar">
-        <div id="members-list"></div>
-        <div style="padding:20px; border-top:1px solid var(--border);">
-            <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:12px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:12px; margin-bottom:12px; cursor:pointer;">PAINEL DE GESTÃO</button>
-            <button onclick="sair()" style="color:#444; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer; width:100%; text-align:left;">SAIR DO SISTEMA</button>
-        </div>
-    </nav>
-
-    <main id="chat-area">
-        <header>
-            <div style="font-weight: 900; font-size: 0.8rem;">COMUNIDADE <span>APEXIA</span> ELITE</div>
-            <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800; cursor:pointer;">← HUB</button>
-        </header>
-        <div id="chat-window"></div>
-        <div class="input-area">
-            <div class="input-wrapper">
-                <input type="text" id="chat-input" placeholder="Compartilhe sua estratégia...">
-                <button class="send-btn" onclick="enviarMensagem()">→</button>
-            </div>
-        </div>
-    </main>
-</div>
-
-<script>
-    const ADMIN_PHONE = "244931352915"; // SEU NÚMERO
-    const firebaseConfig = {
-        apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
-        authDomain: "comunidade-apexia.firebaseapp.com",
-        projectId: "comunidade-apexia",
-        databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
-        storageBucket: "comunidade-apexia.firebasestorage.app",
-        messagingSenderId: "668289488372",
-        appId: "1:668289488372:web:cf29801db6489d09a695a1"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    let myProfile = null;
-    let base64Proof = "";
-
-    function previewFile() {
-        const file = document.getElementById('reg-photo').files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => { 
-            base64Proof = reader.result; 
-            document.getElementById('file-label').innerText = "✅ " + file.name;
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function falarComAdmin() {
-        window.open(`https://wa.me/${ADMIN_PHONE}?text=Olá! Meu pedido de acesso à Comunidade ApexiA está pendente há algum tempo. Pode verificar?`, '_blank');
-    }
-
-    function solicitarAcesso() {
-        const name = document.getElementById('reg-name').value.trim();
-        const channel = document.getElementById('reg-channel').value.trim();
-        const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
-        
-        if (!name || !channel || wa.length < 9) {
-            alert("Preencha todos os dados corretamente!"); return;
-        }
-
-        const isAdmin = wa === ADMIN_PHONE;
-        
-        if(!isAdmin && !base64Proof) {
-            alert("Você precisa anexar o print provando que é membro!"); return;
-        }
-
-        const user = { 
-            id: "u"+Date.now(), 
-            name, 
-            channel, 
-            wa, 
-            photo: `https://robohash.org/${name}.png?set=set4`, 
-            proof: isAdmin ? "" : base64Proof, 
-            approved: isAdmin, 
-            role: isAdmin ? 'admin' : 'member' 
-        };
-        
-        db.ref("users/" + user.id).set(user);
-        localStorage.setItem("apexia_user", JSON.stringify(user));
-        
-        if(isAdmin) {
-            location.reload();
-        } else {
-            document.getElementById('onboarding').style.display = "none";
-            document.getElementById('waiting-screen').style.display = "flex";
-        }
-    }
-
-    window.onload = () => {
-        const saved = localStorage.getItem("apexia_user");
-        if (!saved) return;
-        myProfile = JSON.parse(saved);
-
-        // Ouvinte em tempo real para mudanças no perfil (como aprovação)
-        db.ref("users/" + myProfile.id).on("value", snap => {
-            const u = snap.val();
-            if (!u) return;
-            
-            myProfile = u;
-
-            if (!u.approved) {
-                document.getElementById('onboarding').style.display = "none";
-                document.getElementById('waiting-screen').style.display = "flex";
-                return;
-            }
-
-            // Se aprovado ou Admin, abre o app
-            document.getElementById('onboarding').style.display = "none";
-            document.getElementById('waiting-screen').style.display = "none";
-            document.getElementById('app').style.display = "flex";
-            
-            if(myProfile.role === 'admin') {
-                document.getElementById('admin-btn').style.display = 'block';
-                ouvirPendentes();
-            }
-            iniciarSistema();
-        });
-    };
-
-    function iniciarSistema() {
-        ouvirChat();
-        setupPresence();
-    }
-
-    function enviarMensagem() {
-        const input = document.getElementById('chat-input');
-        if (!input.value.trim()) return;
-        db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: input.value.trim(), role: myProfile.role, timestamp: Date.now() });
-        input.value = "";
-    }
-
-    function ouvirChat() {
-        db.ref("messages").limitToLast(50).on("child_added", snap => {
-            const m = snap.val();
-            const win = document.getElementById('chat-window');
-            const isMe = m.senderId === myProfile.id;
-            const div = document.createElement('div');
-            div.className = `msg ${isMe ? 'sent' : 'received'}`;
-            div.innerHTML = `
-                <b style="font-size:0.6rem; color:${m.role==='admin'?'#0f0':'#888'}">${m.senderName} ${m.role==='admin'?'👑':''}</b><br>
-                ${m.text}
-            `;
-            win.appendChild(div);
-            win.scrollTop = win.scrollHeight;
-        });
-    }
-
-    function toggleAdminDrawer() { 
-        const d = document.getElementById('admin-drawer');
-        d.style.display = d.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function ouvirPendentes() {
-        db.ref("users").on("value", s => {
-            const list = document.getElementById('pending-list');
-            list.innerHTML = "";
-            s.forEach(child => {
-                const u = child.val();
-                if(!u.approved) {
-                    list.innerHTML += `
-                    <div class="pending-card">
-                        <b style="font-size:0.9rem;">${u.name}</b><br>
-                        <small style="color:#666">${u.channel}</small><br>
-                        <img src="${u.proof}" onclick="window.open(this.src)" style="margin-top:10px;">
-                        <button onclick="aprovarUser('${u.id}')" style="width:100%; background:#0f0; color:#000; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:900;">APROVAR MEMBRO</button>
-                    </div>`;
-                }
-            });
-        });
-    }
-
-    function aprovarUser(id) { db.ref("users/"+id).update({ approved: true }); }
-    function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Comunidade ApexiA | Hub de Elite</title>
     
-    function setupPresence() {
-        const statusRef = db.ref(`status/${myProfile.id}`);
-        db.ref('.info/connected').on('value', snap => {
-            if (snap.val() === true) statusRef.onDisconnect().remove().then(() => statusRef.set({name: myProfile.name, photo: myProfile.photo, channel: myProfile.channel}));
-        });
-        db.ref('status').on('value', snap => {
-            const list = document.getElementById('members-list');
-            list.innerHTML = "";
-            snap.forEach(c => {
-                const d = c.val();
-                list.innerHTML += `<div class="member-card"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">${d.channel}</small></div></div>`;
-            });
-        });
-    }
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-    // Estrelas
-    const g = document.getElementById('galaxy');
-    for (let i = 0; i < 40; i++) {
-        const s = document.createElement('div');
-        s.className = 'star';
-        s.style.width = s.style.height = Math.random() * 2 + 'px';
-        s.style.left = Math.random() * 100 + '%';
-        s.style.top = Math.random() * 100 + '%';
-        g.appendChild(s);
-    }
-    document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key === 'Enter') enviarMensagem(); });
-</script>
+    <style>
+        :root { --primary: #00FF00; --bg: #030303; --border: rgba(0, 255, 0, 0.2); --gold: #FFD700; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; height: 100dvh; overflow: hidden; display: flex; flex-direction: column; }
+
+        /* --- FUNDO --- */
+        #galaxy { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); }
+        .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar 100s linear infinite; }
+        @keyframes moveStar { from { transform: translateY(0); } to { transform: translateY(-1000px); } }
+
+        /* --- TELAS (INICIALMENTE OCULTAS) --- */
+        #onboarding, #waiting-screen, #app { display: none; width: 100%; height: 100%; }
+
+        /* --- TELA DE ESPERA --- */
+        #waiting-screen { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30px; position: fixed; inset: 0; background: #000; z-index: 10000; }
+        .waiting-card { max-width: 450px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); }
+        #rejection-alert { display: none; background: rgba(255,0,0,0.1); border: 1px solid #ff4444; padding: 15px; border-radius: 15px; margin-top: 20px; color: #ff8888; font-size: 0.9rem; }
+        .loader-ring { width: 50px; height: 50px; border: 3px solid rgba(0,255,0,0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- SIDEBAR --- */
+        #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .rank-box { padding: 15px; border-bottom: 1px solid var(--border); background: rgba(0,255,0,0.03); }
+        #members-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .member-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; border: 1px solid transparent; }
+        .member-card img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); }
+        .member-card.top-rank { border-color: var(--gold); }
+
+        /* --- CHAT AREA --- */
+        #chat-area { flex: 1; display: flex; flex-direction: column; position: relative; }
+        header { padding: 15px 25px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.6); }
+        #pinned-msg { display: none; background: rgba(255,215,0,0.1); border-bottom: 1px solid var(--gold); padding: 10px; font-size: 0.8rem; text-align: center; color: var(--gold); }
+        #chat-window { flex: 1; overflow-y: auto; padding: 25px; display: flex; flex-direction: column; gap: 12px; }
+        
+        .msg { max-width: 75%; padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; position: relative; }
+        .msg img, .msg video { max-width: 100%; border-radius: 10px; margin-top: 8px; display: block; border: 1px solid var(--border); }
+        .received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 18px 18px 18px; }
+        .sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 18px 18px 2px 18px; }
+
+        /* --- INPUT --- */
+        .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 12px; background: #0a0a0a; padding: 10px 20px; border-radius: 40px; border: 1px solid var(--primary); align-items: center; position: relative; overflow: hidden; }
+        .input-wrapper::before { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent); animation: neonMove 3s infinite linear; }
+        @keyframes neonMove { 0% { left: -100%; } 100% { left: 100%; } }
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; }
+        .send-btn { background: var(--primary); border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-weight: 900; z-index: 2; }
+
+        /* --- REGISTRO --- */
+        #onboarding { flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 999; position: fixed; inset: 0; background: #000; }
+        .form-box { width: 100%; max-width: 400px; background: #0a0a0a; padding: 35px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
+        .form-box input { width: 100%; padding: 15px; margin-bottom: 12px; background: #000; border: 1px solid #222; border-radius: 12px; color: #fff; outline: none; }
+        .file-btn { display: block; padding: 15px; background: #111; border: 1px dashed #444; border-radius: 12px; cursor: pointer; margin-bottom: 15px; color: #888; font-size: 0.8rem; }
+        .btn-join { width: 100%; padding: 16px; background: var(--primary); color: #000; font-weight: 900; border: none; border-radius: 50px; cursor: pointer; }
+
+        /* --- ADMIN PANEL --- */
+        #admin-drawer { display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 340px; background: #050505; border-left: 2px solid var(--primary); z-index: 10001; padding: 20px; overflow-y: auto; }
+        .pending-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-size: 0.8rem; }
+        .pending-card img { width: 100%; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
+        .admin-btn-group { display: flex; gap: 10px; }
+        .btn-approve { flex: 2; background: var(--primary); color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .btn-reject { flex: 1; background: #ff4444; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+
+        @media (max-width: 768px) { #sidebar { display: none; } #admin-drawer { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div id="galaxy"></div>
+
+    <!-- TELA DE REGISTRO -->
+    <div id="onboarding">
+        <div class="form-box">
+            <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; margin-bottom:15px; border-radius:50%; border:2px solid var(--primary);">
+            <h2>COMUNIDADE <span>APEXIA</span></h2>
+            <p style="color:#aaa; font-size:0.75rem; margin-bottom:20px;">Exclusivo para membros reais.</p>
+            <input type="text" id="reg-name" placeholder="Seu Nome">
+            <input type="text" id="reg-channel" placeholder="Nome do seu Canal">
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ex: 244...)">
+            <label for="reg-photo" class="file-btn" id="file-label">Anexar Print YouTube Studio</label>
+            <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewFile()">
+            <button class="btn-join" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
+        </div>
+    </div>
+
+    <!-- TELA DE ESPERA -->
+    <div id="waiting-screen">
+        <div class="waiting-card">
+            <div class="loader-ring"></div>
+            <h2 style="font-weight: 900;">HUB DE <span style="color:var(--primary)">APROVAÇÃO</span></h2>
+            <p id="waiting-status" style="color: #aaa; margin-top: 15px; font-size: 0.9rem;">Seu print está sendo auditado. Aguarde a liberação.</p>
+            <div id="rejection-alert">
+                <b>PEDIDO RECUSADO:</b><br><span id="rejection-reason">---</span>
+            </div>
+            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top: 30px; background: #25D366; border: none; color: #fff; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: 800; width: 100%;">SUPORTE WHATSAPP</button>
+            <button onclick="localStorage.clear(); location.reload();" style="margin-top: 15px; background: none; border: none; color: #444; font-size: 0.7rem; text-decoration: underline; cursor: pointer;">Tentar novamente</button>
+        </div>
+    </div>
+
+    <!-- PAINEL ADMIN -->
+    <div id="admin-drawer">
+        <h3 style="color:var(--primary); font-weight: 900; margin-bottom: 20px; font-size: 0.8rem;">GESTOR DE COMUNIDADE</h3>
+        <div id="pending-list"></div>
+        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR PAINEL</button>
+    </div>
+
+    <!-- APP PRINCIPAL -->
+    <div id="app">
+        <nav id="sidebar">
+            <div class="rank-box">
+                <b style="font-size: 0.6rem; color: var(--gold);">⭐ TOP ENGAJAMENTO</b>
+                <div id="ranking-list" style="margin-top:5px; font-size:0.7rem;"></div>
+            </div>
+            <div id="members-list"></div>
+            <div style="padding:20px; border-top:1px solid var(--border);">
+                <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:12px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:12px; margin-bottom:12px; cursor:pointer;">PAINEL GESTÃO</button>
+                <button onclick="sair()" style="color:#444; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">SAIR DO SISTEMA</button>
+            </div>
+        </nav>
+
+        <main id="chat-area">
+            <header>
+                <div style="font-weight: 900; font-size: 0.8rem;">QG APEXIA ELITE</div>
+                <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800; cursor:pointer;">← HUB</button>
+            </header>
+            <div id="pinned-msg"></div>
+            <div id="chat-window"></div>
+            <div id="typingIndicator" style="font-size: 0.6rem; color: var(--primary); padding: 5px 25px; min-height: 20px;"></div>
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <label for="chat-file" style="cursor:pointer; font-size: 1.2rem;">📎</label>
+                    <input type="file" id="chat-file" style="display:none" onchange="enviarAnexo()">
+                    <input type="text" id="chat-input" placeholder="Mensagem ou link...">
+                    <button class="send-btn" onclick="enviarMensagem()">→</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const ADMIN_PHONE = "244931352915";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
+            authDomain: "comunidade-apexia.firebaseapp.com",
+            projectId: "comunidade-apexia",
+            databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
+            storageBucket: "comunidade-apexia.firebasestorage.app",
+            messagingSenderId: "668289488372",
+            appId: "1:668289488372:web:cf29801db6489d09a695a1"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        let myProfile = null;
+        let base64Proof = "";
+        let typingTimeout = null;
+
+        if ("Notification" in window) Notification.requestPermission();
+
+        function previewFile() {
+            const file = document.getElementById('reg-photo').files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => { 
+                base64Proof = reader.result; 
+                document.getElementById('file-label').innerText = "✅ Arquivo Carregado";
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function solicitarAcesso() {
+            const name = document.getElementById('reg-name').value.trim();
+            const channel = document.getElementById('reg-channel').value.trim();
+            const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
+            if (!name || !channel || wa.length < 9) { alert("Preencha os dados corretamente!"); return; }
+            const isAdmin = wa === ADMIN_PHONE;
+            if(!isAdmin && !base64Proof) { alert("Anexe o print comprovante!"); return; }
+
+            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin ? 'admin' : 'member', msgCount: 0 };
+            db.ref("users/" + user.id).set(user);
+            localStorage.setItem("apexia_user", JSON.stringify(user));
+            location.reload();
+        }
+
+        window.onload = () => {
+            const saved = localStorage.getItem("apexia_user");
+            if (!saved) { document.getElementById('onboarding').style.display="flex"; return; }
+            myProfile = JSON.parse(saved);
+
+            db.ref("users/" + myProfile.id).on("value", snap => {
+                const u = snap.val();
+                if (!u) return;
+                myProfile = u;
+                if (u.rejectionReason) {
+                    document.getElementById('waiting-screen').style.display = "flex";
+                    document.getElementById('rejection-alert').style.display = "block";
+                    document.getElementById('rejection-reason').innerText = u.rejectionReason;
+                    return;
+                }
+                if (!u.approved) { document.getElementById('waiting-screen').style.display = "flex"; return; }
+
+                document.getElementById('onboarding').style.display = "none";
+                document.getElementById('waiting-screen').style.display = "none";
+                document.getElementById('app').style.display = "flex";
+                if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
+                iniciarSistema();
+            });
+        };
+
+        function iniciarSistema() {
+            ouvirChat();
+            setupPresence();
+            ouvirFixada();
+            ouvirRanking();
+            ouvirDigitando();
+            if(myProfile.role === 'admin') ouvirPendentes();
+        }
+
+        function enviarMensagem() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() });
+            db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
+            input.value = "";
+            pararDigitando();
+        }
+
+        function enviarAnexo() {
+            const file = document.getElementById('chat-file').files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const type = file.type.startsWith('image') ? 'img' : 'video';
+                db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: `Enviou um ${type}`, attachment: e.target.result, attachmentType: type, timestamp: Date.now() });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function ouvirChat() {
+            db.ref("messages").limitToLast(30).on("child_added", snap => {
+                const m = snap.val();
+                const win = document.getElementById('chat-window');
+                const isMe = m.senderId === myProfile.id;
+                const div = document.createElement('div');
+                div.className = `msg ${isMe ? 'sent' : 'received'}`;
+                let content = `<b style="font-size:0.6rem; color:${isMe?'#000':'var(--primary)'}">${m.senderName}</b><br>${m.text}`;
+                if(m.attachment) {
+                    if(m.attachmentType === 'img') content += `<br><img src="${m.attachment}" onclick="window.open(this.src)">`;
+                    else content += `<br><video controls src="${m.attachment}"></video>`;
+                }
+                if(myProfile.role === 'admin') content += `<div style="font-size:8px; margin-top:5px; cursor:pointer;" onclick="apagar('${snap.key}')">🗑 APAGAR</div>`;
+                div.innerHTML = content;
+                win.appendChild(div);
+                win.scrollTop = win.scrollHeight;
+                if(!isMe && document.hidden) new Notification("ApexiA HQ", {body: `${m.senderName}: ${m.text}`});
+            });
+        }
+
+        function apagar(id) { if(confirm("Apagar?")) db.ref("messages/"+id).remove(); location.reload(); }
+
+        function ouvirRanking() {
+            db.ref("users").orderByChild("msgCount").limitToLast(3).on("value", s => {
+                const list = document.getElementById('ranking-list');
+                list.innerHTML = "";
+                s.forEach(c => { const u = c.val(); list.innerHTML = `<div>⭐ ${u.name} (${u.msgCount || 0} pts)</div>` + list.innerHTML; });
+            });
+        }
+
+        function ouvirFixada() {
+            db.ref("fixed").on("value", s => {
+                const b = document.getElementById('pinned-msg');
+                if(s.exists()) { b.style.display = 'block'; b.innerText = "📌 " + s.val(); }
+            });
+        }
+
+        function ouvirPendentes() {
+            db.ref("users").on("value", s => {
+                const list = document.getElementById('pending-list');
+                list.innerHTML = "";
+                s.forEach(child => {
+                    const u = child.val();
+                    if(!u.approved && !u.rejectionReason) {
+                        list.innerHTML += `<div class="pending-card"><b>${u.name}</b><br><img src="${u.proof}"><div class="admin-btn-group"><button class="btn-approve" onclick="db.ref('users/${u.id}').update({approved:true})">APROVAR</button><button class="btn-reject" onclick="rejeitar('${u.id}')">X</button></div></div>`;
+                    }
+                });
+            });
+        }
+
+        function rejeitar(id) { const m = prompt("Motivo:"); if(m) db.ref(`users/${id}`).update({ rejectionReason: m }); }
+
+        document.getElementById('chat-input').addEventListener("input", () => {
+            db.ref("typing/" + myProfile.id).set(myProfile.name);
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(pararDigitando, 1500);
+        });
+
+        function pararDigitando() { db.ref("typing/" + myProfile.id).remove(); }
+
+        function ouvirDigitando() {
+            db.ref("typing").on("value", snap => {
+                let t = "";
+                snap.forEach(c => { if (c.key !== myProfile.id) t += c.val() + "... "; });
+                document.getElementById("typingIndicator").innerText = t ? t + "digitando" : "";
+            });
+        }
+
+        function setupPresence() {
+            const statusRef = db.ref(`status/${myProfile.id}`);
+            db.ref('.info/connected').on('value', snap => {
+                if (snap.val() === true) statusRef.onDisconnect().remove().then(() => statusRef.set({name: myProfile.name, photo: myProfile.photo, channel: myProfile.channel, msgCount: myProfile.msgCount || 0}));
+            });
+            db.ref('status').on('value', snap => {
+                const list = document.getElementById('members-list');
+                list.innerHTML = "";
+                snap.forEach(c => { const d = c.val(); list.innerHTML += `<div class="member-card ${d.msgCount > 50 ? 'top-rank' : ''}"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">ativo</small></div></div>`; });
+            });
+        }
+
+        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
+
+        // Estrelas
+        const g = document.getElementById('galaxy');
+        for (let i = 0; i < 40; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.width = s.style.height = Math.random() * 2 + 'px';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            g.appendChild(s);
+        }
+
+        document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key === 'Enter') enviarMensagem(); });
+    </script>
+</body>
+</html>
