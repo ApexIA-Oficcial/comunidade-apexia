@@ -3,89 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ApexiA QG | Comunidade de Elite</title>
+    <title>ApexiA Community</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    
-    <!-- SDKs do Firebase -->
+    <!-- Bibliotecas do Google -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --primary: #00FF00; --bg: #030303; --border: rgba(0, 255, 0, 0.15); }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background: #000; color: #fff; height: 100dvh; overflow: hidden; display: flex; }
-
-        /* Sidebar */
-        #members-sidebar { width: 260px; background: #050505; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 900; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; }
-        #members-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .member-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 5px; background: rgba(255,255,255,0.02); }
-        .member-item img { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--primary); }
-        .online-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); }
-
-        /* Área do Chat */
-        #chat-area { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); position: relative; }
-        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
-        
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
-        
-        .msg.sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 15px 15px 2px 15px; }
-        .msg.received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 15px 15px 15px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Input Neon */
-        .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
-        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; border: 1px solid var(--primary); position: relative; overflow: hidden; }
-        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; }
-        .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #000; font-weight: 900; z-index: 2; }
-
-        /* Login Screen */
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        .btn-google { background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: 0.3s; }
-        
-        #galaxy { position: fixed; inset: 0; z-index: -1; }
-        @media (max-width: 768px) { #members-sidebar { display: none; } }
+        :root { --primary: #00FF00; }
+        body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
+        .login-box { padding: 20px; border: 1px solid rgba(0,255,0,0.2); border-radius: 20px; background: #050505; }
+        .logo { width: 100px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 20px; }
+        .btn-google { background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; transition: 0.3s; }
+        #chat-area { display: none; }
     </style>
 </head>
 <body>
-    <div id="galaxy"></div>
 
-    <div id="login-screen">
-        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px;">
-        <h1 style="margin-bottom: 10px;">QG <span>APEXIA</span></h1>
-        <p id="status-text" style="color: #666; margin-bottom: 30px;">Login Google obrigatório para validar membros.</p>
-        <button class="btn-google" id="login-btn" onclick="login()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
-            ENTRAR COM GOOGLE
-        </button>
+    <div id="login-screen" class="login-box">
+        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" class="logo">
+        <h1>QG APEXIA</h1>
+        <p style="color: #666;">Clique para entrar na comunidade.</p>
+        <br>
+        <button class="btn-google" onclick="fazerLogin()">ENTRAR COM GOOGLE</button>
     </div>
 
-    <nav id="members-sidebar">
-        <div class="sidebar-header">Online Agora (<span id="count">0</span>)</div>
-        <div id="members-list"></div>
-    </nav>
-
-    <main id="chat-area">
-        <header>
-            <div style="font-weight: 900;">APEXIA <span>COMMUNITY</span></div>
-            <button onclick="logout()" style="background:none; border:none; color:#555; font-size:0.7rem; cursor:pointer;">SAIR</button>
-        </header>
-        <div id="chat-window"></div>
-        <div class="input-area">
-            <div class="input-wrapper">
-                <input type="text" id="chat-input" placeholder="Escreva sua mensagem...">
-                <button class="send-btn" id="send-btn" onclick="send()">→</button>
-            </div>
-        </div>
-    </main>
+    <div id="chat-area">
+        <h1>BEM-VINDO AO QG!</h1>
+        <p>Você está logado.</p>
+        <button onclick="location.reload()">SAIR</button>
+    </div>
 
     <script>
-        // CONFIGURAÇÕES ATUALIZADAS COM A CHAVE NOVA DA FOTO
+        // CONFIGURAÇÃO USANDO SUA API KEY 2
         const firebaseConfig = {
             apiKey: "AIzaSyAryBWRIA10CCDBNBsRw0hfHZJShvtto8Q",
             authDomain: "comunidade-apexia.firebaseapp.com",
@@ -96,30 +48,28 @@
             appId: "1:668289488372:web:cf29801db6489d09a695a1"
         };
 
+        // Inicia o sistema
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.database();
-        let user = null;
 
-        function login() {
+        // FUNÇÃO DE LOGIN (Mudei o nome para fazerLogin para não dar erro)
+        window.fazerLogin = function() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            document.getElementById('status-text').innerText = "Conectando ao Google...";
-            auth.signInWithRedirect(provider);
-        }
-
-        function logout() { auth.signOut().then(() => location.reload()); }
-
-        // Monitorar estado de login
-        auth.onAuthStateChanged((u) => {
-            if (u) {
-                user = u;
-                document.getElementById('login-screen').style.display = 'none';
-                confetti({ particleCount: 150, origin: { y: 0.7 } });
-                setupPresence();
-                loadMessages();
-            }
-        });
-
-        function setupPresence() {
-            const statusRef = db.ref(`status/${user.uid}`);
-            db.ref(`.info/co
+            
+            // Tenta abrir a janelinha
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    alert("Sucesso! Bem-vindo " + result.user.displayName);
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('chat-area').style.display = 'block';
+                    confetti({ particleCount: 150 });
+                })
+                .catch((error) => {
+                    // SE DER ERRO, VAI APARECER ESTA CAIXA NA TELA:
+                    alert("ERRO DO GOOGLE: " + error.message);
+                    console.error(error);
+                });
+        };
+    </script>
+</body>
+</html>
