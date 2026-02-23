@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ApexiA QG | QG de Elite</title>
+    <title>ApexiA QG | Comunidade de Elite</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
@@ -34,18 +34,13 @@
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
         
-        /* Imagens menores no chat */
-        .msg img { max-width: 150px; border-radius: 8px; margin-top: 5px; border: 1px solid var(--border); }
-        
         .msg.sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 15px 15px 2px 15px; }
         .msg.received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 15px 15px 15px; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Input Neon */
         .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
-        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; border: 1px solid var(--primary); box-shadow: 0 0 15px rgba(0,255,0,0.1); position: relative; overflow: hidden; }
-        .input-wrapper::before { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent); animation: neonMove 3s infinite linear; }
-        @keyframes neonMove { 0% { left: -100%; } 100% { left: 100%; } }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; border: 1px solid var(--primary); position: relative; overflow: hidden; }
         input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; }
         .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #000; font-weight: 900; z-index: 2; }
 
@@ -63,15 +58,15 @@
     <div id="login-screen">
         <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px;">
         <h1 style="margin-bottom: 10px;">QG <span>APEXIA</span></h1>
-        <p style="color: #666; margin-bottom: 30px;">Login obrigatório para membros reais.</p>
-        <button class="btn-google" id="btn-login" onclick="login()">
+        <p id="status-text" style="color: #666; margin-bottom: 30px;">Login Google obrigatório para validar membros.</p>
+        <button class="btn-google" id="login-btn" onclick="login()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20">
             ENTRAR COM GOOGLE
         </button>
     </div>
 
     <nav id="members-sidebar">
-        <div class="sidebar-header">Online (<span id="count">0</span>)</div>
+        <div class="sidebar-header">Online Agora (<span id="count">0</span>)</div>
         <div id="members-list"></div>
     </nav>
 
@@ -83,15 +78,16 @@
         <div id="chat-window"></div>
         <div class="input-area">
             <div class="input-wrapper">
-                <input type="text" id="chat-input" placeholder="Digite sua mensagem...">
-                <button class="send-btn" onclick="send()">→</button>
+                <input type="text" id="chat-input" placeholder="Escreva sua mensagem...">
+                <button class="send-btn" id="send-btn" onclick="send()">→</button>
             </div>
         </div>
     </main>
 
     <script>
+        // CONFIGURAÇÕES ATUALIZADAS COM A CHAVE NOVA DA FOTO
         const firebaseConfig = {
-            apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
+            apiKey: "AIzaSyAryBWRIA10CCDBNBsRw0hfHZJShvtto8Q",
             authDomain: "comunidade-apexia.firebaseapp.com",
             projectId: "comunidade-apexia",
             databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
@@ -103,24 +99,20 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        let currentUser = null;
+        let user = null;
 
         function login() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // Usamos Redirect para evitar bloqueio de Popups do navegador
+            document.getElementById('status-text').innerText = "Conectando ao Google...";
             auth.signInWithRedirect(provider);
         }
 
         function logout() { auth.signOut().then(() => location.reload()); }
 
-        // MONITOR DE ERROS E ESTADO
-        auth.getRedirectResult().catch(e => {
-            alert("ERRO TÉCNICO: " + e.code + " - " + e.message);
-        });
-
-        auth.onAuthStateChanged((user) => {
-            if (user) {
-                currentUser = user;
+        // Monitorar estado de login
+        auth.onAuthStateChanged((u) => {
+            if (u) {
+                user = u;
                 document.getElementById('login-screen').style.display = 'none';
                 confetti({ particleCount: 150, origin: { y: 0.7 } });
                 setupPresence();
@@ -129,68 +121,5 @@
         });
 
         function setupPresence() {
-            const statusRef = db.ref(`status/${currentUser.uid}`);
-            db.ref(`.info/connected`).on('value', (snap) => {
-                if (snap.val() === true) {
-                    statusRef.onDisconnect().remove().then(() => {
-                        statusRef.set({ nome: currentUser.displayName, foto: currentUser.photoURL });
-                    });
-                }
-            });
-
-            db.ref('status').on('value', (s) => {
-                const list = document.getElementById('members-list');
-                const count = document.getElementById('count');
-                if(!list) return;
-                list.innerHTML = "";
-                let onlineCount = 0;
-                s.forEach((child) => {
-                    const data = child.val();
-                    list.innerHTML += `<div class="member-item"><img src="${data.foto}"> ${data.nome} <div class="online-dot"></div></div>`;
-                    onlineCount++;
-                });
-                count.innerText = onlineCount;
-            });
-        }
-
-        function send() {
-            const input = document.getElementById('chat-input');
-            if (input.value.trim() && currentUser) {
-                db.ref('chat').push({
-                    uid: currentUser.uid,
-                    nome: currentUser.displayName,
-                    texto: input.value.trim(),
-                    timestamp: Date.now()
-                });
-                input.value = "";
-            }
-        }
-
-        function loadMessages() {
-            db.ref('chat').limitToLast(50).on('child_added', (s) => {
-                const data = s.val();
-                const win = document.getElementById('chat-window');
-                const div = document.createElement('div');
-                div.className = `msg ${data.uid === currentUser.uid ? 'sent' : 'received'}`;
-                div.innerHTML = `<span style="font-size:0.6rem; font-weight:900; margin-bottom:4px; opacity:0.6;">${data.nome}</span>${data.texto}`;
-                win.appendChild(div);
-                win.scrollTop = win.scrollHeight;
-            });
-        }
-
-        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
-
-        // Galáxia
-        const g = document.getElementById('galaxy');
-        for (let i = 0; i < 50; i++) {
-            const s = document.createElement('div');
-            s.className = 'star';
-            s.style.width = s.style.height = Math.random() * 3 + 'px';
-            s.style.left = Math.random() * 100 + '%';
-            s.style.top = Math.random() * 100 + '%';
-            s.style.animationDuration = (Math.random() * 50 + 50) + 's';
-            g.appendChild(s);
-        }
-    </script>
-</body>
-</html>
+            const statusRef = db.ref(`status/${user.uid}`);
+            db.ref(`.info/co
