@@ -3,37 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ApexiA QG | Comunidade</title>
+    <title>ApexiA QG | Acesso de Membros</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    
+    <!-- Motores do Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-        :root { --primary: #00FF00; }
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
-        .login-box { padding: 30px; border: 1px solid rgba(0,255,0,0.2); border-radius: 20px; background: #050505; max-width: 320px; width: 90%; }
-        .logo { width: 100px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 20px; }
-        .btn-google { background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; transition: 0.3s; }
-        #chat-area { display: none; }
+        :root { --primary: #00FF00; --bg: #030303; --border: rgba(0, 255, 0, 0.15); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #000; color: #fff; height: 100dvh; overflow: hidden; display: flex; }
+
+        /* Sidebar de Membros */
+        #members-sidebar { width: 260px; background: #050505; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); font-weight: 900; font-size: 0.7rem; color: var(--primary); text-transform: uppercase; }
+        #members-list { flex: 1; overflow-y: auto; padding: 10px; }
+        .member-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 5px; background: rgba(255,255,255,0.02); }
+        .member-item img { width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--primary); }
+        .online-dot { width: 6px; height: 6px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 5px var(--primary); }
+
+        /* Área do Chat */
+        #chat-area { flex: 1; display: flex; flex-direction: column; background: radial-gradient(circle at center, #0a1a0a 0%, #000 100%); position: relative; }
+        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
+        
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .msg { max-width: 80%; padding: 12px 16px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; display: flex; flex-direction: column; animation: fadeIn 0.3s ease; }
+        .msg.sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 15px 15px 2px 15px; }
+        .msg.received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 15px 15px 15px; }
+        .msg-info { font-size: 0.65rem; font-weight: 900; margin-bottom: 4px; opacity: 0.8; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Input Neon ApexiA */
+        .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
+        .input-wrapper { max-width: 800px; margin: 0 auto; display: flex; gap: 10px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; border: 1px solid var(--primary); position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(0,255,0,0.1); }
+        .input-wrapper::before { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent); animation: neonMove 3s infinite linear; }
+        @keyframes neonMove { 0% { left: -100%; } 100% { left: 100%; } }
+        input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; }
+        .send-btn { background: var(--primary); border: none; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; color: #000; font-weight: 900; z-index: 2; }
+
+        /* Login Screen */
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .logo-login { width: 100px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 20px; box-shadow: 0 0 30px rgba(0,255,0,0.3); }
+        
+        .btn-google { background: #fff; color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin-bottom: 15px; width: 280px; justify-content: center; }
+        
+        .or-divider { margin: 15px 0; color: #444; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; }
+
+        .handle-input { background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 50px; width: 280px; color: #fff; text-align: center; outline: none; margin-bottom: 15px; }
+        .btn-handle { background: var(--primary); color: #000; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; width: 280px; }
+
+        #galaxy { position: fixed; inset: 0; z-index: -1; }
+        @media (max-width: 768px) { #members-sidebar { display: none; } }
     </style>
 </head>
 <body>
-    <div id="login-screen" class="login-box">
-        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" class="logo">
-        <h1 style="font-size: 1.5rem; margin-bottom: 10px;">QG APEXIA</h1>
-        <p style="color: #666; font-size: 0.8rem; margin-bottom: 25px;">Acesso exclusivo para membros.</p>
-        <button class="btn-google" id="btn-login" onclick="login()">
+    <div id="galaxy"></div>
+
+    <!-- TELA DE ACESSO DUPLO -->
+    <div id="login-screen">
+        <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" class="logo-login">
+        <h1 style="margin-bottom: 5px;">QG <span>APEXIA</span></h1>
+        <p style="color: #666; margin-bottom: 30px; font-size: 0.8rem;">Comunidade de Elite para Criadores.</p>
+        
+        <!-- Opção 1: Google -->
+        <button class="btn-google" onclick="loginGoogle()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
             ENTRAR COM GOOGLE
         </button>
+
+        <div class="or-divider">ou use sua Identidade</div>
+
+        <!-- Opção 2: Identificador do Canal -->
+        <input type="text" id="handle-id" class="handle-input" placeholder="@SeuCanal">
+        <button class="btn-handle" onclick="loginHandle()">ENTRAR NO QG</button>
+        
+        <p style="margin-top: 25px; font-size: 0.6rem; color: #444; max-width: 250px;">Ao entrar, você concorda com os termos de uso da Comunidade ApexiA.</p>
     </div>
 
-    <div id="chat-area">
-        <h1 style="color: var(--primary);">CONECTADO</h1>
-        <p>Aguarde o QG carregar...</p>
-    </div>
+    <!-- CHAT ÁREA -->
+    <nav id="members-sidebar">
+        <div class="sidebar-header">Membros no QG (<span id="count">0</span>)</div>
+        <div id="members-list"></div>
+    </nav>
+
+    <main id="chat-area">
+        <header>
+            <div style="font-weight: 900; font-size: 0.8rem;">APEXIA <span>COMMUNITY</span></div>
+            <button onclick="location.reload()" style="background:none; border:none; color:#555; font-size:0.7rem; cursor:pointer; font-weight:800;">DESCONECTAR</button>
+        </header>
+        <div id="chat-window"></div>
+        <div class="input-area">
+            <div class="input-wrapper">
+                <input type="text" id="chat-input" placeholder="Compartilhe uma estratégia...">
+                <button class="send-btn" onclick="send()">→</button>
+            </div>
+        </div>
+    </main>
 
     <script>
         const firebaseConfig = {
@@ -46,36 +116,125 @@
             appId: "1:668289488372:web:cf29801db6489d09a695a1"
         };
 
+        // Inicialização
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
+        const db = firebase.database();
+        let userProfile = null;
 
-        // Função de Login por Redirecionamento (Evita erros de Popup)
-        window.login = function() {
+        // LOGIN OPÇÃO 1: GOOGLE
+        window.loginGoogle = function() {
             const provider = new firebase.auth.GoogleAuthProvider();
             auth.signInWithRedirect(provider);
         };
 
-        // Captura o resultado quando o Google volta para o site
+        // LOGIN OPÇÃO 2: IDENTIFICADOR
+        window.loginHandle = function() {
+            const handle = document.getElementById('handle-id').value.trim();
+            if(handle.length < 3) {
+                alert("Insira um identificador válido!");
+                return;
+            }
+            userProfile = {
+                uid: "handle_" + handle,
+                nome: handle,
+                foto: "https://via.placeholder.com/50/00FF00/000000?text=A"
+            };
+            entrarNoChat();
+        };
+
+        // Checar se voltou do redirecionamento do Google
         auth.getRedirectResult().then((result) => {
             if (result.user) {
-                entrar();
-            }
-        }).catch((error) => {
-            if (error.code === 'auth/api-key-not-valid') {
-                alert("O GOOGLE AINDA NÃO ATIVOU SUA CHAVE. Aguarde 5 minutos e tente de novo em uma janela NORMAL (não anônima).");
-            } else {
-                alert("Erro: " + error.message);
+                userProfile = {
+                    uid: result.user.uid,
+                    nome: result.user.displayName,
+                    foto: result.user.photoURL
+                };
+                entrarNoChat();
             }
         });
 
+        // Monitor de estado do Google
         auth.onAuthStateChanged((user) => {
-            if (user) entrar();
+            if (user) {
+                userProfile = { uid: user.uid, nome: user.displayName, foto: user.photoURL };
+                entrarNoChat();
+            }
         });
 
-        function entrar() {
+        function entrarNoChat() {
             document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('chat-area').style.display = 'block';
-            confetti({ particleCount: 150, origin: { y: 0.7 } });
+            confetti({ particleCount: 150, origin: { y: 0.7 }, colors: ['#00FF00', '#ffffff'] });
+            setupPresence();
+            loadMessages();
+        }
+
+        function setupPresence() {
+            const statusRef = db.ref(`status/${userProfile.uid}`);
+            db.ref(`.info/connected`).on('value', (snap) => {
+                if (snap.val() === true) {
+                    statusRef.onDisconnect().remove().then(() => {
+                        statusRef.set({ nome: userProfile.nome, foto: userProfile.foto });
+                    });
+                }
+            });
+            db.ref('status').on('value', (s) => {
+                const list = document.getElementById('members-list');
+                const count = document.getElementById('count');
+                if(!list) return;
+                list.innerHTML = "";
+                let n = 0;
+                s.forEach(child => {
+                    const d = child.val();
+                    list.innerHTML += `<div class="member-item"><img src="${d.foto}"> ${d.nome} <div class="online-dot"></div></div>`;
+                    n++;
+                });
+                count.innerText = n;
+            });
+        }
+
+        function send() {
+            const input = document.getElementById('chat-input');
+            if (input.value.trim() && userProfile) {
+                db.ref('chat').push({
+                    uid: userProfile.uid,
+                    nome: userProfile.nome,
+                    texto: input.value.trim(),
+                    timestamp: Date.now()
+                });
+                input.value = "";
+            }
+        }
+
+        function loadMessages() {
+            const win = document.getElementById('chat-window');
+            db.ref('chat').limitToLast(50).on('child_added', (s) => {
+                const d = s.val();
+                if(!win) return;
+                const div = document.createElement('div');
+                div.className = `msg ${d.uid === userProfile.uid ? 'sent' : 'received'}`;
+                div.innerHTML = `<span class="msg-info">${d.nome}</span>${d.texto}`;
+                win.appendChild(div);
+                win.scrollTop = win.scrollHeight;
+            });
+        }
+
+        document.getElementById('chat-input').addEventListener('keypress', (e) => { if(e.key === 'Enter') send(); });
+
+        // Gerar Estrelas
+        const g = document.getElementById('galaxy');
+        for (let i = 0; i < 50; i++) {
+            const s = document.createElement('div');
+            s.className = 'star';
+            s.style.position = 'absolute';
+            s.style.backgroundColor = 'white';
+            s.style.borderRadius = '50%';
+            s.style.width = s.style.height = Math.random() * 2 + 'px';
+            s.style.left = Math.random() * 100 + '%';
+            s.style.top = Math.random() * 100 + '%';
+            s.style.animation = `moveStar ${Math.random() * 50 + 50}s linear infinite`;
+            g.appendChild(s);
         }
     </script>
 </body>
