@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ApexiA QG | Comunidade de Elite</title>
+    <title>ApexiA QG | Comunidade</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
@@ -12,20 +12,19 @@
 
     <style>
         :root { --primary: #00FF00; }
-        body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; overflow: hidden; }
+        body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; }
         .login-box { padding: 30px; border: 1px solid rgba(0,255,0,0.2); border-radius: 20px; background: #050505; max-width: 320px; width: 90%; }
         .logo { width: 100px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 20px; }
-        .btn-google { background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
+        .btn-google { background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; transition: 0.3s; }
         #chat-area { display: none; }
     </style>
 </head>
 <body>
-
     <div id="login-screen" class="login-box">
         <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" class="logo">
         <h1 style="font-size: 1.5rem; margin-bottom: 10px;">QG APEXIA</h1>
-        <p style="color: #666; font-size: 0.8rem; margin-bottom: 25px;">Acesso restrito para membros.</p>
-        <button class="btn-google" onclick="login()">
+        <p style="color: #666; font-size: 0.8rem; margin-bottom: 25px;">Acesso exclusivo para membros.</p>
+        <button class="btn-google" id="btn-login" onclick="login()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
             ENTRAR COM GOOGLE
         </button>
@@ -33,14 +32,12 @@
 
     <div id="chat-area">
         <h1 style="color: var(--primary);">CONECTADO</h1>
-        <p>Login realizado com sucesso!</p>
-        <button onclick="location.reload()">SAIR</button>
+        <p>Aguarde o QG carregar...</p>
     </div>
 
     <script>
-        // CONFIGURAÇÃO USANDO A "API KEY 2" (A QUE FUNCIONA)
         const firebaseConfig = {
-            apiKey: "AIzaSyAryBWRIA10CCDBNBsRw0hfHZJShvtto8Q", 
+            apiKey: "AIzaSyAryBWRIA10CCDBNBsRw0hfHZJShvtto8Q",
             authDomain: "comunidade-apexia.firebaseapp.com",
             projectId: "comunidade-apexia",
             databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
@@ -52,33 +49,34 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        // Função de Login por Redirecionamento (Evita erros de Popup)
         window.login = function() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            // Método REDIRECT é mais garantido que Popup
             auth.signInWithRedirect(provider);
         };
 
-        // Verificar se voltou do redirecionamento
+        // Captura o resultado quando o Google volta para o site
         auth.getRedirectResult().then((result) => {
             if (result.user) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('chat-area').style.display = 'block';
-                confetti({ particleCount: 150 });
+                entrar();
             }
-        }).catch((e) => {
-            if (e.code === 'auth/api-key-not-valid') {
-                alert("O Google ainda está processando sua chave. Tente novamente em 2 minutos em uma janela ANÔNIMA.");
+        }).catch((error) => {
+            if (error.code === 'auth/api-key-not-valid') {
+                alert("O GOOGLE AINDA NÃO ATIVOU SUA CHAVE. Aguarde 5 minutos e tente de novo em uma janela NORMAL (não anônima).");
             } else {
-                alert("Erro: " + e.message);
+                alert("Erro: " + error.message);
             }
         });
 
         auth.onAuthStateChanged((user) => {
-            if (user) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('chat-area').style.display = 'block';
-            }
+            if (user) entrar();
         });
+
+        function entrar() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-area').style.display = 'block';
+            confetti({ particleCount: 150, origin: { y: 0.7 } });
+        }
     </script>
 </body>
 </html>
