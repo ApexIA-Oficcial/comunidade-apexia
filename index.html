@@ -3,11 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Comunidade ApexiA | Hub de Elite</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>ApexiA HQ | Comunidade Suprema</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -22,35 +19,37 @@
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar 100s linear infinite; }
         @keyframes moveStar { from { transform: translateY(0); } to { transform: translateY(-1000px); } }
 
-        /* --- ESTADOS DE TELA --- */
-        #onboarding, #waiting-screen, #app { display: none; width: 100%; height: 100dvh; position: fixed; inset: 0; z-index: 100; background: #000; }
+        /* --- TELAS --- */
+        #onboarding, #waiting-screen, #app, #returning-login { display: none; width: 100%; height: 100dvh; position: fixed; inset: 0; z-index: 100; background: #000; }
 
-        /* --- TELA DE ESPERA --- */
+        /* --- TELA DE ESPERA PROFISSIONAL --- */
         #waiting-screen { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
-        .waiting-card { width: 100%; max-width: 450px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); }
-        #rejection-alert { display: none; background: rgba(255,0,0,0.1); border: 1px solid #ff4444; padding: 15px; border-radius: 15px; margin-top: 20px; color: #ff8888; }
-        .loader-ring { width: 50px; height: 50px; border: 3px solid rgba(0,255,0,0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-
-        /* --- SIDEBAR --- */
-        #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); transition: 0.3s; }
-        .rank-box { padding: 15px; border-bottom: 1px solid var(--border); background: rgba(0,255,0,0.03); }
-        #members-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .member-card { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; border: 1px solid transparent; }
-        .member-card img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); }
+        .waiting-card { width: 100%; max-width: 480px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); }
+        .countdown { font-size: 2rem; font-weight: 900; color: var(--primary); margin: 20px 0; font-variant-numeric: tabular-nums; }
+        #rejection-alert { display: none; background: rgba(255,0,0,0.15); border: 1px solid #f44; padding: 15px; border-radius: 15px; margin-top: 20px; color: #ff8888; }
 
         /* --- CHAT AREA --- */
-        #chat-area { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; background: rgba(0,0,0,0.4); }
+        #app { display: flex; }
+        #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        #chat-area { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
         header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
         #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; animation: slideIn 0.2s ease; word-wrap: break-word; }
-        .msg img { max-width: 100%; border-radius: 10px; margin-top: 8px; border: 1px solid var(--border); }
+        /* --- BALÕES DE MENSAGEM --- */
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; animation: slideIn 0.2s ease; position: relative; }
         .received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 18px 18px 18px; }
         .sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 18px 18px 2px 18px; }
+        
+        /* Resposta / Citação */
+        .reply-quote { background: rgba(0,0,0,0.2); border-left: 3px solid var(--primary); padding: 5px 10px; margin-bottom: 8px; border-radius: 5px; font-size: 0.75rem; opacity: 0.8; }
 
-        /* --- BOX DE TEXTO + NEON EM MOVIMENTO (REPARADO) --- */
-        .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
+        /* Reações */
+        .reactions { display: flex; gap: 5px; margin-top: 5px; }
+        .react-btn { background: rgba(255,255,255,0.1); border: none; border-radius: 10px; padding: 2px 6px; font-size: 0.7rem; cursor: pointer; color: #fff; }
+
+        /* --- INPUT NEON GIRA --- */
+        .input-area { padding: 15px; background: #000; border-top: 1px solid var(--border); }
+        #reply-preview { display: none; background: #111; padding: 10px 20px; border-top: 1px solid var(--primary); font-size: 0.8rem; justify-content: space-between; align-items: center; }
         .input-wrapper { 
             max-width: 900px; margin: 0 auto; display: flex; gap: 12px; background: #0a0a0a; 
             padding: 10px 18px; border-radius: 35px; align-items: center; position: relative; 
@@ -59,45 +58,47 @@
         .input-wrapper::after {
             content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.4), transparent);
-            animation: neonFlow 3s infinite linear; z-index: 1;
+            animation: neonFlow 3s infinite linear;
         }
         @keyframes neonFlow { 0% { left: -100%; } 100% { left: 100%; } }
         input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; font-size: 1rem; }
-        .send-btn { background: var(--primary); border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-weight: 900; z-index: 2; flex-shrink: 0; color: #000; }
+        .send-btn { background: var(--primary); border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-weight: 900; z-index: 2; color: #000; }
 
-        /* --- REGISTRO --- */
-        #onboarding { flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        /* Forms */
         .form-box { width: 100%; max-width: 400px; background: #0a0a0a; padding: 35px; border-radius: 25px; border: 1px solid var(--border); text-align: center; }
         .form-box input { width: 100%; padding: 14px; margin-bottom: 12px; background: #000; border: 1px solid #222; border-radius: 12px; color: #fff; outline: none; }
-        .btn-join { width: 100%; padding: 16px; background: var(--primary); color: #000; font-weight: 900; border: none; border-radius: 50px; cursor: pointer; }
+        .btn-join { width: 100%; padding: 16px; background: var(--primary); color: #000; font-weight: 900; border: none; border-radius: 50px; cursor: pointer; margin-top: 10px; }
 
-        /* --- ADMIN PANEL --- */
-        #admin-drawer { display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 340px; background: #050505; border-left: 2px solid var(--primary); z-index: 10001; padding: 20px; overflow-y: auto; }
-        .pending-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-size: 0.8rem; }
-        .pending-card img { width: 100%; border-radius: 10px; margin: 10px 0; border: 1px solid #333; }
-
-        @media (max-width: 768px) { 
-            #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; }
-            #sidebar.open { transform: translateX(0); }
-            #admin-drawer { width: 100%; }
-        }
+        @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } }
     </style>
 </head>
 <body>
     <div id="galaxy"></div>
 
     <!-- TELA REGISTRO -->
-    <div id="onboarding">
+    <div id="onboarding" style="display: flex;">
         <div class="form-box">
             <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; margin-bottom:15px; border-radius:50%; border:2px solid var(--primary);">
             <h2>COMUNIDADE <span>APEXIA</span></h2>
-            <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Acesso exclusivo para membros reais.</p>
+            <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Exclusivo para membros reais.</p>
             <input type="text" id="reg-name" placeholder="Seu Nome">
             <input type="text" id="reg-channel" placeholder="Nome do seu Canal">
-            <input type="tel" id="reg-whatsapp" placeholder="Seu WhatsApp">
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ex: 244...)">
             <label for="reg-photo" style="display:block; padding:15px; background:#111; border:1px dashed #444; border-radius:10px; cursor:pointer; margin-bottom:15px; font-size:0.8rem; color:#888;" id="file-label">Anexar Print de Membro</label>
             <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewFile()">
-            <button class="btn-join" id="btn-solicitar" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
+            <button class="btn-join" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
+            <p onclick="irParaLoginRapido()" style="margin-top:20px; font-size:0.7rem; color:var(--primary); cursor:pointer;">Já sou membro aprovado? Entrar aqui</p>
+        </div>
+    </div>
+
+    <!-- LOGIN RÁPIDO -->
+    <div id="returning-login">
+        <div class="form-box">
+            <h2>LOGIN <span>MEMBRO</span></h2>
+            <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Digite seu número cadastrado para entrar.</p>
+            <input type="tel" id="login-whatsapp" placeholder="Seu WhatsApp">
+            <button class="btn-join" onclick="loginRapido()">RECONECTAR AO QG</button>
+            <p onclick="location.reload()" style="margin-top:20px; font-size:0.7rem; color:#444; cursor:pointer;">Voltar ao cadastro</p>
         </div>
     </div>
 
@@ -106,41 +107,34 @@
         <div class="waiting-card">
             <div class="loader-ring"></div>
             <h2>HUB DE <span style="color:var(--primary)">APROVAÇÃO</span></h2>
-            <p id="waiting-status" style="color: #aaa; margin-top: 15px;">Auditando seu comprovante. Aguarde...</p>
-            <div id="rejection-alert"><b>PEDIDO RECUSADO:</b><br><span id="rejection-reason">---</span></div>
-            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top: 30px; background: #25D366; color:#fff; padding:12px; width:100%; border-radius:50px; border:none; font-weight:900; cursor:pointer;">SUPORTE WHATSAPP</button>
-            <button onclick="sair()" style="margin-top:15px; background:none; border:none; color:#444; text-decoration:underline; cursor:pointer;">Cancelar e Voltar</button>
+            <div class="countdown" id="timer">24:00:00</div>
+            <p id="waiting-status" style="color: #aaa; font-size: 0.9rem;">Sua solicitação está sendo auditada.</p>
+            <div id="rejection-alert"><b>MOTIVO DA REJEIÇÃO:</b><br><span id="rejection-reason">---</span></div>
+            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top: 30px; background: #25D366; color:#fff; padding:15px; width:100%; border-radius:50px; border:none; font-weight:900; cursor:pointer;">Falar com Gestor no WhatsApp</button>
+            <button onclick="sair()" style="margin-top:20px; background:none; border:none; color:#444; text-decoration:underline; cursor:pointer;">Sair e Voltar</button>
         </div>
-    </div>
-
-    <!-- ADMIN DRAWER -->
-    <div id="admin-drawer">
-        <h3 style="color:var(--primary); font-weight:900; margin-bottom:20px;">GESTÃO DE MEMBROS</h3>
-        <div id="pending-list"></div>
-        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR PAINEL</button>
     </div>
 
     <!-- APP -->
     <div id="app">
         <nav id="sidebar">
-            <div class="rank-box"><b style="font-size: 0.6rem; color: var(--gold);">⭐ RANKING</b><div id="ranking-list" style="margin-top:5px; font-size:0.7rem;"></div></div>
-            <div id="members-list"></div>
+            <div id="members-list" style="flex:1; overflow-y:auto; padding:10px;"></div>
             <div style="padding:20px; border-top:1px solid var(--border);">
-                <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:12px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:10px; margin-bottom:10px;">PAINEL GESTÃO</button>
-                <button onclick="sair()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">SAIR DO SISTEMA</button>
+                <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:10px; background:var(--primary); color:#000; font-weight:900; border-radius:10px; margin-bottom:10px; border:none; cursor:pointer;">PAINEL GESTÃO</button>
+                <button onclick="sair()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">DESCONECTAR SISTEMA</button>
             </div>
         </nav>
         <main id="chat-area">
             <header>
-                <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none; border:none; color:var(--primary); font-size:1.2rem;">☰</button>
-                <div style="font-weight:900; font-size:0.8rem;">COMUNIDADE APEXIA ELITE</div>
+                <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none; border:none; color:var(--primary); font-size:1.5rem;">☰</button>
+                <div style="font-weight:900; font-size:0.8rem;">QG APEXIA ELITE</div>
                 <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800;">← HUB</button>
             </header>
             <div id="chat-window"></div>
-            <div id="typingIndicator" style="font-size: 0.6rem; color: var(--primary); padding: 5px 25px; min-height: 20px;"></div>
+            <div id="reply-preview"><span>Respondendo...</span><button onclick="cancelReply()" style="background:none; border:none; color:red;">X</button></div>
             <div class="input-area">
                 <div class="input-wrapper">
-                    <label for="chat-file" style="cursor:pointer; font-size: 1.2rem; z-index: 5;">📎</label>
+                    <label for="chat-file" style="cursor:pointer; font-size: 1.2rem;">📎</label>
                     <input type="file" id="chat-file" style="display:none" onchange="enviarAnexo()">
                     <input type="text" id="chat-input" placeholder="Mensagem ou link...">
                     <button class="send-btn" onclick="enviarMensagem()">→</button>
@@ -165,31 +159,45 @@
         const db = firebase.database();
         let myProfile = null;
         let base64Proof = "";
+        let replyingTo = null;
+        const msgIds = new Set();
+
+        if ("Notification" in window) Notification.requestPermission();
 
         function previewFile() {
             const file = document.getElementById('reg-photo').files[0];
             const reader = new FileReader();
-            reader.onloadend = () => { 
-                base64Proof = reader.result; 
-                document.getElementById('file-label').innerText = "✅ Arquivo Selecionado";
-            };
+            reader.onloadend = () => { base64Proof = reader.result; document.getElementById('file-label').innerText = "✅ Foto Carregada"; };
             reader.readAsDataURL(file);
+        }
+
+        function irParaLoginRapido() {
+            document.getElementById('onboarding').style.display = 'none';
+            document.getElementById('returning-login').style.display = 'flex';
+        }
+
+        function loginRapido() {
+            const wa = document.getElementById('login-whatsapp').value.replace(/\D/g, "");
+            db.ref("users").orderByChild("wa").equalTo(wa).once("value", snap => {
+                if (snap.exists()) {
+                    const uData = Object.values(snap.val())[0];
+                    localStorage.setItem("apexia_user", JSON.stringify(uData));
+                    location.reload();
+                } else {
+                    alert("Número não encontrado. Por favor, faça o cadastro primeiro.");
+                }
+            });
         }
 
         function solicitarAcesso() {
             const name = document.getElementById('reg-name').value.trim();
             const channel = document.getElementById('reg-channel').value.trim();
             const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
-            const btn = document.getElementById('btn-solicitar');
-
-            if (!name || !channel || wa.length < 9) { alert("Preencha os dados corretamente!"); return; }
-            const isAdmin = wa === ADMIN_PHONE;
-            if(!isAdmin && !base64Proof) { alert("Anexe o print comprovante!"); return; }
-
-            btn.innerText = "PROCESSANDO...";
-            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0 };
+            if (!name || !channel || wa.length < 9 || !base64Proof) { alert("Preencha tudo corretamente!"); return; }
             
-            // AGUARDA O BANCO DE DADOS ANTES DE RECARREGAR
+            const isAdmin = wa === ADMIN_PHONE;
+            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0, createdAt: Date.now() };
+            
             db.ref("users/" + user.id).set(user).then(() => {
                 localStorage.setItem("apexia_user", JSON.stringify(user));
                 location.reload();
@@ -198,126 +206,119 @@
 
         window.onload = () => {
             const saved = localStorage.getItem("apexia_user");
-            if (!saved) { 
-                document.getElementById('onboarding').style.display="flex"; 
-            } else {
-                myProfile = JSON.parse(saved);
-                db.ref("users/" + myProfile.id).on("value", snap => {
-                    const u = snap.val();
-                    if (!u) { sair(); return; }
-                    myProfile = u;
-                    
-                    if (u.rejectionReason) {
-                        document.getElementById('onboarding').style.display = "none";
-                        document.getElementById('waiting-screen').style.display = "flex";
-                        document.getElementById('rejection-alert').style.display = "block";
-                        document.getElementById('rejection-reason').innerText = u.rejectionReason;
-                        return;
-                    }
-                    if (!u.approved) { 
-                        document.getElementById('onboarding').style.display = "none";
-                        document.getElementById('waiting-screen').style.display = "flex"; 
-                    } else {
-                        document.getElementById('onboarding').style.display = "none";
-                        document.getElementById('waiting-screen').style.display = "none";
-                        document.getElementById('app').style.display = "flex";
-                        if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
-                        iniciarSistema();
-                    }
-                });
-            }
+            if (!saved) { document.getElementById('onboarding').style.display="flex"; return; }
+            myProfile = JSON.parse(saved);
+
+            db.ref("users/" + myProfile.id).on("value", snap => {
+                const u = snap.val();
+                if (!u) { sair(); return; }
+                myProfile = u;
+                
+                if (u.rejectionReason) {
+                    document.getElementById('waiting-screen').style.display = "flex";
+                    document.getElementById('rejection-alert').style.display = "block";
+                    document.getElementById('rejection-reason').innerText = u.rejectionReason;
+                    return;
+                }
+                if (!u.approved) { 
+                    document.getElementById('waiting-screen').style.display = "flex";
+                    startTimer(u.createdAt);
+                    return; 
+                }
+
+                document.getElementById('waiting-screen').style.display = "none";
+                document.getElementById('app').style.display = "flex";
+                if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
+                iniciarSistema();
+            });
         };
 
-        function iniciarSistema() {
-            ouvirChat();
-            setupPresence();
-            ouvirRanking();
-            if(myProfile.role === 'admin') ouvirPendentes();
+        function startTimer(created) {
+            const end = created + (24 * 60 * 60 * 1000);
+            setInterval(() => {
+                const now = Date.now();
+                const diff = end - now;
+                if(diff <= 0) { document.getElementById('timer').innerText = "Processando..."; return; }
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+            }, 1000);
         }
+
+        function iniciarSistema() {
+            setupPresence();
+            db.ref("messages").limitToLast(30).on("child_added", snap => {
+                if (msgIds.has(snap.key)) return;
+                msgIds.add(snap.key);
+                renderMessage(snap.key, snap.val());
+            });
+        }
+
+        function renderMessage(id, m) {
+            const win = document.getElementById('chat-window');
+            const isMe = m.senderId === myProfile.id;
+            const div = document.createElement('div');
+            div.className = `msg ${isMe ? 'sent' : 'received'}`;
+            div.onclick = () => setReply(m.senderName, m.text);
+            
+            let html = "";
+            if(m.reply) html += `<div class="reply-quote"><b>${m.reply.name}</b>: ${m.reply.text}</div>`;
+            html += `<b style="font-size:0.6rem; color:${isMe?'#000':'var(--primary)'}">${m.senderName}</b><br>${m.text}`;
+            if(m.attachment) html += `<br><img src="${m.attachment}" onclick="window.open(this.src)">`;
+            
+            // Reações
+            html += `<div class="reactions">
+                <button class="react-btn" onclick="react('${id}', '❤️')">❤️ ${m.likes || ''}</button>
+                <button class="react-btn" onclick="react('${id}', '🔥')">🔥 ${m.fire || ''}</button>
+            </div>`;
+
+            div.innerHTML = html;
+            win.appendChild(div);
+            win.scrollTop = win.scrollHeight;
+            if(!isMe && document.hidden) new Notification("ApexiA HQ", {body: `${m.senderName}: ${m.text}`});
+        }
+
+        function setReply(name, text) {
+            replyingTo = { name, text };
+            document.getElementById('reply-preview').style.display = 'flex';
+            document.getElementById('reply-preview').querySelector('span').innerText = `Respondendo a ${name}`;
+        }
+        function cancelReply() { replyingTo = null; document.getElementById('reply-preview').style.display = 'none'; }
 
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
-            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() });
-            db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
+            const msgObj = { senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() };
+            if(replyingTo) { msgObj.reply = replyingTo; cancelReply(); }
+            db.ref("messages").push(msgObj);
             input.value = "";
         }
-
-        function enviarAnexo() {
-            const file = document.getElementById('chat-file').files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: "Enviou uma imagem", attachment: e.target.result, timestamp: Date.now() });
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function ouvirChat() {
-            db.ref("messages").limitToLast(30).on("child_added", snap => {
-                const m = snap.val();
-                const win = document.getElementById('chat-window');
-                const isMe = m.senderId === myProfile.id;
-                const div = document.createElement('div');
-                div.className = `msg ${isMe ? 'sent' : 'received'}`;
-                let html = `<b>${m.senderName}</b><br>${m.text}`;
-                if(m.attachment) html += `<br><img src="${m.attachment}" onclick="window.open(this.src)">`;
-                div.innerHTML = html;
-                win.appendChild(div);
-                win.scrollTop = win.scrollHeight;
-            });
-        }
-
-        function toggleAdminDrawer() { 
-            const d = document.getElementById('admin-drawer');
-            d.style.display = d.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function ouvirPendentes() {
-            db.ref("users").on("value", s => {
-                const list = document.getElementById('pending-list');
-                list.innerHTML = "";
-                s.forEach(child => {
-                    const u = child.val();
-                    if(!u.approved && !u.rejectionReason) {
-                        list.innerHTML += `<div style="background:#111; padding:10px; margin-bottom:10px; border-radius:10px;"><b>${u.name}</b><br><img src="${u.proof}" style="width:100%;"><br><button onclick="db.ref('users/${u.id}').update({approved:true})" style="background:#0f0; border:none; padding:5px; width:100%; border-radius:5px; margin-top:5px; font-weight:900;">APROVAR</button><button onclick="rejeitar('${u.id}')" style="background:#f00; border:none; padding:5px; width:100%; border-radius:5px; margin-top:5px; color:#fff;">REJEITAR</button></div>`;
-                    }
-                });
-            });
-        }
-
-        function rejeitar(id) { const m = prompt("Motivo:"); if(m) db.ref(`users/${id}`).update({ rejectionReason: m }); }
-        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
 
         function setupPresence() {
             const statusRef = db.ref(`status/${myProfile.id}`);
             db.ref('.info/connected').on('value', snap => {
-                if (snap.val() === true) statusRef.onDisconnect().remove().then(() => statusRef.set({name: myProfile.name, photo: myProfile.photo, channel: myProfile.channel, msgCount: myProfile.msgCount || 0}));
+                if (snap.val() === true) statusRef.onDisconnect().remove().then(() => statusRef.set({name: myProfile.name, photo: myProfile.photo, channel: myProfile.channel}));
             });
             db.ref('status').on('value', snap => {
                 const list = document.getElementById('members-list');
                 list.innerHTML = "";
-                snap.forEach(c => { const d = c.val(); list.innerHTML += `<div class="member-card"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">online</small></div></div>`; });
+                snap.forEach(c => { const d = c.val(); list.innerHTML += `<div class="member-card"><img src="${d.photo}"> <b>${d.name}</b></div>`; });
             });
         }
 
-        function ouvirRanking() {
-            db.ref("users").orderByChild("msgCount").limitToLast(3).on("value", s => {
-                const list = document.getElementById('ranking-list');
-                list.innerHTML = "";
-                s.forEach(c => { const u = c.val(); list.innerHTML = `<div>⭐ ${u.name} (${u.msgCount || 0})</div>` + list.innerHTML; });
-            });
-        }
-
-        // Estrelas de fundo
-        const g = document.getElementById('galaxy');
+        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
+        
+        // Estrelas
+        const container = document.getElementById('galaxy');
         for (let i = 0; i < 40; i++) {
-            const s = document.createElement('div');
-            s.className = 'star';
-            s.style.width = s.style.height = Math.random() * 2 + 'px';
-            s.style.left = Math.random() * 100 + '%';
-            s.style.top = Math.random() * 100 + '%';
-            g.appendChild(s);
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = star.style.height = Math.random() * 2 + 'px';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            container.appendChild(star);
         }
         document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key === 'Enter') enviarMensagem(); });
     </script>
