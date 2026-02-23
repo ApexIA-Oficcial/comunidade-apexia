@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ApexiA Community</title>
     
+    <!-- Bibliotecas Oficiais -->
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -13,10 +14,9 @@
     <style>
         :root { --primary: #00FF00; }
         body { background: #000; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; text-align: center; overflow: hidden; }
-        .login-box { padding: 30px; border: 1px solid rgba(0,255,0,0.2); border-radius: 20px; background: #050505; max-width: 320px; width: 90%; }
+        .login-box { padding: 30px; border: 1px solid rgba(0,255,0,0.2); border-radius: 20px; background: #050505; max-width: 320px; width: 90%; box-shadow: 0 0 30px rgba(0,255,0,0.05); }
         .logo { width: 100px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 20px; }
-        .btn-google { background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; transition: 0.3s; }
-        .btn-google:hover { transform: scale(1.05); box-shadow: 0 0 20px var(--primary); }
+        .btn-google { background: #fff; color: #000; padding: 15px 25px; border-radius: 50px; border: none; font-weight: 900; cursor: pointer; display: flex; align-items: center; gap: 10px; margin: 0 auto; }
         #chat-area { display: none; }
     </style>
 </head>
@@ -25,21 +25,21 @@
     <div id="login-screen" class="login-box">
         <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" class="logo">
         <h1 style="font-size: 1.5rem; margin-bottom: 10px;">QG APEXIA</h1>
-        <p style="color: #666; font-size: 0.9rem; margin-bottom: 25px;">Acesso restrito para membros de elite.</p>
-        <button class="btn-google" onclick="login()">
+        <p style="color: #666; font-size: 0.8rem; margin-bottom: 25px;">Acesso restrito para membros.</p>
+        <button class="btn-google" id="btn-login" onclick="executarLogin()">
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18">
             ENTRAR COM GOOGLE
         </button>
     </div>
 
     <div id="chat-area">
-        <h1 style="color: var(--primary);">CONECTADO</h1>
-        <p>Login realizado com sucesso!</p>
-        <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; border-radius: 20px; border: none; background: #333; color: #fff; cursor: pointer;">SAIR</button>
+        <h1 style="color: var(--primary);">CONECTADO AO QG</h1>
+        <p>Aguarde o carregamento das mensagens...</p>
+        <button onclick="sair()">DESCONECTAR</button>
     </div>
 
     <script>
-        // CONFIGURAÇÃO COM A CHAVE ORIGINAL (VEM DA SUA PRIMEIRA FOTO)
+        // CONFIGURAÇÃO RE-VALIDADA (MILIMÉTRICA)
         const firebaseConfig = {
             apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
             authDomain: "comunidade-apexia.firebaseapp.com",
@@ -50,26 +50,51 @@
             appId: "1:668289488372:web:cf29801db6489d09a695a1"
         };
 
-        // Inicializa Firebase
-        firebase.initializeApp(firebaseConfig);
+        // Inicialização Forçada
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
         const auth = firebase.auth();
 
-        // Função de Login
-        window.login = function() {
+        // FUNÇÃO DE LOGIN REESCRITA
+        window.executarLogin = function() {
+            console.log("Tentando login...");
             const provider = new firebase.auth.GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
 
-            auth.signInWithPopup(provider)
-                .then((result) => {
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('chat-area').style.display = 'block';
-                    confetti({ particleCount: 150, origin: { y: 0.7 } });
-                })
-                .catch((error) => {
-                    // SE DER ERRO AQUI, É PORQUE O PASSO 1 NÃO FOI FEITO
-                    alert("ALERTA: " + error.message);
-                });
+            // Usamos REDIRECT para forçar o Google a aceitar a chave sem bloqueio de janela
+            auth.signInWithRedirect(provider);
         };
+
+        // Checar se voltou do login
+        auth.getRedirectResult().then((result) => {
+            if (result.user) {
+                console.log("Logado:", result.user.displayName);
+                entrarNoChat();
+            }
+        }).catch((error) => {
+            if (error.code === 'auth/api-key-not-valid') {
+                alert("O GOOGLE AINDA NÃO LIBEROU SUA CHAVE. Vá no Google Cloud > Credentials > Clique na Chave > e marque 'Don't restrict key'.");
+            } else {
+                alert("Erro: " + error.message);
+            }
+        });
+
+        function entrarNoChat() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('chat-area').style.display = 'block';
+            confetti({ particleCount: 150, origin: { y: 0.7 } });
+        }
+
+        window.sair = function() {
+            auth.signOut().then(() => location.reload());
+        };
+
+        // Monitor de estado persistente
+        auth.onAuthStateChanged((user) => {
+            if (user) entrarNoChat();
+        });
     </script>
 </body>
 </html>
