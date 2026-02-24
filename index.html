@@ -9,6 +9,23 @@
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
+    <!-- // ===============================
+         // INÍCIO NOVA FUNCIONALIDADE: INTERCEPTOR DE CONSULTA OTIMIZADA
+         // Isso garante ordenação e limite de 50 SEM alterar a função ouvirChat original!
+         // =============================== -->
+    <script>
+        const apexia_origLimit = firebase.database.Query.prototype.limitToLast;
+        firebase.database.Query.prototype.limitToLast = function(limit) {
+            if (limit === 30 || limit === 100) {
+                return this.orderByChild("timestamp").limitToLast(50);
+            }
+            return apexia_origLimit.call(this, limit);
+        };
+    </script>
+    <!-- // ===============================
+         // FIM NOVA FUNCIONALIDADE
+         // =============================== -->
+
     <style>
         :root { --primary: #00FF00; --bg: #030303; --border: rgba(0, 255, 0, 0.2); --gold: #FFD700; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -48,7 +65,7 @@
         #chat-area { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
         #chat-area::before { content: ""; position: absolute; inset: 0; background: url('https://apexia-oficcial.github.io/ApexIA/canalapexia.png') no-repeat center; background-size: 30%; opacity: 0.03; pointer-events: none; }
         header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; scroll-behavior: smooth; }
 
         /* --- BALÕES WHATSAPP STYLE --- */
         .msg { max-width: 80%; padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; animation: slideIn 0.2s ease; word-wrap: break-word; cursor: pointer; }
@@ -89,113 +106,50 @@
         @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
 
         /* // ===============================
-           // INÍCIO NOVA FUNCIONALIDADE: CSS Polimento Visuais
+           // INÍCIO NOVA FUNCIONALIDADE: CSS Polimento Avançado, Admin, Scroll
            // =============================== */
            
-        /* 1) ÁREA DE LOGIN PROFISSIONAL (DARK PREMIUM) OVERRIDES */
-        #onboarding .form-box, #returning-login .form-box {
-            background: rgba(10, 10, 10, 0.85) !important;
-            backdrop-filter: blur(20px) !important;
-            border: 1px solid rgba(0, 255, 0, 0.2) !important;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,255,0,0.05) !important;
-            border-radius: 20px !important;
-            padding: 45px 35px !important;
-            max-width: 420px !important;
-            width: 90% !important;
-        }
-        #onboarding .form-box input, #returning-login .form-box input {
-            background: rgba(0,0,0,0.6) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
-            border-radius: 12px !important;
-            padding: 16px 20px !important;
-            font-size: 0.95rem !important;
-            margin-bottom: 15px !important;
-            transition: 0.3s all !important;
-            width: 100% !important;
-        }
-        #onboarding .form-box input:focus, #returning-login .form-box input:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 15px rgba(0,255,0,0.15) !important;
-        }
-        #onboarding .btn-join, #returning-login .btn-join {
-            background: linear-gradient(135deg, #00b300, #00ff00) !important;
-            color: #000 !important;
-            font-weight: 900 !important;
-            border-radius: 12px !important;
-            padding: 16px !important;
-            margin-top: 10px !important;
-            box-shadow: 0 10px 20px rgba(0,255,0,0.2) !important;
-            text-transform: uppercase !important;
-            letter-spacing: 1px !important;
-            transition: transform 0.2s, box-shadow 0.2s !important;
-        }
-        #onboarding .btn-join:hover, #returning-login .btn-join:hover {
-            transform: translateY(-2px) scale(1.02) !important;
-            box-shadow: 0 15px 25px rgba(0,255,0,0.3) !important;
-        }
+        /* ÁREA DE LOGIN PROFISSIONAL (DARK PREMIUM) */
+        #onboarding .form-box, #returning-login .form-box { background: rgba(10, 10, 10, 0.85) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(0, 255, 0, 0.2) !important; box-shadow: 0 20px 60px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,255,0,0.05) !important; border-radius: 20px !important; padding: 45px 35px !important; max-width: 420px !important; width: 90% !important; }
+        #onboarding .form-box input, #returning-login .form-box input { background: rgba(0,0,0,0.6) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 12px !important; padding: 16px 20px !important; font-size: 0.95rem !important; margin-bottom: 15px !important; transition: 0.3s all !important; width: 100% !important; }
+        #onboarding .form-box input:focus, #returning-login .form-box input:focus { border-color: var(--primary) !important; box-shadow: 0 0 15px rgba(0,255,0,0.15) !important; }
+        #onboarding .btn-join, #returning-login .btn-join { background: linear-gradient(135deg, #00b300, #00ff00) !important; color: #000 !important; font-weight: 900 !important; border-radius: 12px !important; padding: 16px !important; margin-top: 10px !important; box-shadow: 0 10px 20px rgba(0,255,0,0.2) !important; text-transform: uppercase !important; letter-spacing: 1px !important; transition: transform 0.2s, box-shadow 0.2s !important; }
+        #onboarding .btn-join:hover, #returning-login .btn-join:hover { transform: translateY(-2px) scale(1.02) !important; box-shadow: 0 15px 25px rgba(0,255,0,0.3) !important; }
 
-        /* 3) Mensagem Fixada Mobile - Classes Auxiliares */
-        .apexia_pin_expanded {
-            white-space: normal !important;
-            overflow: visible !important;
-            position: absolute !important;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
-            background: rgba(10, 30, 10, 0.95) !important;
-            backdrop-filter: blur(10px);
-            padding: 20px !important;
-            border-bottom: 2px solid var(--primary) !important;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-            flex-direction: column !important;
-            align-items: flex-start !important;
-        }
-        .apexia_pin_expanded #apexia_pin_text {
-            white-space: normal !important;
-            overflow: visible !important;
-            font-size: 0.9rem !important;
-            line-height: 1.5;
-            margin-top: 10px;
-        }
-        .apexia_pin_close_btn {
-            display: none;
-            align-self: flex-end;
-            background: rgba(255,0,0,0.1);
-            color: #ff4444;
-            border: 1px solid #ff4444;
-            padding: 6px 16px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-weight: bold;
-            font-size: 0.7rem;
-        }
-        .apexia_pin_expanded .apexia_pin_close_btn { display: block !important; }
+        /* Identidade de Admin */
+        .apexia_admin_badge { background: linear-gradient(45deg, #FFD700, #FFA500); color: #000; font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; font-weight: 900; vertical-align: middle; letter-spacing: 0.5px; box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+        .apexia_admin_msg { border: 1px solid rgba(255, 215, 0, 0.5) !important; box-shadow: 0 0 10px rgba(255, 215, 0, 0.1) !important; }
 
-        /* 4) Melhorar Visual da Resposta Estilo WhatsApp */
-        .apexia_quoted_msg {
-            background: rgba(20,20,20,0.8) !important;
-            border-left: 4px solid var(--primary) !important;
-            padding: 8px 12px !important;
-            margin-bottom: 8px !important;
-            border-radius: 4px 12px 12px 4px !important;
-            font-size: 0.7rem !important;
-            color: #ddd !important;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
-            display: block;
-        }
+        /* Novo Botão Assistir Agora - Pulsante Conversão */
+        @keyframes apexia_pulse_conversion { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 255, 0, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 255, 0, 0); } }
+        #apexia_video_banner_link { animation: apexia_pulse_conversion 2s infinite !important; background: var(--primary) !important; color: #000 !important; text-transform: uppercase; font-weight: 900 !important; border-radius: 50px !important; padding: 8px 20px !important; display: inline-block; margin-top: 8px; }
+
+        /* Melhor Visual da Resposta */
+        .apexia_quoted_msg { background: rgba(0,0,0,0.3) !important; border-left: 4px solid var(--primary) !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-radius: 4px 12px 12px 4px !important; font-size: 0.75rem !important; color: #ddd !important; display: block; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .apexia_quoted_msg b { color: var(--primary) !important; display: block; margin-bottom: 3px; font-size: 0.75rem; }
         
-        #apexia_reply_preview {
-            background: rgba(15,15,15,0.95) !important;
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0,255,0,0.3) !important;
-            border-left: 4px solid var(--primary) !important;
-            padding: 12px 20px !important;
-            border-radius: 15px 15px 0 0 !important;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.5) !important;
-        }
+        #apexia_reply_preview { background: rgba(15,15,15,0.95) !important; backdrop-filter: blur(10px); border-top: 1px solid rgba(0,255,0,0.3) !important; border-left: 4px solid var(--primary) !important; padding: 12px 20px !important; border-radius: 15px 15px 0 0 !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.5) !important; }
         #apexia_reply_name { color: var(--primary) !important; font-size: 0.8rem; display: block; margin-bottom: 4px; }
+
+        /* Painel de Notificações Acumuladas */
+        #apexia_notifications_panel { display: none; position: absolute; top: 60px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 350px; background: rgba(15,15,15,0.95); border: 1px solid var(--primary); border-radius: 15px; z-index: 2000; max-height: 300px; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); flex-direction: column; }
+        .apexia_notif_item { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s; }
+        .apexia_notif_item:hover { background: rgba(0,255,0,0.05); }
+        .apexia_notif_header { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--primary); font-weight: bold; margin-bottom: 4px; }
+        .apexia_notif_body { font-size: 0.75rem; color: #ccc; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .apexia_notif_badge_click { cursor: pointer; transition: 0.2s; } .apexia_notif_badge_click:hover { transform: scale(1.1); }
+
+        /* Botão Scroll Down */
+        #apexia_scroll_down { position: absolute; bottom: 80px; right: 20px; background: rgba(0,255,0,0.1); border: 1px solid var(--primary); color: var(--primary); width: 40px; height: 40px; border-radius: 50%; display: none; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; z-index: 50; backdrop-filter: blur(5px); box-shadow: 0 5px 15px #000; transition: 0.3s; }
+        #apexia_scroll_down:hover { background: var(--primary); color: #000; }
+
+        /* Envio Otimista */
+        .apexia_optimistic { opacity: 0.6; filter: grayscale(50%); pointer-events: none; }
+
+        /* Texto PC Maior */
+        @media (min-width: 768px) { #chat-window .msg { font-size: 0.95rem !important; padding: 10px 16px !important; line-height: 1.4; } }
         
-        /* Ajustes Remanescentes Anteriores */
+        /* Ajustes Remanescentes Anteriores (Ocultações e Tamanho Base) */
         .apexia_foto_preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); margin-top: 10px; display: none; margin-left: auto; margin-right: auto; }
         button[onclick*="ApexIA/"] { display: none !important; }
         #chat-window .msg { padding: 6px 10px !important; font-size: 0.75rem !important; border-radius: 14px !important; box-shadow: 0 2px 5px rgba(0,0,0,0.3); position: relative; }
@@ -203,14 +157,25 @@
         #chat-window .sent { border-radius: 14px 14px 2px 14px !important; }
         @keyframes apexia_pulse_vid { 0% { transform:scale(1); opacity:1; } 50% { transform:scale(1.3); opacity:0.6; } 100% { transform:scale(1); opacity:1; } }
         .apexia_anim_icon { display: inline-block; animation: apexia_pulse_vid 1s infinite; color: #FF4444; }
+        
+        /* Oculta o botão PIN por padrão para todos (Liberado apenas via JS p/ admin) */
         .apexia_action_btn { display:none; position:absolute; top:-15px; right:10px; background:#111; border:1px solid var(--primary); border-radius:10px; padding:4px 8px; font-size:0.8rem; z-index: 5; box-shadow: 0 5px 15px #000; }
+        .apexia_action_btn .apexia_pin_btn { display: none; }
+        body.apexia_is_admin .apexia_action_btn .apexia_pin_btn { display: inline-block; }
         #chat-window .msg:hover .apexia_action_btn { display:flex; gap:8px; }
+        
         @keyframes apexia_galaxy_bg { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .member-card img, #apexia_modal_foto, .apexia_foto_preview { background: linear-gradient(45deg, #000000, #0a1a0a, #003300, #000000); background-size: 400% 400%; animation: apexia_galaxy_bg 8s ease infinite; }
         .apexia_spinner { display: inline-block; width: 14px; height: 14px; margin-right: 8px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #000; border-radius: 50%; animation: apexia_spin_btn 0.8s linear infinite; vertical-align: middle; }
         @keyframes apexia_spin_btn { to { transform: rotate(360deg); } }
         @keyframes apexia_fadeInScreen { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         #onboarding, #waiting-screen, #app, #returning-login { animation: apexia_fadeInScreen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* Fixado Mobile */
+        .apexia_pin_expanded { white-space: normal !important; overflow: visible !important; position: absolute !important; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(10, 30, 10, 0.95) !important; backdrop-filter: blur(10px); padding: 20px !important; border-bottom: 2px solid var(--primary) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.9); flex-direction: column !important; align-items: flex-start !important; }
+        .apexia_pin_expanded #apexia_pin_text { white-space: normal !important; overflow: visible !important; font-size: 0.9rem !important; line-height: 1.5; margin-top: 10px; }
+        .apexia_pin_close_btn { display: none; align-self: flex-end; background: rgba(255,0,0,0.1); color: #ff4444; border: 1px solid #ff4444; padding: 6px 16px; border-radius: 8px; margin-top: 15px; font-weight: bold; font-size: 0.7rem; }
+        .apexia_pin_expanded .apexia_pin_close_btn { display: block !important; }
         /* // ===============================
            // FIM NOVA FUNCIONALIDADE
            // =============================== */
@@ -335,20 +300,24 @@
                 <button class="apexia_back_btn" onclick="apexia_toggle_sidebar()">☰ MENU</button>
                 <div style="font-weight:900; font-size:0.8rem; display:flex; align-items:center; gap:8px;">
                     APEXIA ELITE
-                    <span id="apexia_notif_badge" style="display:none; background:#ff4444; color:#fff; border-radius:50%; padding:2px 6px; font-size:0.6rem; font-weight:bold;">0</span>
+                    <span id="apexia_notif_badge" class="apexia_notif_badge_click" onclick="apexia_toggleNotifPanel()" style="display:none; background:#ff4444; color:#fff; border-radius:50%; padding:2px 6px; font-size:0.6rem; font-weight:bold;">0</span>
                 </div>
-                <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800;">← HUB</button>
             </header>
+
+            <!-- // ===============================
+                 // INÍCIO NOVA FUNCIONALIDADE: Painel de Notificações
+                 // =============================== -->
+            <div id="apexia_notifications_panel"></div>
+            <!-- // ===============================
+                 // FIM NOVA FUNCIONALIDADE
+                 // =============================== -->
 
             <div id="apexia_video_banner" style="display:none; background:rgba(255, 215, 0, 0.1); border-bottom:1px solid var(--gold); padding:10px 20px; text-align:center; font-size:0.8rem; z-index:10;">
                 <span class="apexia_anim_icon">🎥</span> <b style="color:var(--gold);">NOVO VÍDEO:</b> <span id="apexia_video_banner_title" style="color:#fff;"></span>
                 <span id="apexia_video_banner_time" style="font-size:0.6rem; opacity:0.6; margin-left:10px;"></span>
-                <br><a id="apexia_video_banner_link" href="#" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none; display:inline-block; margin-top:5px; background:rgba(0,255,0,0.1); padding:5px 15px; border-radius:50px;">ASSISTIR AGORA 🚀</a>
+                <br><a id="apexia_video_banner_link" href="#" target="_blank">ASSISTIR AGORA 🚀</a>
             </div>
 
-            <!-- // ===============================
-                 // INÍCIO NOVA FUNCIONALIDADE: Container Fixados e Preview
-                 // =============================== -->
             <div id="apexia_pin_banner" style="display:none; background:rgba(0,255,0,0.05); border-bottom:1px solid var(--primary); padding:8px 20px; align-items:center; gap:10px; font-size:0.75rem; cursor:pointer;">
                 <span style="font-size:1.2rem;">📌</span>
                 <div style="flex:1; overflow:hidden;">
@@ -356,12 +325,18 @@
                     <span id="apexia_pin_text" style="color:#ccc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;"></span>
                 </div>
             </div>
+
+            <div id="chat-window"></div>
+            
+            <!-- // ===============================
+                 // INÍCIO NOVA FUNCIONALIDADE: Scroll Down Button
+                 // =============================== -->
+            <div id="apexia_scroll_down" onclick="document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;">↓</div>
             <!-- // ===============================
                  // FIM NOVA FUNCIONALIDADE
                  // =============================== -->
 
-            <div id="chat-window"></div>
-            <div id="typingIndicator" style="font-size: 0.6rem; color: var(--primary); padding: 5px 25px; min-height: 20px;"></div>
+            <div id="typingIndicator" style="font-size: 0.65rem; color: var(--primary); padding: 5px 25px; min-height: 22px; font-style: italic; opacity: 0.8;"></div>
             
             <div class="input-area" style="position:relative;">
                 <div id="apexia_reply_preview">
@@ -379,31 +354,27 @@
         </main>
     </div>
 
-    <!-- MODAL DE PERFIL DO MEMBRO -->
+    <!-- MODAIS E AUXILIARES -->
     <div id="apexia_member_modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:3000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
         <div class="modal-box" style="width:90%; max-width:350px; background:#0a0a0a; border:1px solid var(--primary); padding:30px; border-radius:25px; text-align:center; position:relative; box-shadow: 0 10px 30px rgba(0,255,0,0.1);">
             <button onclick="document.getElementById('apexia_member_modal').style.display='none'" style="position:absolute; top:15px; right:20px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
             <img id="apexia_modal_foto" src="" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--primary); object-fit:cover; margin-bottom:10px;">
             <h2 id="apexia_modal_nome" style="color:#fff; margin-bottom:5px; font-size:1.2rem;">-</h2>
             <p id="apexia_modal_bio" style="font-size:0.8rem; color:#aaa; margin-bottom:20px; font-style:italic;">-</p>
-            
             <div style="text-align:left; background:#111; padding:15px; border-radius:15px; font-size:0.8rem; color:#ccc; margin-bottom:20px; border:1px solid #222;">
                 <p><b>Idade:</b> <span id="apexia_modal_idade">-</span></p>
                 <p style="margin-top:8px;"><b>Nacionalidade:</b> <span id="apexia_modal_nacionalidade">-</span></p>
                 <p style="margin-top:8px;"><b>Interesses:</b> <span id="apexia_modal_interesses">-</span></p>
             </div>
-            
             <a id="apexia_modal_wa" href="#" target="_blank" style="display:none; width:100%; padding:14px; background:#25D366; color:#fff; text-decoration:none; border-radius:50px; font-weight:900; font-size:0.8rem;">CHAMAR NO WHATSAPP</a>
         </div>
     </div>
 
-    <!-- Lightbox de Imagem -->
     <div id="apexia_lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:100000; align-items:center; justify-content:center; flex-direction:column; backdrop-filter:blur(5px);" onclick="this.style.display='none'">
         <img id="apexia_lightbox_img" style="max-width:95%; max-height:80vh; border-radius:15px; border:2px solid var(--primary); object-fit:contain; box-shadow:0 10px 40px #000;">
         <span style="color:var(--primary); margin-top:20px; font-weight:900; font-size:0.8rem; cursor:pointer; background:rgba(0,255,0,0.1); padding:8px 20px; border-radius:50px;">FECHAR IMAGEM (X)</span>
     </div>
 
-    <!-- Painel de Emojis -->
     <div id="apexia_emoji_panel" style="display:none; position:fixed; background:#111; border:1px solid var(--primary); border-radius:30px; padding:10px 15px; gap:15px; z-index:90000; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
         <span onclick="apexia_addReaction('👍')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">👍</span>
         <span onclick="apexia_addReaction('❤️')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">❤️</span>
@@ -412,7 +383,6 @@
         <span onclick="apexia_addReaction('🙏')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🙏</span>
     </div>
 
-    <!-- Notificação SMS Interno -->
     <div id="apexia_sms_toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -150%); background:rgba(20,20,20,0.95); border-left:4px solid var(--primary); color:#fff; padding:15px 20px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; gap:12px; align-items:center; min-width:300px; max-width:90vw; cursor:pointer;">
         <span style="font-size:1.8rem;">💬</span>
         <div style="flex:1;">
@@ -421,9 +391,6 @@
         </div>
     </div>
 
-    <!-- // ===============================
-         // INÍCIO NOVA FUNCIONALIDADE: MODAL INTERNO PERSONALIZADO
-         // =============================== -->
     <div id="apexia_custom_modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:999999; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
         <div style="background:#0a0a0a; border:1px solid var(--primary); padding:30px; border-radius:20px; text-align:center; max-width:350px; width:90%; box-shadow:0 15px 40px rgba(0,255,0,0.1);">
             <p id="apexia_modal_msg" style="margin-bottom:20px; font-size:0.85rem; line-height:1.5; color:#fff; font-weight:bold;"></p>
@@ -434,9 +401,6 @@
             </div>
         </div>
     </div>
-    <!-- // ===============================
-         // FIM NOVA FUNCIONALIDADE
-         // =============================== -->
 
     <script>
         const ADMIN_PHONE = "244931352915";
@@ -528,6 +492,7 @@
                 document.getElementById('app').style.display = "flex";
                 if(myProfile.role === 'admin') {
                     document.getElementById('admin-btn').style.display = 'block';
+                    document.body.classList.add('apexia_is_admin'); // Libera botões restritos
                     ouvirPendentes();
                 }
                 
@@ -657,6 +622,9 @@
             if (!isClickInside && sidebar.classList.contains('open') && window.innerWidth <= 768) {
                 sidebar.classList.remove('open');
             }
+            if(!e.target.closest('#apexia_notif_badge') && !e.target.closest('#apexia_notifications_panel')) {
+                document.getElementById('apexia_notifications_panel').style.display = 'none';
+            }
         });
 
         let apexia_touchStartX = 0;
@@ -691,7 +659,7 @@
             const card = e.target.closest('.member-card');
             if(card) {
                 const name = card.querySelector('b').innerText;
-                apexia_exibirPerfilUsuario(name);
+                apexia_exibirPerfilUsuario(name.replace('ADMIN', '').trim());
             }
         });
         
@@ -700,7 +668,7 @@
                 const rawText = e.target.innerText.split('⭐ ')[1];
                 if(rawText) {
                     const name = rawText.split(' (')[0];
-                    apexia_exibirPerfilUsuario(name);
+                    apexia_exibirPerfilUsuario(name.replace('ADMIN', '').trim());
                 }
             }
         });
@@ -729,27 +697,30 @@
         }
 
         let apexia_unread_count = 0;
+        let apexia_unread_list = [];
         const apexia_initTime = Date.now();
 
         function apexia_notificacoes() {
-            db.ref("messages").limitToLast(1).on("child_added", snap => {
+            db.ref("messages").orderByChild("timestamp").limitToLast(1).on("child_added", snap => {
                 const m = snap.val();
                 if(m.timestamp > apexia_initTime && m.senderId !== (myProfile ? myProfile.id : null)) {
                     const isMobileSidebarOpen = document.getElementById('sidebar').classList.contains('open');
-                    if (document.hidden || (window.innerWidth <= 768 && isMobileSidebarOpen)) {
+                    const win = document.getElementById('chat-window');
+                    const isAtBottom = win.scrollHeight - win.scrollTop <= win.clientHeight + 100;
+
+                    if (document.hidden || !isAtBottom || (window.innerWidth <= 768 && isMobileSidebarOpen)) {
                         apexia_unread_count++;
+                        apexia_unread_list.push(m);
                         apexia_updateBadge();
                     }
                 }
             });
 
             document.getElementById('chat-input').addEventListener('focus', () => {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
+                apexia_unread_count = 0; apexia_unread_list = []; apexia_updateBadge();
             });
             document.getElementById('chat-window').addEventListener('click', () => {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
+                apexia_unread_count = 0; apexia_unread_list = []; apexia_updateBadge();
             });
         }
 
@@ -759,6 +730,34 @@
                 badge.style.display = apexia_unread_count > 0 ? 'inline-block' : 'none';
                 badge.innerText = apexia_unread_count;
             }
+            apexia_renderNotifPanel();
+        }
+
+        function apexia_renderNotifPanel() {
+            const panel = document.getElementById('apexia_notifications_panel');
+            panel.innerHTML = '<div style="padding:10px; border-bottom:1px solid rgba(0,255,0,0.2); font-size:0.7rem; color:var(--primary); font-weight:900; text-align:center;">MENSAGENS NÃO LIDAS</div>';
+            if(apexia_unread_list.length === 0) {
+                panel.style.display = 'none';
+                return;
+            }
+            apexia_unread_list.forEach(m => {
+                const d = new Date(m.timestamp);
+                const timeStr = d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
+                const div = document.createElement('div');
+                div.className = 'apexia_notif_item';
+                div.innerHTML = `<div class="apexia_notif_header"><span>${m.senderName}</span><span>${timeStr}</span></div><div class="apexia_notif_body">${m.text.replace(/\[Resp.*\]/,'').substring(0,40)}...</div>`;
+                div.onclick = () => {
+                    document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
+                    panel.style.display = 'none';
+                    apexia_unread_count = 0; apexia_unread_list = []; apexia_updateBadge();
+                };
+                panel.appendChild(div);
+            });
+        }
+
+        function apexia_toggleNotifPanel() {
+            const panel = document.getElementById('apexia_notifications_panel');
+            panel.style.display = panel.style.display === 'flex' ? 'none' : 'flex';
         }
         
         setTimeout(apexia_notificacoes, 2000);
@@ -854,62 +853,79 @@
             }
         });
 
-        let apexia_toast_initTime = Date.now();
-        setTimeout(() => {
-            db.ref("messages").limitToLast(1).on("child_added", snap => {
-                const m = snap.val();
-                if(m.timestamp > apexia_toast_initTime && m.senderId !== (myProfile ? myProfile.id : null)) {
-                    const win = document.getElementById('chat-window');
-                    const isAtBottom = win.scrollHeight - win.scrollTop <= win.clientHeight + 100;
-                    
-                    if(document.hidden || !isAtBottom || (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open'))) {
-                        const toast = document.getElementById('apexia_sms_toast');
-                        document.getElementById('apexia_sms_name').innerText = m.senderName;
-                        document.getElementById('apexia_sms_text').innerText = m.text.substring(0,35) + '...';
-                        
-                        toast.style.transform = 'translate(-50%, 0)';
-                        
-                        toast.onclick = () => {
-                            toast.style.transform = 'translate(-50%, -150%)';
-                            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
-                            win.scrollTop = win.scrollHeight;
-                        };
+        // ===============================
+        // INÍCIO NOVA FUNCIONALIDADE: Polimentos Visuais, Admin e Otimizações Real-Time
+        // ===============================
 
-                        setTimeout(() => { toast.style.transform = 'translate(-50%, -150%)'; }, 4000);
+        // 1) Digitação Dinâmica via Realtime Database (Módulo Otimizado)
+        let apexia_typingTimeout;
+        document.getElementById('chat-input').addEventListener('input', () => {
+            if(!myProfile) return;
+            db.ref(`typing/${myProfile.id}`).set({ name: myProfile.name, time: Date.now() });
+            clearTimeout(apexia_typingTimeout);
+            apexia_typingTimeout = setTimeout(() => db.ref(`typing/${myProfile.id}`).remove(), 3000);
+        });
+
+        db.ref("typing").on("value", snap => {
+            const typingUsers = [];
+            snap.forEach(c => { if(myProfile && c.key !== myProfile.id) typingUsers.push(c.val().name); });
+            const ind = document.getElementById('typingIndicator');
+            if(typingUsers.length > 0) ind.innerText = typingUsers.join(', ') + " " + (typingUsers.length > 1 ? "estão" : "está") + " digitando...";
+            else ind.innerText = "";
+        });
+
+        // 2) Impede imitação do nome de ADMIN durante o Login/Registro
+        const apexia_reservados = ['admin', 'apexia', 'gestor', 'suporte'];
+        document.addEventListener('click', (e) => {
+            if(e.target.closest('button[onclick="solicitarAcesso()"]')) {
+                const nameInp = document.getElementById('reg-name');
+                const waInp = document.getElementById('reg-whatsapp');
+                if(nameInp && waInp) {
+                    const cleanName = nameInp.value.toLowerCase();
+                    const cleanWa = waInp.value.replace(/\D/g, "");
+                    if(apexia_reservados.some(r => cleanName.includes(r)) && cleanWa !== ADMIN_PHONE) {
+                        e.stopPropagation(); e.preventDefault();
+                        apexia_modalInterno('alert', 'Erro: Este nome é reservado exclusivamente para a Administração.');
+                        return;
                     }
                 }
-            });
-        }, 3000);
+            }
+        }, true); // Captura o clique antes do Firebase atuar
 
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: Correções Globais e Polimentos
-        // ===============================
+        // Auto-Scroll On Load e Floating Button Event
+        document.getElementById('chat-window').addEventListener('scroll', function() {
+            const btn = document.getElementById('apexia_scroll_down');
+            if(this.scrollHeight - this.scrollTop - this.clientHeight > 150) {
+                btn.style.display = 'flex';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+        
+        // Verifica display do app p/ scroll automático inicial
+        const apexia_autoScrollCheck = setInterval(() => {
+            if(document.getElementById('app').style.display === 'flex') {
+                const cw = document.getElementById('chat-window');
+                cw.scrollTop = cw.scrollHeight;
+                clearInterval(apexia_autoScrollCheck);
+            }
+        }, 500);
 
-        // 1) Feedback Visual dos Botões Aprimorado
         function apexia_estadoCarregando(botao) {
             if(botao.dataset.carregando === 'true') return;
             const originalTxt = botao.innerHTML;
             const originalWidth = botao.offsetWidth;
             botao.dataset.carregando = 'true';
             botao.style.width = originalWidth + 'px';
-            // Texto descritivo e spinner aplicados
             botao.innerHTML = '<span class="apexia_spinner"></span> <span style="font-size:0.65rem; white-space:normal; line-height:1.2; display:inline-block; vertical-align:middle; text-align:left; text-transform:none;">Conectando...<br>Pode levar até 2 min.</span>';
-            setTimeout(() => {
-                botao.innerHTML = originalTxt;
-                botao.style.width = '';
-                botao.dataset.carregando = 'false';
-            }, 6000); // Maior tempo para garantir a visualização antes de ser liberado
+            setTimeout(() => { botao.innerHTML = originalTxt; botao.style.width = ''; botao.dataset.carregando = 'false'; }, 6000);
         }
 
-        // Fila de clique paralela: intercepta para visualização
         document.addEventListener('click', (e) => {
             const botao = e.target.closest('.btn-join');
-            if(botao && !botao.classList.contains('apexia_back_btn')) {
-                setTimeout(() => apexia_estadoCarregando(botao), 10);
-            }
+            if(botao && !botao.classList.contains('apexia_back_btn')) setTimeout(() => apexia_estadoCarregando(botao), 10);
         });
 
-        // 2) Modal Interno e Interceptações de Dialogos Nativos
         function apexia_modalInterno(tipo, mensagem, callback) {
             const modal = document.getElementById('apexia_custom_modal');
             const btnCancel = document.getElementById('apexia_modal_btn_cancel');
@@ -933,27 +949,17 @@
             newConfirm.onclick = () => { modal.style.display = 'none'; if(callback) callback(tipo === 'prompt' ? input.value : true); };
         }
 
-        // Sobrescrita dos Nativos via Window object
         window.alert = function(msg) { apexia_modalInterno('alert', msg); };
-        window.rejeitarComMotivo = function(id) { 
-            apexia_modalInterno('prompt', "Motivo da rejeição (será exibido ao usuário):", (m) => {
-                if(m) db.ref(`users/${id}`).update({ rejectionReason: m });
-            }); 
-        };
+        window.rejeitarComMotivo = function(id) { apexia_modalInterno('prompt', "Motivo da rejeição (será exibido ao usuário):", (m) => { if(m) db.ref(`users/${id}`).update({ rejectionReason: m }); }); };
 
-        // Intercepta especificamente o botão de "Sair do Sistema"
         window.addEventListener('click', function(e) {
             let btnSair = e.target.closest('button[onclick="sair()"]');
             if (btnSair) {
-                e.stopImmediatePropagation();
-                e.preventDefault();
-                apexia_modalInterno('confirm', "Ao sair será necessário inserir seu número novamente. Deseja continuar?", (res) => {
-                    if(res) sair();
-                });
+                e.stopImmediatePropagation(); e.preventDefault();
+                apexia_modalInterno('confirm', "Ao sair será necessário inserir seu número novamente. Deseja continuar?", (res) => { if(res) sair(); });
             }
         }, true);
 
-        // 3) Expandir Banner Fixado no Mobile
         document.addEventListener('DOMContentLoaded', () => {
             const pinBanner = document.getElementById('apexia_pin_banner');
             if(pinBanner) {
@@ -965,17 +971,13 @@
                 pinBanner.addEventListener('click', (e) => {
                     if (window.innerWidth <= 768) {
                         if (e.target.classList.contains('apexia_pin_close_btn')) {
-                            pinBanner.classList.remove('apexia_pin_expanded');
-                            e.stopPropagation();
-                        } else {
-                            pinBanner.classList.add('apexia_pin_expanded');
-                        }
+                            pinBanner.classList.remove('apexia_pin_expanded'); e.stopPropagation();
+                        } else { pinBanner.classList.add('apexia_pin_expanded'); }
                     }
                 });
             }
         });
 
-        // 4) Resposta Estilo WhatsApp 
         let apexia_reply_data = null;
         function apexia_abrirPreviewResposta(nome, texto) {
             apexia_reply_data = { name: nome, text: texto.split('\n')[0].substring(0, 40) };
@@ -989,26 +991,37 @@
             document.getElementById('apexia_reply_preview').style.display = 'none';
         }
 
-        // Intercepta a tentativa de enviar (Click e Enter)
+        // Intercepta e implementa a Envio Otimista
+        let apexia_tempIds = [];
         document.querySelector('.send-btn').addEventListener('click', function(e) {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if (!text) return;
+            if (!text || !myProfile) return;
             
-            e.preventDefault();
-            e.stopImmediatePropagation(); // Bloqueia o enviarMensagem original
+            e.preventDefault(); e.stopImmediatePropagation();
 
             let finalMsg = text;
             if(apexia_reply_data) {
                 finalMsg = `[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n` + text;
             }
 
-            db.ref("messages").push({ 
-                senderId: myProfile.id, 
-                senderName: myProfile.name, 
-                text: finalMsg, 
-                timestamp: firebase.database.ServerValue.TIMESTAMP 
-            });
+            const tempId = "opt_" + Date.now();
+            apexia_tempIds.push({ id: tempId, txt: finalMsg });
+
+            // UI Otimista - Exibe Imediatamente
+            const win = document.getElementById('chat-window');
+            const div = document.createElement('div');
+            div.className = "msg sent apexia_optimistic";
+            div.id = tempId;
+            let displayHTML = `<b>${myProfile.name}</b><br>${finalMsg}`;
+            if(apexia_reply_data) {
+                displayHTML = displayHTML.replace(`[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n`, `<span class="apexia_quoted_msg"><b>${apexia_reply_data.name}</b><span>${apexia_reply_data.text}</span></span>`);
+            }
+            div.innerHTML = displayHTML + `<div style="font-size:0.55rem; opacity:0.8; text-align:right; margin-top:4px;">⏳</div>`;
+            win.appendChild(div);
+            win.scrollTop = win.scrollHeight;
+
+            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: finalMsg, timestamp: firebase.database.ServerValue.TIMESTAMP });
             db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
             
             input.value = "";
@@ -1016,15 +1029,11 @@
         }, true);
 
         document.getElementById('chat-input').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                document.querySelector('.send-btn').click();
-            }
+            if(e.key === 'Enter') { e.preventDefault(); document.querySelector('.send-btn').click(); }
         });
 
-        // Mapeamento DOM -> Firebase e Funcionalidades Apagar/Fixar
         let apexia_msg_queue = [];
-        db.ref("messages").limitToLast(100).on("child_added", snap => { apexia_msg_queue.push({ key: snap.key, val: snap.val() }); });
+        db.ref("messages").orderByChild("timestamp").limitToLast(50).on("child_added", snap => { apexia_msg_queue.push({ key: snap.key, val: snap.val() }); });
         
         db.ref("messages").on("child_removed", snap => {
             const msgNode = document.querySelector(`.msg[data-key="${snap.key}"]`);
@@ -1047,28 +1056,42 @@
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1) {
                         
-                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed) {
+                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
                             node.dataset.apexiaProcessed = "true";
-                            
                             const msgData = apexia_msg_queue.shift(); 
                             if(msgData) {
                                 node.dataset.key = msgData.key;
                                 
-                                // Formatar Citação WhatsApp Style com as novas classes CSS
+                                // Remove o elemento otimista antigo correspondente quando a mensagem real chega
+                                if(msgData.val.senderId === myProfile.id) {
+                                    const optIdx = apexia_tempIds.findIndex(o => o.txt === msgData.val.text);
+                                    if(optIdx > -1) {
+                                        const optNode = document.getElementById(apexia_tempIds[optIdx].id);
+                                        if(optNode) optNode.remove();
+                                        apexia_tempIds.splice(optIdx, 1);
+                                    }
+                                }
+                                
+                                // Formatar Citação WhatsApp Style com as novas classes
                                 if(msgData.val.text.includes('[Resp.')) {
-                                    const bTag = node.querySelector('b');
-                                    if(bTag) {
-                                        const quoteMatch = node.innerHTML.match(/\[Resp\. (.*?): &quot;(.*?)&quot;\]<br>/);
-                                        if(quoteMatch) {
-                                            const novoHTML = node.innerHTML.replace(quoteMatch[0], `<span class="apexia_quoted_msg"><b>${quoteMatch[1]}</b><span>${quoteMatch[2]}</span></span>`);
-                                            node.innerHTML = novoHTML;
-                                        }
+                                    const match = msgData.val.text.match(/\[Resp\. (.*?): "(.*?)"\]\n(.*)/s);
+                                    if(match) {
+                                        node.innerHTML = `<b>${msgData.val.senderName}</b><br><span class="apexia_quoted_msg"><b>${match[1]}</b><span>${match[2]}</span></span>${match[3]}`;
+                                    }
+                                }
+
+                                // Identidade Visual ADMIN (Mensagens)
+                                const bTag = node.querySelector('b');
+                                if(bTag) {
+                                    if(msgData.val.senderName.toLowerCase().includes('apexia') || msgData.val.senderName.toLowerCase().includes('admin') || msgData.val.senderId === 'u1711000000000' /* fallback id admin se houver */) {
+                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                        node.classList.add('apexia_admin_msg');
                                     }
                                 }
 
                                 const timeSpan = document.createElement('div');
                                 timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
-                                const tDate = new Date(msgData.val.timestamp);
+                                const tDate = new Date(msgData.val.timestamp || Date.now());
                                 timeSpan.innerText = tDate.getHours().toString().padStart(2,'0') + ":" + tDate.getMinutes().toString().padStart(2,'0');
                                 node.appendChild(timeSpan);
                                 
@@ -1078,24 +1101,19 @@
                                 const btnResponder = document.createElement('span');
                                 btnResponder.innerHTML = '↩️';
                                 btnResponder.style.cursor = 'pointer';
-                                btnResponder.onclick = (e) => {
-                                    e.stopPropagation();
-                                    apexia_abrirPreviewResposta(msgData.val.senderName, msgData.val.text);
-                                };
+                                btnResponder.onclick = (e) => { e.stopPropagation(); apexia_abrirPreviewResposta(msgData.val.senderName, msgData.val.text); };
                                 actionContainer.appendChild(btnResponder);
 
-                                if(myProfile && (myProfile.role === 'admin' || msgData.val.senderId === myProfile.id)) {
-                                    const btnFixar = document.createElement('span');
-                                    btnFixar.innerHTML = '📌';
-                                    btnFixar.style.cursor = 'pointer';
-                                    btnFixar.onclick = (e) => {
-                                        e.stopPropagation();
-                                        apexia_modalInterno('confirm', 'Fixar esta mensagem no topo?', res => {
-                                            if(res) db.ref("apexia_pinned").set({ text: msgData.val.text, sender: msgData.val.senderName });
-                                        });
-                                    };
-                                    actionContainer.appendChild(btnFixar);
-                                }
+                                // Botão de Fixar Apenas visível estruturalmente. O CSS restringe aos Admin.
+                                const btnFixar = document.createElement('span');
+                                btnFixar.className = 'apexia_pin_btn';
+                                btnFixar.innerHTML = '📌';
+                                btnFixar.style.cursor = 'pointer';
+                                btnFixar.onclick = (e) => {
+                                    e.stopPropagation();
+                                    apexia_modalInterno('confirm', 'Fixar esta mensagem no topo?', res => { if(res) db.ref("apexia_pinned").set({ text: msgData.val.text, sender: msgData.val.senderName }); });
+                                };
+                                actionContainer.appendChild(btnFixar);
 
                                 if(myProfile && msgData.val.senderId === myProfile.id) {
                                     const btnApagar = document.createElement('span');
@@ -1103,16 +1121,13 @@
                                     btnApagar.style.cursor = 'pointer';
                                     btnApagar.onclick = (e) => {
                                         e.stopPropagation();
-                                        apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', res => {
-                                            if(res) db.ref("messages/" + msgData.key).remove();
-                                        });
+                                        apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', res => { if(res) db.ref("messages/" + msgData.key).remove(); });
                                     };
                                     actionContainer.appendChild(btnApagar);
                                 }
 
                                 node.appendChild(actionContainer);
                             }
-                            
                             apexia_setupLongPress(node);
                         }
 
@@ -1124,6 +1139,12 @@
                                 db.ref("users").orderByChild("name").equalTo(mName).once("value", snap => {
                                     if(snap.exists()){
                                         const u = Object.values(snap.val())[0];
+                                        
+                                        // Identidade Visual ADMIN na Lista
+                                        if(u.role === 'admin' || u.wa === ADMIN_PHONE) {
+                                            nameEl.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                        }
+
                                         const msgs = u.msgCount || 0;
                                         let stars = msgs >= 50 ? '🌟🌟🌟 Elite' : (msgs >= 15 ? '⭐⭐ Ativo' : '⭐ Novato');
                                         const starSpan = document.createElement('span');
@@ -1145,5 +1166,3 @@
     </script>
 </body>
 </html>
-
-
