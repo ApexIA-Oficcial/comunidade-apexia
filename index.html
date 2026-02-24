@@ -19,115 +19,111 @@
         .star { position: absolute; background: white; border-radius: 50%; opacity: 0.5; animation: moveStar 100s linear infinite; }
         @keyframes moveStar { from { transform: translateY(0); } to { transform: translateY(-1000px); } }
 
-        /* --- LOGO FUMAÇA (NOVO) --- */
-        #smoke-bg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; background: url('https://apexia-oficcial.github.io/ApexIA/canalapexia.png') no-repeat center; background-size: contain; opacity: 0.05; filter: blur(4px); animation: smokeMove 15s infinite ease-in-out; pointer-events: none; }
-        @keyframes smokeMove { 0%, 100% { transform: translate(-50%, -50%) scale(1); filter: blur(4px); } 50% { transform: translate(-48%, -52%) scale(1.1); filter: blur(8px); } }
+        /* --- LOGO FUMAÇA DINÂMICA (NOVO) --- */
+        #smoke-logo {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: clamp(200px, 50vw, 400px); height: auto; opacity: 0.04;
+            filter: blur(4px); pointer-events: none; z-index: 0;
+            animation: smokeFloat 20s infinite ease-in-out;
+        }
+        @keyframes smokeFloat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); filter: blur(4px); }
+            50% { transform: translate(-48%, -52%) scale(1.1); filter: blur(8px); }
+        }
 
         /* --- TELAS --- */
-        #onboarding, #waiting-screen, #app, #returning-login, #welcome-modal, #profile-modal { display: none; width: 100%; height: 100dvh; position: fixed; inset: 0; z-index: 100; background: #000; }
-        
-        /* Centralização do Registro */
-        #onboarding, #returning-login { align-items: center; justify-content: center; }
+        #onboarding, #waiting-screen, #app, #returning-login, #modal-profile, #modal-welcome { display: none; width: 100%; height: 100dvh; position: fixed; inset: 0; z-index: 100; background: #000; }
+
+        /* --- MODAIS ESTETIZADOS --- */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        .modal-card { width: 100%; max-width: 450px; background: #0a0a0a; border: 1px solid var(--primary); border-radius: 30px; padding: 35px; text-align: center; box-shadow: 0 0 50px rgba(0,255,0,0.1); }
+        .modal-card input, .modal-card textarea { width: 100%; padding: 14px; margin-bottom: 12px; background: #000; border: 1px solid #222; border-radius: 12px; color: #fff; outline: none; }
 
         /* --- TELA DE ESPERA --- */
         #waiting-screen { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
         .waiting-card { width: 100%; max-width: 480px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); }
-        .countdown { font-size: 2.2rem; font-weight: 900; color: var(--primary); margin: 20px 0; }
-        #rejection-alert { display: none; background: rgba(255,0,0,0.1); border: 1px solid #ff4444; padding: 15px; border-radius: 15px; margin-top: 20px; color: #ff8888; }
 
-        /* --- SIDEBAR --- */
-        #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        #members-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; }
-        .member-card img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); object-fit: cover; }
+        /* --- SIDEBAR REPARADA --- */
+        #sidebar { width: 280px; background: rgba(8, 8, 8, 0.98); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); transition: 0.3s; }
+        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 15px; border-radius: 12px; margin-bottom: 5px; background: rgba(255,255,255,0.02); font-size: 0.8rem; }
+        .member-card img { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--primary); object-fit: cover; }
 
         /* --- CHAT AREA --- */
         #chat-area { flex: 1; display: flex; flex-direction: column; position: relative; min-width: 0; }
-        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); }
-        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 2; }
-        
-        /* Barra de vídeo novo */
-        #video-sticky { background: rgba(0,255,0,0.1); border-bottom: 1px solid var(--primary); padding: 10px; font-size: 0.75rem; text-align: center; color: var(--primary); font-weight: 900; cursor: pointer; }
+        header { padding: 15px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); z-index: 10; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 5; }
 
-        /* Mensagens */
+        /* Barra de vídeo novo */
+        #video-sticky { background: rgba(0,255,0,0.1); border-bottom: 1px solid var(--primary); padding: 8px; font-size: 0.7rem; text-align: center; color: var(--primary); font-weight: 900; cursor: pointer; display: none; }
+
         .msg { max-width: 80%; padding: 12px 18px; border-radius: 18px; font-size: 0.9rem; animation: slideIn 0.2s ease; word-wrap: break-word; cursor: pointer; }
-        .received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); border-radius: 2px 18px 18px 18px; }
-        .sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; border-radius: 18px 18px 2px 18px; }
-        .reply-box { background: rgba(0,0,0,0.2); padding: 5px 10px; border-left: 2px solid #fff; margin-bottom: 5px; font-size: 0.75rem; border-radius: 5px; opacity: 0.7; }
+        .received { align-self: flex-start; background: rgba(255,255,255,0.05); border-left: 3px solid var(--primary); }
+        .sent { align-self: flex-end; background: var(--primary); color: #000; font-weight: 600; }
 
         /* --- INPUT NEON --- */
         .input-area { padding: 20px; background: #000; border-top: 1px solid var(--border); }
-        #reply-preview { display: none; background: #111; padding: 10px 20px; border-top: 1px solid var(--primary); font-size: 0.8rem; justify-content: space-between; align-items: center; }
-        .input-wrapper { 
-            max-width: 900px; margin: 0 auto; display: flex; gap: 12px; background: #0a0a0a; 
-            padding: 10px 18px; border-radius: 35px; align-items: center; position: relative; 
-            overflow: hidden; border: 1px solid rgba(0, 255, 0, 0.3);
-        }
+        .input-wrapper { max-width: 900px; margin: 0 auto; display: flex; gap: 12px; background: #0a0a0a; padding: 10px 18px; border-radius: 35px; align-items: center; position: relative; overflow: hidden; border: 1px solid var(--border); }
         .input-wrapper::after { content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.4), transparent); animation: neonFlow 3s infinite linear; }
         @keyframes neonFlow { 0% { left: -100%; } 100% { left: 100%; } }
         input { flex: 1; background: transparent; border: none; color: #fff; outline: none; z-index: 2; font-size: 1rem; }
         .send-btn { background: var(--primary); border: none; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; font-weight: 900; z-index: 2; color: #000; }
 
-        /* MODAIS */
-        .modal-card { max-width: 400px; width: 90%; background: #0a0a0a; border: 1px solid var(--primary); border-radius: 25px; padding: 30px; margin: auto; text-align: center; }
-        .modal-card input, .modal-card textarea { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: #fff; border-radius: 10px; outline: none; }
-
-        /* --- ADMIN PANEL --- */
-        #admin-drawer { display: none; position: fixed; right: 0; top: 0; bottom: 0; width: 340px; background: #050505; border-left: 2px solid var(--primary); z-index: 10001; padding: 20px; overflow-y: auto; }
-
-        @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
+        @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } }
     </style>
 </head>
 <body>
     <div id="galaxy"></div>
 
     <!-- TELA REGISTRO -->
-    <div id="onboarding" style="display: flex;">
+    <div id="onboarding" style="display: flex; align-items: center; justify-content: center;">
         <div class="form-box" style="text-align: center; max-width: 400px; padding: 40px; background: #0a0a0a; border-radius: 30px; border: 1px solid var(--border);">
-            <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; border-radius:50%; margin-bottom:15px; border:2px solid var(--primary);">
-            <h2>QG <span>APEXIA</span></h2>
-            <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Exclusivo para membros reais.</p>
+            <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; margin-bottom:15px; border-radius:50%; border:2px solid var(--primary);">
+            <h2 style="margin-bottom: 10px;">QG <span>APEXIA</span></h2>
+            <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Portal de Membros Elite.</p>
             <input type="text" id="reg-name" placeholder="Seu Nome">
             <input type="text" id="reg-channel" placeholder="Nome do seu Canal">
-            <input type="tel" id="reg-whatsapp" placeholder="Seu WhatsApp">
-            <label for="reg-photo" style="display:block; padding:15px; background:#111; border:1px dashed #444; border-radius:10px; cursor:pointer; margin-bottom:15px; font-size:0.8rem; color:#888;" id="file-label">Anexar Print YouTube Studio</label>
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp">
+            <label for="reg-photo" style="display:block; padding:15px; background:#111; border:1px dashed #444; border-radius:10px; cursor:pointer; margin-bottom:15px; font-size:0.8rem; color:#888;" id="file-label">Anexar Print Comprovante</label>
             <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewFile()">
-            <button class="btn-join" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
-            <p onclick="irParaLoginRapido()" style="margin-top:20px; font-size:0.7rem; color:var(--primary); cursor:pointer;">Já sou membro? Entrar aqui</p>
+            <button class="btn-join" style="width: 100%; height: 50px; background: var(--primary); color:#000; border:none; border-radius:50px; font-weight: 900; cursor: pointer;" onclick="solicitarAcesso()">SOLICITAR ACESSO</button>
+            <p onclick="irParaLoginRapido()" style="margin-top:20px; font-size:0.7rem; color:var(--primary); cursor:pointer;">Já é membro? Clique aqui</p>
         </div>
     </div>
 
     <!-- LOGIN RÁPIDO -->
-    <div id="returning-login">
-        <div class="form-box" style="text-align:center; max-width:400px;">
+    <div id="returning-login" style="display: none; align-items: center; justify-content: center;">
+        <div class="form-box" style="text-align: center; max-width: 400px; padding: 40px; background: #0a0a0a; border-radius: 30px; border: 1px solid var(--border);">
             <h2>RECONECTAR <span>QG</span></h2>
-            <input type="tel" id="login-whatsapp" placeholder="Digite seu WhatsApp cadastrado">
-            <button class="btn-join" onclick="loginRapido()">ENTRAR NO CHAT</button>
-            <p onclick="location.reload()" style="margin-top:15px; font-size:0.7rem; color:#444; cursor:pointer;">Voltar</p>
+            <input type="tel" id="login-whatsapp" placeholder="Digite seu WhatsApp">
+            <button class="btn-join" style="width: 100%; height: 50px; background: var(--primary); color:#000; border:none; border-radius:50px; font-weight: 900; cursor: pointer;" onclick="loginRapido()">ENTRAR</button>
+            <p onclick="location.reload()" style="margin-top:20px; font-size:0.7rem; color:#444; cursor:pointer;">Voltar</p>
         </div>
     </div>
 
-    <!-- MODAL BOAS-VINDAS -->
-    <div id="welcome-modal" style="display: none; align-items:center; justify-content:center;">
+    <!-- MODAL BOAS-VINDAS (NOVO) -->
+    <div id="modal-welcome" class="modal-overlay">
         <div class="modal-card">
             <h2 style="color:var(--primary)">Parabéns Membro! 🚀</h2>
-            <p style="font-size: 0.9rem; margin: 15px 0;">Você agora faz parte da elite da ApexiA. Respeite as regras e cresça conosco.</p>
-            <div style="text-align:left; background:#111; padding:15px; border-radius:10px; font-size:0.8rem; line-height:1.6;">
-                1. Sem spam ou links.<br>2. Foco total em YouTube Growth.<br>3. Seja respeitoso.
+            <p style="font-size: 0.9rem; margin: 15px 0; color: #ccc;">Sua conta foi auditada e aprovada. Você agora faz parte da elite da ApexiA.</p>
+            <div style="text-align:left; background:#000; border: 1px solid #222; padding:15px; border-radius:15px; font-size:0.8rem; line-height:1.6; color:#888;">
+                <b>Regras do QG:</b><br>
+                • Foco total em YouTube Growth.<br>
+                • Respeito mútuo absoluto.<br>
+                • Sem spam ou vendas externas.
             </div>
-            <button class="btn-join" onclick="fecharWelcome()">ENTRAR NO QG</button>
+            <button class="btn-join" style="margin-top: 20px; padding: 12px 40px; background:var(--primary); border:none; border-radius:50px; font-weight:900; cursor:pointer;" onclick="fecharWelcome()">COMEÇAR AGORA</button>
         </div>
     </div>
 
-    <!-- MODAL PERFIL -->
-    <div id="profile-modal" style="display: none; align-items:center; justify-content:center;">
+    <!-- MODAL PERFIL (NOVO) -->
+    <div id="modal-profile" class="modal-overlay">
         <div class="modal-card">
-            <h2>Meu Perfil <span>Elite</span></h2>
-            <input type="number" id="perf-age" placeholder="Sua Idade">
-            <input type="text" id="perf-interests" placeholder="Interesses (Ex: Tecnologia, Games)">
-            <textarea id="perf-bio" placeholder="Sua biografia..."></textarea>
-            <button class="btn-join" onclick="salvarPerfil()">SALVAR PERFIL</button>
-            <p onclick="document.getElementById('profile-modal').style.display='none'" style="margin-top:15px; font-size:0.8rem; cursor:pointer;">Cancelar</p>
+            <h2 style="color:var(--primary)">Meu Perfil Elite</h2>
+            <input type="number" id="p-age" placeholder="Sua Idade">
+            <input type="text" id="p-interests" placeholder="Interesses (ex: Games, Tecnologia)">
+            <textarea id="p-bio" rows="4" placeholder="Sua biografia supremo..."></textarea>
+            <button class="btn-join" style="width: 100%; padding: 15px; background:var(--primary); border:none; border-radius:50px; font-weight:900; cursor:pointer;" onclick="salvarPerfil()">SALVAR PERFIL</button>
+            <p onclick="document.getElementById('modal-profile').style.display='none'" style="margin-top:15px; font-size:0.8rem; color:#555; cursor:pointer;">Fechar</p>
         </div>
     </div>
 
@@ -136,51 +132,47 @@
         <div class="waiting-card">
             <div class="loader-ring"></div>
             <h2>HUB DE <span style="color:var(--primary)">APROVAÇÃO</span></h2>
-            <div class="countdown" id="timer">24:00:00</div>
-            <p id="waiting-status" style="color: #aaa;">Auditando seu comprovante...</p>
+            <p id="waiting-status" style="color: #aaa; font-size: 0.9rem; margin-top: 10px;">Validando sua inscrição...</p>
             <div id="rejection-alert"><b>RECUSADO:</b><br><span id="rejection-reason">---</span></div>
-            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top:30px; background:#25D366; color:#fff; padding:12px; width:100%; border-radius:50px; border:none; font-weight:900; cursor:pointer;">WHATSAPP DO GESTOR</button>
-            <button onclick="sair()" style="margin-top:15px; background:none; border:none; color:#444; text-decoration:underline; cursor:pointer;">Voltar</button>
+            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top: 30px; background: #25D366; color:#fff; padding:12px; width:100%; border-radius:50px; border:none; font-weight:900; cursor:pointer;">SUPORTE WHATSAPP</button>
         </div>
     </div>
 
-    <!-- ADMIN DRAWER -->
-    <div id="admin-drawer">
-        <h3 style="color:var(--primary); font-weight:900; margin-bottom:20px;">GESTOR DE ACESSOS</h3>
-        <div id="pending-list"></div>
-        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR PAINEL</button>
-    </div>
-
-    <!-- APP -->
+    <!-- APP CHAT -->
     <div id="app">
         <nav id="sidebar">
-            <div class="rank-box"><b style="font-size: 0.6rem; color: var(--gold);">⭐ TOP MEMBROS</b><div id="ranking-list"></div></div>
-            <div id="members-list"></div>
+            <div id="members-list" style="flex:1; overflow-y:auto; padding:10px;"></div>
             <div style="padding:20px; border-top:1px solid var(--border);">
-                <button onclick="document.getElementById('profile-modal').style.display='flex'" style="width:100%; padding:10px; background:#111; color:var(--primary); border:1px solid var(--primary); border-radius:10px; margin-bottom:10px; font-weight:900; cursor:pointer;">MEU PERFIL</button>
+                <button onclick="document.getElementById('modal-profile').style.display='flex'" style="width:100%; padding:10px; background:#111; color:var(--primary); border:1px solid var(--primary); border-radius:10px; margin-bottom:10px; font-weight:900; cursor:pointer;">MEU PERFIL</button>
                 <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:10px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:10px; margin-bottom:10px;">PAINEL GESTÃO</button>
-                <button onclick="sair()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">SAIR DO SISTEMA</button>
+                <button onclick="sair()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">DESCONECTAR SISTEMA</button>
             </div>
         </nav>
         <main id="chat-area">
-            <div id="video-sticky" onclick="window.open('https://youtube.com/@jose')">🎬 VÍDEO NOVO: Como dominar o algoritmo em 2026! Assista agora.</div>
-            <div id="smoke-bg"></div>
+            <div id="video-sticky" onclick="window.open('https://youtube.com/@jose')">🎬 VÍDEO NOVO: Estratégias de Dominação 2026. Assista agora!</div>
+            <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" id="smoke-logo">
             <header>
                 <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="background:none; border:none; color:var(--primary); font-size:1.5rem;">☰</button>
                 <div style="font-weight:900; font-size:0.8rem;">QG APEXIA ELITE</div>
                 <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800;">← HUB</button>
             </header>
             <div id="chat-window"></div>
-            <div id="reply-preview"><span>Respondendo...</span><button onclick="cancelReply()" style="background:none; border:none; color:red;">X</button></div>
             <div class="input-area">
                 <div class="input-wrapper">
                     <label for="chat-file" style="cursor:pointer; font-size: 1.2rem; z-index: 5;">📎</label>
                     <input type="file" id="chat-file" style="display:none" onchange="enviarAnexo()">
-                    <input type="text" id="chat-input" placeholder="Sua mensagem...">
+                    <input type="text" id="chat-input" placeholder="Mensagem supremo...">
                     <button class="send-btn" onclick="enviarMensagem()">→</button>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- ADMIN DRAWER -->
+    <div id="admin-drawer" style="display:none; position:fixed; right:0; top:0; bottom:0; width:340px; background:#050505; border-left:2px solid var(--primary); z-index:10001; padding:20px; overflow-y:auto;">
+        <h3 style="color:var(--primary); font-weight:900; margin-bottom:20px;">GESTÃO DE MEMBROS</h3>
+        <div id="pending-list"></div>
+        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR</button>
     </div>
 
     <script>
@@ -197,7 +189,7 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        let myProfile = null, base64Proof = "", replyingTo = null;
+        let myProfile = null, base64Proof = "";
         const msgIds = new Set();
 
         if ("Notification" in window) Notification.requestPermission();
@@ -210,13 +202,10 @@
         }
 
         function solicitarAcesso() {
-            const name = document.getElementById('reg-name').value.trim();
-            const channel = document.getElementById('reg-channel').value.trim();
-            const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
-            if (!name || !channel || wa.length < 9) { alert("Dados incompletos!"); return; }
+            const name = document.getElementById('reg-name').value.trim(), channel = document.getElementById('reg-channel').value.trim(), wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
+            if (!name || !channel || wa.length < 9 || !base64Proof) { alert("Dados incompletos!"); return; }
             const isAdmin = wa === ADMIN_PHONE;
-            if(!isAdmin && !base64Proof) { alert("Anexe o print!"); return; }
-            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0, createdAt: Date.now(), welcomeShown: false };
+            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', welcomeShown: false, msgCount: 0 };
             db.ref("users/" + user.id).set(user).then(() => { localStorage.setItem("apexia_user", JSON.stringify(user)); location.reload(); });
         }
 
@@ -248,72 +237,63 @@
                     document.getElementById('rejection-reason').innerText = u.rejectionReason;
                     return;
                 }
-                if (!u.approved) { document.getElementById('waiting-screen').style.display = "flex"; startTimer(u.createdAt); return; }
+                if (!u.approved) { document.getElementById('waiting-screen').style.display = "flex"; return; }
 
-                if (!u.welcomeShown) { document.getElementById('welcome-modal').style.display='flex'; db.ref("users/"+u.id).update({welcomeShown:true}); }
+                if (!u.welcomeShown) { document.getElementById('modal-welcome').style.display='flex'; db.ref("users/"+u.id).update({welcomeShown:true}); }
+                document.getElementById('onboarding').style.display = "none";
                 document.getElementById('app').style.display = "flex";
+                document.getElementById('video-sticky').style.display = "block";
                 if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
                 iniciarSistema();
             });
         };
 
-        function startTimer(created) {
-            const end = created + (24 * 60 * 60 * 1000);
-            setInterval(() => {
-                const diff = end - Date.now();
-                const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-                document.getElementById('timer').innerText = diff > 0 ? `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}` : "Processando...";
-            }, 1000);
-        }
+        function fecharWelcome() { document.getElementById('modal-welcome').style.display='none'; }
 
-        function fecharWelcome() { document.getElementById('welcome-modal').style.display='none'; }
         function salvarPerfil() {
-            const age = document.getElementById('perf-age').value, interests = document.getElementById('perf-interests').value, bio = document.getElementById('perf-bio').value;
-            db.ref("users/" + myProfile.id).update({age, interests, bio}).then(() => { alert("Perfil salvo!"); document.getElementById('profile-modal').style.display='none'; });
+            const age = document.getElementById('p-age').value, interests = document.getElementById('p-interests').value, bio = document.getElementById('p-bio').value;
+            db.ref("users/" + myProfile.id).update({age, interests, bio}).then(() => {
+                document.getElementById('modal-profile').style.display='none';
+                alert("Perfil Atualizado!");
+            });
         }
 
-        function iniciarSistema() { ouvirChat(); setupPresence(); ouvirRanking(); if(myProfile.role === 'admin') ouvirPendentes(); }
+        function iniciarSistema() {
+            db.ref("messages").limitToLast(30).on("child_added", snap => {
+                if (msgIds.has(snap.key)) return;
+                msgIds.add(snap.key);
+                const m = snap.val();
+                const win = document.getElementById('chat-window');
+                const div = document.createElement('div');
+                div.className = `msg ${m.senderId === myProfile.id ? 'sent' : 'received'}`;
+                let html = `<b>${m.senderName}</b><br>${m.text}`;
+                if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
+                div.innerHTML = html;
+                win.appendChild(div);
+                win.scrollTop = win.scrollHeight;
+                if(m.senderId !== myProfile.id && document.hidden && Notification.permission === "granted") {
+                    new Notification("ApexiA Community", {body: `${m.senderName}: ${m.text}`});
+                }
+            });
+            setupPresence();
+            ouvirRanking();
+            if(myProfile.role === 'admin') ouvirPendentes();
+        }
 
         function enviarMensagem() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
+            const text = document.getElementById('chat-input').value.trim();
             if (!text) return;
-            const msg = { senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() };
-            if(replyingTo) { msg.reply = replyingTo; cancelReply(); }
-            db.ref("messages").push(msg);
+            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() });
             db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
-            input.value = "";
+            document.getElementById('chat-input').value = "";
         }
 
         function enviarAnexo() {
             const file = document.getElementById('chat-file').files[0];
             const reader = new FileReader();
-            reader.onload = (e) => { db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: "Enviou anexo", attachment: e.target.result, timestamp: Date.now() }); };
+            reader.onload = (e) => { db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: "Enviou uma imagem", attachment: e.target.result, timestamp: Date.now() }); };
             reader.readAsDataURL(file);
         }
-
-        function ouvirChat() {
-            db.ref("messages").limitToLast(30).on("child_added", snap => {
-                if (msgIds.has(snap.key)) return;
-                msgIds.add(snap.key);
-                const m = snap.val();
-                const div = document.createElement('div');
-                div.className = `msg ${m.senderId === myProfile.id ? 'sent' : 'received'}`;
-                div.onclick = () => { replyingTo = {name: m.senderName, text: m.text}; document.getElementById('reply-preview').style.display='flex'; document.getElementById('reply-preview').querySelector('span').innerText = `Respondendo a ${m.senderName}`; };
-                let html = "";
-                if(m.reply) html += `<div class="reply-box"><b>${m.reply.name}</b>: ${m.reply.text}</div>`;
-                html += `<b>${m.senderName}</b><br>${m.text}`;
-                if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
-                div.innerHTML = html;
-                document.getElementById('chat-window').appendChild(div);
-                document.getElementById('chat-window').scrollTop = document.getElementById('chat-window').scrollHeight;
-                if(m.senderId !== myProfile.id && document.hidden && Notification.permission === "granted") new Notification("ApexiA HQ", {body: `${m.senderName}: ${m.text}`});
-            });
-        }
-
-        function cancelReply() { replyingTo = null; document.getElementById('reply-preview').style.display='none'; }
-        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
-        function toggleAdminDrawer() { const d = document.getElementById('admin-drawer'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
 
         function ouvirPendentes() {
             db.ref("users").on("value", s => {
@@ -321,13 +301,15 @@
                 s.forEach(child => {
                     const u = child.val();
                     if(!u.approved && !u.rejectionReason) {
-                        list.innerHTML += `<div class="pending-card"><b>${u.name}</b><br><img src="${u.proof}" style="width:100%;"><br><button onclick="db.ref('users/${u.id}').update({approved:true})" style="background:#0f0; width:100%; border:none; padding:10px; border-radius:5px; font-weight:900;">APROVAR</button><button onclick="rejeitar('${u.id}')" style="background:#f00; width:100%; border:none; padding:10px; border-radius:5px; margin-top:5px; color:#fff;">REJEITAR</button></div>`;
+                        list.innerHTML += `<div class="pending-card"><b>${u.name}</b><br><img src="${u.proof}" style="width:100%;"><br><button onclick="db.ref('users/${u.id}').update({approved:true})" style="background:#0f0; width:100%; border:none; padding:10px; border-radius:5px; font-weight:900;">APROVAR</button><button onclick="rejeitar('${u.id}')" style="background:#f00; width:100%; border:none; padding:10px; border-radius:5px; color:#fff;">REJEITAR</button></div>`;
                     }
                 });
             });
         }
 
         function rejeitar(id) { const m = prompt("Motivo:"); if(m) db.ref(`users/${id}`).update({ rejectionReason: m }); }
+        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
+        function toggleAdminDrawer() { const d = document.getElementById('admin-drawer'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
 
         function setupPresence() {
             const statusRef = db.ref(`status/${myProfile.id}`);
