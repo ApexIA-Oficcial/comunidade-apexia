@@ -41,7 +41,7 @@
         /* --- SIDEBAR --- */
         #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); transition: 0.3s; }
         #members-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; cursor: pointer; /* Modificado apenas para indicar o clique */ }
+        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; cursor: pointer; }
         .member-card img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); object-fit: cover; }
 
         /* --- CHAT AREA --- */
@@ -89,14 +89,17 @@
         @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
 
         /* // ===============================
-           // INÍCIO NOVA FUNCIONALIDADE: Estilos Auxiliares
+           // INÍCIO NOVA FUNCIONALIDADE: CSS Complementar Multi-ajustes
            // =============================== */
         .apexia_foto_preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); margin-top: 10px; display: none; margin-left: auto; margin-right: auto; }
         
-        /* Ajuste visual do chat original (preservado do bloco anterior) */
+        /* 4) Ocultar Lupa de Zoom e HUB (Overrides Absolutos) */
+        button[onclick*="ApexIA/"], #apexia_zoom_btn { display: none !important; }
+        
+        /* Ajuste de tamanho fixo do balão (Pequeno por padrão, conforme pedido) */
         #chat-window .msg {
-            padding: 8px 14px !important;
-            font-size: 0.8rem !important;
+            padding: 6px 10px !important;
+            font-size: 0.75rem !important;
             border-radius: 14px !important;
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             position: relative;
@@ -104,17 +107,14 @@
         #chat-window .received { border-radius: 2px 14px 14px 14px !important; }
         #chat-window .sent { border-radius: 14px 14px 2px 14px !important; }
         
-        /* Ícone Animado */
+        /* Ícone Animado (Vídeo) */
         @keyframes apexia_pulse_vid { 0% { transform:scale(1); opacity:1; } 50% { transform:scale(1.3); opacity:0.6; } 100% { transform:scale(1); opacity:1; } }
         .apexia_anim_icon { display: inline-block; animation: apexia_pulse_vid 1s infinite; color: #FF4444; }
 
-        /* Emojis e Reply Hover */
-        .apexia_action_btn { display:none; position:absolute; top:-10px; right:10px; background:#222; border:1px solid #444; border-radius:10px; padding:2px 5px; font-size:0.7rem; }
-        #chat-window .msg:hover .apexia_action_btn { display:flex; gap:5px; }
+        /* 5) Ações (Apagar/Fixar/Responder) Hover Menu */
+        .apexia_action_btn { display:none; position:absolute; top:-15px; right:10px; background:#222; border:1px solid #444; border-radius:10px; padding:4px 8px; font-size:0.8rem; z-index: 5; }
+        #chat-window .msg:hover .apexia_action_btn { display:flex; gap:8px; }
 
-        /* // ===============================
-           // INÍCIO NOVA FUNCIONALIDADE: UX, Animações e Zoom
-           // =============================== */
         /* Transições suaves de Tela */
         @keyframes apexia_fadeInScreen {
             from { opacity: 0; transform: translateY(10px) scale(0.98); }
@@ -122,29 +122,29 @@
         }
         #onboarding, #waiting-screen, #app, #returning-login { animation: apexia_fadeInScreen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 
-        /* Micro animação nos botões interativos e mensagens */
+        /* Micro animação nos botões */
         button, .btn-join, .member-card { transition: transform 0.1s ease, filter 0.1s ease; }
         button:active, .btn-join:active { transform: scale(0.96); filter: brightness(0.8); }
 
-        /* Classes auxiliares de Zoom Dinâmico */
-        .apexia_zoom_pequeno .msg { font-size: 0.7rem !important; padding: 6px 10px !important; }
-        .apexia_zoom_grande .msg { font-size: 1.1rem !important; padding: 14px 20px !important; line-height: 1.4; }
-
-        /* CSS Dinâmico do Botão de Controle de Zoom (Injetado via JS) */
-        #apexia_zoom_btn {
-            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--primary);
-            border-radius: 20px; padding: 3px 10px; font-size: 0.65rem; font-weight: bold; cursor: pointer;
-            display: flex; align-items: center; gap: 4px; margin-left: 10px; transition: 0.2s;
-        }
-        #apexia_zoom_btn:hover { background: rgba(0, 255, 0, 0.1); }
-
-        /* Spinner Universal p/ Botões */
+        /* Spinner Auxiliar Rápido */
         .apexia_spinner {
             display: inline-block; width: 14px; height: 14px; margin-right: 8px;
             border: 2px solid rgba(255,255,255,0.3); border-top-color: #000;
             border-radius: 50%; animation: apexia_spin_btn 0.8s linear infinite; vertical-align: middle;
         }
         @keyframes apexia_spin_btn { to { transform: rotate(360deg); } }
+
+        /* 6) AVATAR COM FUNDO GALÁXIA ANIMADA (CSS puro) */
+        @keyframes apexia_galaxy_bg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .member-card img, #apexia_modal_foto, .apexia_foto_preview {
+            background: linear-gradient(45deg, #000000, #0a1a0a, #003300, #000000);
+            background-size: 400% 400%;
+            animation: apexia_galaxy_bg 8s ease infinite;
+        }
         /* // ===============================
            // FIM NOVA FUNCIONALIDADE
            // =============================== */
@@ -280,663 +280,8 @@
                 <br><a id="apexia_video_banner_link" href="#" target="_blank" style="color:var(--primary); font-weight:bold; text-decoration:none; display:inline-block; margin-top:5px; background:rgba(0,255,0,0.1); padding:5px 15px; border-radius:50px;">ASSISTIR AGORA 🚀</a>
             </div>
 
-            <div id="chat-window"></div>
-            <div id="typingIndicator" style="font-size: 0.6rem; color: var(--primary); padding: 5px 25px; min-height: 20px;"></div>
-            <div class="input-area">
-                <div class="input-wrapper">
-                    <label for="chat-file" style="cursor:pointer; font-size: 1.2rem; z-index: 5;">📎</label>
-                    <input type="file" id="chat-file" style="display:none" onchange="enviarAnexo()">
-                    <input type="text" id="chat-input" placeholder="Mensagem ou link...">
-                    <button class="send-btn" onclick="enviarMensagem()">→</button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- MODAL DE PERFIL DO MEMBRO -->
-    <div id="apexia_member_modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:3000; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-        <div class="modal-box" style="width:90%; max-width:350px; background:#0a0a0a; border:1px solid var(--primary); padding:30px; border-radius:25px; text-align:center; position:relative; box-shadow: 0 10px 30px rgba(0,255,0,0.1);">
-            <button onclick="document.getElementById('apexia_member_modal').style.display='none'" style="position:absolute; top:15px; right:20px; background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
-            <img id="apexia_modal_foto" src="" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--primary); object-fit:cover; margin-bottom:10px;">
-            <h2 id="apexia_modal_nome" style="color:#fff; margin-bottom:5px; font-size:1.2rem;">-</h2>
-            <p id="apexia_modal_bio" style="font-size:0.8rem; color:#aaa; margin-bottom:20px; font-style:italic;">-</p>
-            
-            <div style="text-align:left; background:#111; padding:15px; border-radius:15px; font-size:0.8rem; color:#ccc; margin-bottom:20px; border:1px solid #222;">
-                <p><b>Idade:</b> <span id="apexia_modal_idade">-</span></p>
-                <p style="margin-top:8px;"><b>Nacionalidade:</b> <span id="apexia_modal_nacionalidade">-</span></p>
-                <p style="margin-top:8px;"><b>Interesses:</b> <span id="apexia_modal_interesses">-</span></p>
-            </div>
-            
-            <a id="apexia_modal_wa" href="#" target="_blank" style="display:none; width:100%; padding:14px; background:#25D366; color:#fff; text-decoration:none; border-radius:50px; font-weight:900; font-size:0.8rem;">CHAMAR NO WHATSAPP</a>
-        </div>
-    </div>
-
-    <!-- Lightbox de Imagem -->
-    <div id="apexia_lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:100000; align-items:center; justify-content:center; flex-direction:column; backdrop-filter:blur(5px);" onclick="this.style.display='none'">
-        <img id="apexia_lightbox_img" style="max-width:95%; max-height:80vh; border-radius:15px; border:2px solid var(--primary); object-fit:contain; box-shadow:0 10px 40px #000;">
-        <span style="color:var(--primary); margin-top:20px; font-weight:900; font-size:0.8rem; cursor:pointer; background:rgba(0,255,0,0.1); padding:8px 20px; border-radius:50px;">FECHAR IMAGEM (X)</span>
-    </div>
-
-    <!-- Painel de Emojis -->
-    <div id="apexia_emoji_panel" style="display:none; position:fixed; background:#111; border:1px solid var(--primary); border-radius:30px; padding:10px 15px; gap:15px; z-index:90000; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
-        <span onclick="apexia_addReaction('👍')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">👍</span>
-        <span onclick="apexia_addReaction('❤️')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">❤️</span>
-        <span onclick="apexia_addReaction('😂')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">😂</span>
-        <span onclick="apexia_addReaction('🔥')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🔥</span>
-        <span onclick="apexia_addReaction('🙏')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🙏</span>
-    </div>
-
-    <!-- Notificação SMS Interno -->
-    <div id="apexia_sms_toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -150%); background:rgba(20,20,20,0.95); border-left:4px solid var(--primary); color:#fff; padding:15px 20px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; gap:12px; align-items:center; min-width:300px; max-width:90vw; cursor:pointer;">
-        <span style="font-size:1.8rem;">💬</span>
-        <div style="flex:1;">
-            <b id="apexia_sms_name" style="font-size:0.8rem; color:var(--primary);">Nome</b><br>
-            <span id="apexia_sms_text" style="font-size:0.75rem; color:#ddd; word-break:break-word;">Mensagem</span>
-        </div>
-    </div>
-
-    <script>
-        const ADMIN_PHONE = "244931352915";
-        const firebaseConfig = {
-            apiKey: "AIzaSyBhdI1v1_3ycms26YQdYhy0_GSuuh2ZvJA",
-            authDomain: "comunidade-apexia.firebaseapp.com",
-            projectId: "comunidade-apexia",
-            databaseURL: "https://comunidade-apexia-default-rtdb.firebaseio.com",
-            storageBucket: "comunidade-apexia.firebasestorage.app",
-            messagingSenderId: "668289488372",
-            appId: "1:668289488372:web:cf29801db6489d09a695a1"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        let myProfile = null, base64Proof = "", replyingTo = null;
-        const msgIds = new Set();
-
-        function apexia_toggle_sidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-
-        function salvarPerfil() {
-            const updates = {
-                age: document.getElementById('p-age').value,
-                interests: document.getElementById('p-interests').value,
-                bio: document.getElementById('p-bio').value,
-                nacionalidade: document.getElementById('p-nacionalidade').value,
-                waContato: document.getElementById('p-whatsapp-contato').value
-            };
-            db.ref("users/" + myProfile.id).update(updates).then(() => {
-                alert("Perfil Supremo Atualizado!");
-                document.getElementById('profile-modal').style.display = 'none';
-            });
-        }
-
-        function previewFile() {
-            const file = document.getElementById('reg-photo').files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => { base64Proof = reader.result; document.getElementById('file-label').innerText = "✅ Print Carregado"; };
-            reader.readAsDataURL(file);
-        }
-
-        function irParaLoginRapido() { document.getElementById('onboarding').style.display = 'none'; document.getElementById('returning-login').style.display = 'flex'; }
-
-        function loginRapido() {
-            const wa = document.getElementById('login-whatsapp').value.replace(/\D/g, "");
-            db.ref("users").orderByChild("wa").equalTo(wa).once("value", snap => {
-                if (snap.exists()) {
-                    const uData = Object.values(snap.val())[0];
-                    localStorage.setItem("apexia_user", JSON.stringify(uData));
-                    location.reload();
-                } else { alert("Número não encontrado!"); }
-            });
-        }
-
-        function solicitarAcesso() {
-            const name = document.getElementById('reg-name').value.trim();
-            const channel = document.getElementById('reg-channel').value.trim();
-            const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
-            if (!name || !channel || wa.length < 9) { alert("Dados incompletos!"); return; }
-            const isAdmin = wa === ADMIN_PHONE;
-            if(!isAdmin && !base64Proof) { alert("Anexe o print!"); return; }
-
-            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0, createdAt: Date.now() };
-            
-            db.ref("users/" + user.id).set(user).then(() => {
-                localStorage.setItem("apexia_user", JSON.stringify(user));
-                location.reload();
-            });
-        }
-
-        window.onload = () => {
-            const saved = localStorage.getItem("apexia_user");
-            if (!saved) return;
-            myProfile = JSON.parse(saved);
-
-            db.ref("users/" + myProfile.id).on("value", snap => {
-                const u = snap.val();
-                if (!u) { sair(); return; }
-                myProfile = u;
-                if (u.rejectionReason) {
-                    document.getElementById('waiting-screen').style.display = "flex";
-                    document.getElementById('rejection-alert').style.display = "block";
-                    document.getElementById('rejection-reason').innerText = u.rejectionReason;
-                    return;
-                }
-                if (!u.approved) { document.getElementById('waiting-screen').style.display = "flex"; startTimer(u.createdAt); return; }
-
-                document.getElementById('onboarding').style.display = "none";
-                document.getElementById('app').style.display = "flex";
-                if(myProfile.role === 'admin') {
-                    document.getElementById('admin-btn').style.display = 'block';
-                    ouvirPendentes();
-                }
-                
-                if(document.getElementById('apexia_p_name_input')) {
-                    document.getElementById('apexia_p_name_input').value = myProfile.name || "";
-                }
-
-                iniciarSistema();
-            });
-        };
-
-        function startTimer(created) {
-            const end = created + (24 * 60 * 60 * 1000);
-            setInterval(() => {
-                const diff = end - Date.now();
-                if(diff <= 0) { document.getElementById('timer').innerText = "Processando..."; return; }
-                const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-            }, 1000);
-        }
-
-        function iniciarSistema() { ouvirChat(); setupPresence(); ouvirRanking(); }
-
-        function enviarMensagem() {
-            const input = document.getElementById('chat-input');
-            const text = input.value.trim();
-            if (!text) return;
-            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() });
-            db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
-            input.value = "";
-        }
-
-        function enviarAnexo() {
-            const file = document.getElementById('chat-file').files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: "Enviou uma imagem", attachment: e.target.result, timestamp: Date.now() });
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function ouvirChat() {
-            db.ref("messages").limitToLast(30).on("child_added", snap => {
-                if (msgIds.has(snap.key)) return;
-                msgIds.add(snap.key);
-                const m = snap.val();
-                const win = document.getElementById('chat-window');
-                const isMe = m.senderId === myProfile.id;
-                const div = document.createElement('div');
-                div.className = `msg ${isMe ? 'sent' : 'received'}`;
-                let html = `<b>${m.senderName}</b><br>${m.text}`;
-                if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
-                div.innerHTML = html;
-                win.appendChild(div);
-                win.scrollTop = win.scrollHeight;
-            });
-        }
-
-        function toggleAdminDrawer() { const d = document.getElementById('admin-drawer'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
-
-        function ouvirPendentes() {
-            db.ref("users").on("value", s => {
-                const list = document.getElementById('pending-list'); list.innerHTML = "";
-                s.forEach(child => {
-                    const u = child.val();
-                    if(!u.approved && !u.rejectionReason) {
-                        list.innerHTML += `
-                        <div class="pending-card">
-                            <b>${u.name}</b> (${u.channel})<br>
-                            <img src="${u.proof}" style="width:100%; border-radius:10px;">
-                            <div style="display:flex; gap:10px; margin-top:10px;">
-                                <button onclick="db.ref('users/${u.id}').update({approved:true})" style="flex:1; background:#0f0; border:none; padding:8px; border-radius:5px; font-weight:900; cursor:pointer;">APROVAR</button>
-                                <button onclick="rejeitarComMotivo('${u.id}')" style="flex:1; background:#f00; border:none; padding:8px; border-radius:5px; color:#fff; cursor:pointer;">REJEITAR</button>
-                            </div>
-                        </div>`;
-                    }
-                });
-            });
-        }
-
-        function rejeitarComMotivo(id) {
-            const m = prompt("Motivo da rejeição (será exibido ao usuário):");
-            if(m) db.ref(`users/${id}`).update({ rejectionReason: m });
-        }
-
-        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
-
-        function setupPresence() {
-            const statusRef = db.ref(`status/${myProfile.id}`);
-            db.ref('.info/connected').on('value', snap => {
-                if (snap.val() === true) statusRef.onDisconnect().remove().then(() => statusRef.set({name: myProfile.name, photo: myProfile.photo, channel: myProfile.channel, msgCount: myProfile.msgCount || 0}));
-            });
-            db.ref('status').on('value', snap => {
-                const list = document.getElementById('members-list'); list.innerHTML = "";
-                snap.forEach(c => { const d = c.val(); list.innerHTML += `<div class="member-card"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">online</small></div></div>`; });
-            });
-        }
-
-        function ouvirRanking() {
-            db.ref("users").orderByChild("msgCount").limitToLast(3).on("value", s => {
-                const list = document.getElementById('ranking-list'); list.innerHTML = "";
-                s.forEach(c => { const u = c.val(); list.innerHTML = `<div>⭐ ${u.name} (${u.msgCount || 0} pts)</div>` + list.innerHTML; });
-            });
-        }
-
-        const g = document.getElementById('galaxy');
-        for (let i = 0; i < 40; i++) {
-            const s = document.createElement('div');
-            s.className = 'star';
-            s.style.width = s.style.height = Math.random() * 2 + 'px';
-            s.style.left = Math.random() * 100 + '%';
-            s.style.top = Math.random() * 100 + '%';
-            g.appendChild(s);
-        }
-
-        function apexia_toggleMenuMobile() {
-            apexia_toggle_sidebar();
-            if (document.getElementById('sidebar').classList.contains('open')) {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const sidebar = document.getElementById('sidebar');
-            const isClickInside = sidebar.contains(e.target) || e.target.closest('.apexia_back_btn');
-            if (!isClickInside && sidebar.classList.contains('open') && window.innerWidth <= 768) {
-                sidebar.classList.remove('open');
-            }
-        });
-
-        let apexia_touchStartX = 0;
-        document.addEventListener('touchstart', e => { apexia_touchStartX = e.changedTouches[0].screenX; }, {passive: true});
-        document.addEventListener('touchend', e => {
-            let touchEndX = e.changedTouches[0].screenX;
-            if (apexia_touchStartX - touchEndX > 50 && window.innerWidth <= 768) {
-                document.getElementById('sidebar').classList.remove('open');
-            }
-        });
-
-        function apexia_uploadFotoPerfil(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const base64 = e.target.result;
-                if(myProfile) {
-                    myProfile.photo = base64;
-                    db.ref("users/" + myProfile.id).update({ photo: base64 });
-                    db.ref("status/" + myProfile.id).update({ photo: base64 });
-                    const imgPreview = document.getElementById('apexia_foto_preview_img');
-                    imgPreview.src = base64;
-                    imgPreview.style.display = 'block';
-                    alert("✅ Foto carregada e salva! (O chat refletirá na próxima vez)");
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        document.getElementById('members-list').addEventListener('click', function(e) {
-            const card = e.target.closest('.member-card');
-            if(card) {
-                const name = card.querySelector('b').innerText;
-                apexia_exibirPerfilUsuario(name);
-            }
-        });
-        
-        document.getElementById('ranking-list').addEventListener('click', function(e) {
-            if(e.target.innerText.includes('⭐')) {
-                const rawText = e.target.innerText.split('⭐ ')[1];
-                if(rawText) {
-                    const name = rawText.split(' (')[0];
-                    apexia_exibirPerfilUsuario(name);
-                }
-            }
-        });
-
-        function apexia_exibirPerfilUsuario(name) {
-            db.ref("users").orderByChild("name").equalTo(name).once("value", snap => {
-                if(snap.exists()) {
-                    const u = Object.values(snap.val())[0];
-                    document.getElementById('apexia_modal_foto').src = u.photo || ('https://robohash.org/'+u.name+'.png?set=set4');
-                    document.getElementById('apexia_modal_nome').innerText = u.name;
-                    document.getElementById('apexia_modal_bio').innerText = u.bio || 'Sem biografia fornecida ainda...';
-                    document.getElementById('apexia_modal_idade').innerText = u.age ? u.age + ' anos' : 'Não informado';
-                    document.getElementById('apexia_modal_nacionalidade').innerText = u.nacionalidade || 'Não informado';
-                    document.getElementById('apexia_modal_interesses').innerText = u.interests || 'Nenhum listado';
-                    
-                    const waBtn = document.getElementById('apexia_modal_wa');
-                    if(u.waContato) {
-                        waBtn.style.display = 'inline-block';
-                        waBtn.href = 'https://wa.me/' + u.waContato;
-                    } else {
-                        waBtn.style.display = 'none';
-                    }
-                    document.getElementById('apexia_member_modal').style.display = 'flex';
-                }
-            });
-        }
-
-        let apexia_unread_count = 0;
-        const apexia_initTime = Date.now();
-
-        function apexia_notificacoes() {
-            db.ref("messages").limitToLast(1).on("child_added", snap => {
-                const m = snap.val();
-                if(m.timestamp > apexia_initTime && m.senderId !== (myProfile ? myProfile.id : null)) {
-                    const isMobileSidebarOpen = document.getElementById('sidebar').classList.contains('open');
-                    if (document.hidden || (window.innerWidth <= 768 && isMobileSidebarOpen)) {
-                        apexia_unread_count++;
-                        apexia_updateBadge();
-                    }
-                }
-            });
-
-            document.getElementById('chat-input').addEventListener('focus', () => {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
-            });
-            document.getElementById('chat-window').addEventListener('click', () => {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
-            });
-        }
-
-        function apexia_updateBadge() {
-            const badge = document.getElementById('apexia_notif_badge');
-            if(badge) {
-                badge.style.display = apexia_unread_count > 0 ? 'inline-block' : 'none';
-                badge.innerText = apexia_unread_count;
-            }
-        }
-        
-        setTimeout(apexia_notificacoes, 2000);
-
-        function apexia_novoVideo() {
-            const title = document.getElementById('apexia_video_title').value.trim();
-            const link = document.getElementById('apexia_video_link').value.trim();
-            const desc = document.getElementById('apexia_video_desc').value.trim();
-            
-            if(!title || !link) { alert('Aviso: Preencha o Título e o Link do vídeo!'); return; }
-            
-            db.ref("apexia_videos").push({
-                title: title, 
-                link: link, 
-                desc: desc, 
-                timestamp: Date.now()
-            }).then(() => {
-                alert('Vídeo publicado! Os membros já foram notificados.');
-                document.getElementById('apexia_video_title').value = '';
-                document.getElementById('apexia_video_link').value = '';
-                document.getElementById('apexia_video_desc').value = '';
-            });
-        }
-
-        function apexia_escutarVideos() {
-            db.ref("apexia_videos").limitToLast(1).on("child_added", snap => {
-                const v = snap.val();
-                const banner = document.getElementById('apexia_video_banner');
-                if(banner && v.timestamp > (Date.now() - 86400000)) { 
-                    banner.style.display = 'block';
-                    document.getElementById('apexia_video_banner_title').innerText = v.title;
-                    document.getElementById('apexia_video_banner_link').href = v.link;
-                    const d = new Date(v.timestamp);
-                    document.getElementById('apexia_video_banner_time').innerText = "Hoje " + d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
-                }
-            });
-        }
-        
-        setTimeout(apexia_escutarVideos, 1500);
-
-        const apexia_observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === 1) {
-                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed) {
-                            node.dataset.apexiaProcessed = "true";
-                            const timeSpan = document.createElement('div');
-                            timeSpan.style.cssText = "font-size:0.6rem; opacity:0.5; text-align:right; margin-top:2px; font-weight:normal;";
-                            const now = new Date();
-                            timeSpan.innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
-                            node.appendChild(timeSpan);
-                            
-                            const replyBtn = document.createElement('div');
-                            replyBtn.className = "apexia_action_btn";
-                            replyBtn.innerHTML = '↩️ Responder';
-                            replyBtn.onclick = (e) => {
-                                e.stopPropagation();
-                                const senderNode = node.querySelector('b');
-                                const sender = senderNode ? senderNode.innerText : 'Membro';
-                                const clone = node.cloneNode(true);
-                                const b = clone.querySelector('b'); if(b) b.remove();
-                                const txt = clone.innerText.split('\n')[0].substring(0, 30);
-                                const input = document.getElementById('chat-input');
-                                input.value = `[Resp. ${sender}: "${txt}..."] ` + input.value;
-                                input.focus();
-                            };
-                            node.appendChild(replyBtn);
-                            apexia_setupLongPress(node);
-                        }
-
-                        if (node.classList.contains('member-card') && !node.dataset.apexiaStars) {
-                            node.dataset.apexiaStars = "true";
-                            const nameEl = node.querySelector('b');
-                            if(nameEl) {
-                                const mName = nameEl.innerText;
-                                db.ref("users").orderByChild("name").equalTo(mName).once("value", snap => {
-                                    if(snap.exists()){
-                                        const u = Object.values(snap.val())[0];
-                                        const msgs = u.msgCount || 0;
-                                        let stars = msgs >= 50 ? '🌟🌟🌟 Elite' : (msgs >= 15 ? '⭐⭐ Ativo' : '⭐ Novato');
-                                        const starSpan = document.createElement('span');
-                                        starSpan.innerHTML = `<br><small style="font-size:0.6rem; color:var(--gold); font-weight:bold;">${stars}</small>`;
-                                        nameEl.parentNode.appendChild(starSpan);
-                                    }
-                                });
-                            }
-                        }
-                    }
-                });
-            });
-        });
-        apexia_observer.observe(document.body, { childList: true, subtree: true });
-
-        document.addEventListener('click', (e) => {
-            if(e.target.tagName === 'IMG' && e.target.closest('.msg')) {
-                document.getElementById('apexia_lightbox_img').src = e.target.src;
-                document.getElementById('apexia_lightbox').style.display = 'flex';
-            }
-        });
-
-        let apexia_pressTimer;
-        let apexia_targetNode = null;
-        function apexia_setupLongPress(node) {
-            node.addEventListener('touchstart', (e) => { apexia_pressTimer = setTimeout(() => apexia_showEmojiPanel(e, node), 600); }, {passive:true});
-            node.addEventListener('touchend', () => clearTimeout(apexia_pressTimer));
-            node.addEventListener('mousedown', (e) => { apexia_pressTimer = setTimeout(() => apexia_showEmojiPanel(e, node), 600); });
-            node.addEventListener('mouseup', () => clearTimeout(apexia_pressTimer));
-            node.addEventListener('mouseleave', () => clearTimeout(apexia_pressTimer));
-        }
-
-        function apexia_showEmojiPanel(e, node) {
-            apexia_targetNode = node;
-            const panel = document.getElementById('apexia_emoji_panel');
-            panel.style.display = 'flex';
-            panel.style.top = '50%';
-            panel.style.left = '50%';
-            panel.style.transform = 'translate(-50%, -50%)';
-            if(navigator.vibrate) navigator.vibrate(50);
-        }
-
-        function apexia_addReaction(emoji) {
-            if(apexia_targetNode) {
-                const rSpan = document.createElement('span');
-                rSpan.innerText = emoji;
-                rSpan.style.cssText = "background:rgba(255,255,255,0.1); border-radius:10px; padding:2px 5px; font-size:0.7rem; margin-left:5px;";
-                apexia_targetNode.appendChild(rSpan);
-            }
-            document.getElementById('apexia_emoji_panel').style.display = 'none';
-        }
-
-        document.addEventListener('click', e => {
-            if(!e.target.closest('#apexia_emoji_panel') && !e.target.closest('.msg')) {
-                document.getElementById('apexia_emoji_panel').style.display = 'none';
-            }
-        });
-
-        const btnJoin = document.querySelector('.btn-join');
-        if(btnJoin) {
-            btnJoin.addEventListener('click', function() {
-                const originalTxt = this.innerText;
-                this.innerText = "PROCESSANDO DADOS...";
-                setTimeout(() => { this.innerText = originalTxt; }, 1500);
-            });
-        }
-
-        window.addEventListener('click', function(e) {
-            let btn = e.target.closest('[onclick="sair()"]');
-            if (btn) {
-                let conf = confirm("Ao sair será necessário inserir seu número novamente. Deseja continuar?");
-                if (!conf) {
-                    e.stopImmediatePropagation();
-                    e.stopPropagation();
-                    e.preventDefault();
-                }
-            }
-        }, true);
-
-        document.addEventListener('click', e => {
-            if(e.target.innerText === 'SALVAR ALTERAÇÕES') {
-                const nameInput = document.getElementById('apexia_p_name_input');
-                if(nameInput && nameInput.value.trim() !== '' && myProfile) {
-                    const newName = nameInput.value.trim();
-                    db.ref("users/" + myProfile.id).update({name: newName});
-                    myProfile.name = newName;
-                    localStorage.setItem("apexia_user", JSON.stringify(myProfile));
-                }
-            }
-        });
-
-        let apexia_toast_initTime = Date.now();
-        setTimeout(() => {
-            db.ref("messages").limitToLast(1).on("child_added", snap => {
-                const m = snap.val();
-                if(m.timestamp > apexia_toast_initTime && m.senderId !== (myProfile ? myProfile.id : null)) {
-                    const win = document.getElementById('chat-window');
-                    const isAtBottom = win.scrollHeight - win.scrollTop <= win.clientHeight + 100;
-                    
-                    if(document.hidden || !isAtBottom || (window.innerWidth <= 768 && document.getElementById('sidebar').classList.contains('open'))) {
-                        const toast = document.getElementById('apexia_sms_toast');
-                        document.getElementById('apexia_sms_name').innerText = m.senderName;
-                        document.getElementById('apexia_sms_text').innerText = m.text.substring(0,35) + '...';
-                        
-                        toast.style.transform = 'translate(-50%, 0)';
-                        
-                        toast.onclick = () => {
-                            toast.style.transform = 'translate(-50%, -150%)';
-                            if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
-                            win.scrollTop = win.scrollHeight;
-                        };
-
-                        setTimeout(() => { toast.style.transform = 'translate(-50%, -150%)'; }, 4000);
-                    }
-                }
-            });
-        }, 3000);
-
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: UX e Zoom
-        // ===============================
-
-        // 1) Controle de Zoom do Chat
-        const apexia_zoomNiveis = ['pequeno', 'medio', 'grande'];
-        const apexia_zoomLabels = ['Pequeno', 'Médio', 'Grande'];
-        let apexia_zoomAtual = 1; // Padrão é médio
-
-        function apexia_aplicarZoom(nivelIndex) {
-            const chatWindow = document.getElementById('chat-window');
-            if(!chatWindow) return;
-            
-            chatWindow.classList.remove('apexia_zoom_pequeno', 'apexia_zoom_grande');
-            
-            if(apexia_zoomNiveis[nivelIndex] === 'pequeno') chatWindow.classList.add('apexia_zoom_pequeno');
-            if(apexia_zoomNiveis[nivelIndex] === 'grande') chatWindow.classList.add('apexia_zoom_grande');
-            
-            const label = document.getElementById('apexia_zoom_label');
-            if(label) label.innerText = apexia_zoomLabels[nivelIndex];
-            
-            localStorage.setItem('apexia_zoom_pref', nivelIndex);
-        }
-
-        function apexia_controleZoomChat() {
-            apexia_zoomAtual = (apexia_zoomAtual + 1) % apexia_zoomNiveis.length;
-            apexia_aplicarZoom(apexia_zoomAtual);
-        }
-
-        // Injeta o botão dinamicamente no header para não alterar o HTML fixo e carrega a preferência
-        document.addEventListener('DOMContentLoaded', () => {
-            const headerDiv = document.querySelector('header div');
-            if(headerDiv) {
-                const zoomBtn = document.createElement('button');
-                zoomBtn.id = 'apexia_zoom_btn';
-                zoomBtn.innerHTML = '🔍 <span id="apexia_zoom_label">Médio</span>';
-                zoomBtn.onclick = apexia_controleZoomChat;
-                headerDiv.appendChild(zoomBtn);
-            }
-
-            const salvo = localStorage.getItem('apexia_zoom_pref');
-            if(salvo !== null) {
-                apexia_zoomAtual = parseInt(salvo);
-                apexia_aplicarZoom(apexia_zoomAtual);
-            }
-        });
-
-        // 2) Feedback Visual de Botões (Estado Carregando Paralelo)
-        function apexia_estadoCarregando(botao) {
-            if(botao.dataset.carregando === 'true') return;
-            
-            const textoOriginal = botao.innerHTML;
-            const larguraOriginal = botao.offsetWidth;
-            
-            botao.dataset.carregando = 'true';
-            botao.style.width = larguraOriginal + 'px'; 
-            botao.style.opacity = '0.7';
-            botao.style.cursor = 'wait';
-            botao.innerHTML = '<span class="apexia_spinner"></span> Aguarde...';
-            
-            botao.style.pointerEvents = 'none';
-            document.body.style.cursor = 'wait';
-
-            setTimeout(() => {
-                botao.innerHTML = textoOriginal;
-                botao.style.width = '';
-                botao.style.opacity = '1';
-                botao.style.cursor = 'pointer';
-                botao.style.pointerEvents = 'auto';
-                botao.dataset.carregando = 'false';
-                document.body.style.cursor = 'default';
-            }, 2500);
-        }
-
-        // Intercepta todos os cliques principais (Fase de captura) e aplica o efeito visual de carregamento
-        document.addEventListener('click', (e) => {
-            const botao = e.target.closest('.btn-join') || e.target.closest('button[onclick="loginRapido()"]') || e.target.closest('button[onclick="solicitarAcesso()"]');
-            if(botao && !botao.id.includes('zoom') && !botao.classList.contains('apexia_back_btn')) {
-                apexia_estadoCarregando(botao);
-            }
-        }, true);
-        
-        // ===============================
-        // FIM NOVA FUNCIONALIDADE
-        // ===============================
-    </script>
-</body>
-</html>
+            <!-- // ===============================
+                 // INÍCIO NOVA FUNCIONALIDADE: Container Fixados e Preview Resposta
+                 // =============================== -->
+            <div id="apexia_pin_banner" style="display:none; background:rgba(255,215,0,0.1); border-bottom:1px solid var(--gold); padding:8px 15px; font-size:0.75rem; cursor:pointer;"></div>
+            <!-- // ===============================
