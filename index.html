@@ -22,6 +22,37 @@
         /* --- TELAS --- */
         #onboarding, #waiting-screen, #app, #returning-login { display: none; width: 100%; height: 100dvh; position: fixed; inset: 0; z-index: 100; background: #000; }
 
+        /* // ===== INÍCIO AJUSTE: MELHORIA VISUAL CAMPOS E MODAIS ===== // */
+        input, textarea { 
+            transition: all 0.3s ease !important; 
+            border: 1px solid #333 !important;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.5) !important;
+        }
+        input:focus, textarea:focus { 
+            border-color: var(--primary) !important; 
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.2) !important;
+            background: rgba(0,255,0,0.02) !important;
+        }
+        .apexia_logout_modal {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .apexia_modal_content {
+            background: #0a0a0a; border: 1px solid var(--primary); padding: 30px;
+            border-radius: 25px; text-align: center; width: 90%; max-width: 350px;
+        }
+        .apexia_modal_btns { display: flex; gap: 10px; margin-top: 20px; }
+        .apexia_btn_cancel { flex: 1; padding: 12px; background: #222; color: #fff; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; }
+        .apexia_btn_confirm { flex: 1; padding: 12px; background: #f44; color: #fff; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; }
+        
+        .apexia_progress_bar { width: 100%; height: 6px; background: rgba(255,255,255,0.05); border-radius: 10px; margin: 20px 0; overflow: hidden; }
+        .apexia_progress_fill { width: 45%; height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary); animation: apexia_pulse_loading 2s infinite ease-in-out; }
+        @keyframes apexia_pulse_loading { 0% { opacity: 0.5; width: 30%; } 50% { opacity: 1; width: 60%; } 100% { opacity: 0.5; width: 30%; } }
+        .apexia_support_link { display: inline-flex; align-items: center; gap: 8px; background: #25D366; color: #fff; padding: 12px 24px; border-radius: 50px; text-decoration: none; font-weight: 800; font-size: 0.8rem; margin-top: 15px; transition: 0.3s; }
+        .apexia_back_btn { background: rgba(0,255,0,0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 12px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; display: none; margin-right: 10px; }
+        @media (max-width: 768px) { .apexia_back_btn { display: block; } }
+        /* // ===== FIM AJUSTE ===== // */
+
         /* --- TELA DE ESPERA PROFISSIONAL --- */
         #waiting-screen { flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
         .waiting-card { width: 100%; max-width: 480px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 40px; border-radius: 30px; backdrop-filter: blur(20px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
@@ -71,26 +102,29 @@
         .pending-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 15px; margin-bottom: 15px; }
         .pending-card img { width: 100%; border-radius: 10px; margin: 10px 0; }
 
-        @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
+        /* --- MODAIS ADICIONAIS --- */
+        #profile-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-box { width: 90%; max-width: 400px; background: #0a0a0a; border: 1px solid var(--primary); padding: 30px; border-radius: 25px; text-align: center; }
+        .modal-box input, .modal-box textarea { width: 100%; padding: 12px; margin-top: 10px; background: #000; border: 1px solid #333; color: #fff; border-radius: 10px; outline: none; }
 
-        /* =============================== */
-        /* INÍCIO NOVA FUNCIONALIDADE: CSS EXTRAS */
-        /* =============================== */
-        .apexia_back_btn { display: none; background: rgba(0,255,0,0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 12px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer; margin-right: 15px; }
-        @media (max-width: 768px) { .apexia_back_btn { display: inline-block; } }
-        .apexia_notif_badge { background: #ff4444; color: #fff; border-radius: 50%; padding: 2px 6px; font-size: 0.6rem; font-weight: 900; position: absolute; top: -5px; right: -5px; border: 2px solid #000; display: none; }
-        #apexia_video_banner { display: none; background: linear-gradient(90deg, rgba(0,255,0,0.15), transparent); border-bottom: 1px solid var(--primary); padding: 10px; text-align: center; color: var(--primary); font-size: 0.75rem; font-weight: 800; cursor: pointer; position: sticky; top: 0; z-index: 20; }
-        .apexia_modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 5000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-        .apexia_profile_view_card { width: 90%; max-width: 380px; background: #0a0a0a; border: 1px solid var(--primary); border-radius: 30px; padding: 30px; text-align: center; }
-        .apexia_profile_view_card img { width: 100px; height: 100px; border-radius: 50%; border: 2px solid var(--primary); margin-bottom: 15px; object-fit: cover; }
-        #apexia_input_foto_container { margin-top: 10px; border: 1px dashed #333; padding: 10px; border-radius: 10px; font-size: 0.7rem; }
-        /* =============================== */
-        /* FIM NOVA FUNCIONALIDADE */
-        /* =============================== */
+        @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
     </style>
 </head>
 <body>
     <div id="galaxy"></div>
+
+    <!-- // ===== INÍCIO AJUSTE: MODAL LOGOUT ===== // -->
+    <div id="apexia_logout_confirm" class="apexia_logout_modal">
+        <div class="apexia_modal_content">
+            <h2 style="color:var(--primary); margin-bottom:10px;">Sair do Sistema?</h2>
+            <p style="font-size:0.9rem; opacity:0.6;">Você precisará validar seu número para entrar novamente.</p>
+            <div class="apexia_modal_btns">
+                <button class="apexia_btn_cancel" onclick="document.getElementById('apexia_logout_confirm').style.display='none'">CANCELAR</button>
+                <button class="apexia_btn_confirm" onclick="sair()">SIM, SAIR</button>
+            </div>
+        </div>
+    </div>
+    <!-- // ===== FIM AJUSTE ===== // -->
 
     <!-- TELA REGISTRO -->
     <div id="onboarding" style="display: flex; align-items: center; justify-content: center;">
@@ -98,13 +132,15 @@
             <img src="https://apexia-oficcial.github.io/ApexIA/canalapexia.png" style="width:70px; margin-bottom:15px; border-radius:50%; border:2px solid var(--primary);">
             <h2 style="margin-bottom: 10px;">QG <span>APEXIA</span></h2>
             <p style="color:#666; font-size:0.75rem; margin-bottom:20px;">Exclusivo para membros reais.</p>
-            <input type="text" id="reg-name" placeholder="Seu Nome" style="width:100%; padding:15px; margin-bottom:10px; background:#000; border:1px solid #222; border-radius:10px; color:#fff;">
-            <input type="text" id="reg-channel" placeholder="Nome do seu Canal" style="width:100%; padding:15px; margin-bottom:10px; background:#000; border:1px solid #222; border-radius:10px; color:#fff;">
-            <input type="tel" id="reg-whatsapp" placeholder="Seu WhatsApp" style="width:100%; padding:15px; margin-bottom:10px; background:#000; border:1px solid #222; border-radius:10px; color:#fff;">
+            <input type="text" id="reg-name" placeholder="Seu Nome">
+            <input type="text" id="reg-channel" placeholder="Nome do seu Canal">
+            <input type="tel" id="reg-whatsapp" placeholder="WhatsApp (ex: 244...)">
             <label for="reg-photo" style="display:block; padding:15px; background:#111; border:1px dashed #444; border-radius:10px; cursor:pointer; margin-bottom:15px; font-size:0.8rem; color:#888;" id="file-label">Anexar Print de Membro</label>
             <input type="file" id="reg-photo" accept="image/*" style="display:none" onchange="previewFile()">
             <button class="btn-join" onclick="solicitarAcesso()" style="width:100%; padding:16px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:50px; cursor:pointer;">SOLICITAR ACESSO</button>
-            <p onclick="irParaLoginRapido()" style="margin-top:20px; font-size:0.7rem; color:var(--primary); cursor:pointer;">Já é membro aprovado? Clique aqui</p>
+            <!-- // ===== INÍCIO AJUSTE: BOTÃO JÁ É MEMBRO ===== // -->
+            <p onclick="irParaLoginRapido()" style="margin-top:20px; font-size:0.75rem; color:var(--primary); cursor:pointer; font-weight:800; text-decoration: underline;">JÁ É MEMBRO? CLIQUE AQUI</p>
+            <!-- // ===== FIM AJUSTE ===== // -->
         </div>
     </div>
 
@@ -113,22 +149,41 @@
         <div class="form-box" style="text-align: center; max-width: 400px; padding: 40px; background: #0a0a0a; border-radius: 30px; border: 1px solid var(--border);">
             <h2>RECONECTAR <span>QG</span></h2>
             <p style="color:#666; font-size:0.75rem; margin-bottom:25px;">Digite seu número cadastrado.</p>
-            <input type="tel" id="login-whatsapp" placeholder="WhatsApp" style="width:100%; padding:15px; margin-bottom:15px; background:#000; border:1px solid #222; border-radius:10px; color:#fff;">
+            <input type="tel" id="login-whatsapp" placeholder="WhatsApp">
             <button class="btn-join" onclick="loginRapido()" style="width:100%; padding:16px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:50px; cursor:pointer;">ENTRAR NO CHAT</button>
             <p onclick="location.reload()" style="margin-top:20px; font-size:0.7rem; color:#444; cursor:pointer;">Voltar ao cadastro</p>
         </div>
     </div>
 
-    <!-- TELA ESPERA -->
+    <!-- TELA ESPERA REFORMULADA -->
     <div id="waiting-screen">
         <div class="waiting-card">
+            <!-- // ===== INÍCIO AJUSTE: UI ESPERA MELHORADA ===== // -->
             <div class="loader-ring"></div>
-            <h2>HUB DE <span style="color:var(--primary)">APROVAÇÃO</span></h2>
+            <h2 style="font-weight: 900; letter-spacing: -1px;">AUDITORIA DE <span style="color:var(--primary)">MEMBRO</span></h2>
+            <p style="color: #ccc; font-size: 0.9rem; margin-top: 15px; line-height: 1.6;">
+                Estamos analisando seu pedido com atenção para manter a exclusividade do grupo.
+            </p>
+            
+            <div class="apexia_progress_bar"><div class="apexia_progress_fill"></div></div>
+
             <div class="countdown" id="timer">24:00:00</div>
-            <p id="waiting-status" style="color: #aaa; font-size: 0.9rem;">Auditando seu comprovante. Aguarde...</p>
-            <div id="rejection-alert"><b>PEDIDO RECUSADO:</b><br><span id="rejection-reason">---</span></div>
-            <button onclick="window.open('https://wa.me/244931352915')" style="margin-top: 30px; background: #25D366; color:#fff; padding:12px; width:100%; border-radius:50px; border:none; font-weight:900; cursor:pointer;">SUPORTE WHATSAPP</button>
-            <button onclick="sair()" style="margin-top:15px; background:none; border:none; color:#444; text-decoration:underline; cursor:pointer;">Sair do Sistema</button>
+            
+            <p style="color: #666; font-size: 0.8rem; margin-bottom: 20px;">
+                O prazo médio de aprovação é de <b>24 horas</b>. <br>
+                Em períodos de alta demanda, pode levar até 48h.
+            </p>
+
+            <div id="rejection-alert">
+                <b style="color:#ff4444">ACESSO NEGADO:</b><br>
+                <span id="rejection-reason" style="font-size: 0.85rem; color: #fff;">---</span>
+            </div>
+
+            <a href="https://wa.me/244931352915?text=Olá, solicitei acesso à Comunidade ApexiA e gostaria de agilizar minha aprovação." target="_blank" class="apexia_support_link">
+                FALAR COM GESTOR NO WHATSAPP
+            </a>
+            <!-- // ===== FIM AJUSTE ===== // -->
+            <button onclick="apexia_confirmarSaida()" style="margin-top:25px; background:none; border:none; color:#333; text-decoration:underline; cursor:pointer; font-size: 0.7rem;">Sair e Voltar</button>
         </div>
     </div>
 
@@ -136,58 +191,8 @@
     <div id="admin-drawer">
         <h3 style="color:var(--primary); font-weight:900; margin-bottom:20px;">GESTÃO DE ACESSOS</h3>
         <div id="pending-list"></div>
-        <!-- // =============================== -->
-        <!-- // INÍCIO NOVA FUNCIONALIDADE: ÁREA VÍDEO ADMIN -->
-        <!-- // =============================== -->
-        <div style="border-top: 1px solid #222; margin-top: 20px; padding-top: 20px;">
-            <b style="font-size:0.7rem; color:var(--primary);">ANUNCIAR VÍDEO NO CANAL</b>
-            <input type="text" id="apexia_v_title" placeholder="Título" style="width:100%; padding:8px; margin-top:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <input type="text" id="apexia_v_link" placeholder="Link YouTube" style="width:100%; padding:8px; margin-top:5px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <textarea id="apexia_v_desc" placeholder="Resumo" style="width:100%; padding:8px; margin-top:5px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
-            <button onclick="apexia_novoVideo()" style="width:100%; background:var(--primary); color:#000; padding:10px; margin-top:10px; border:none; border-radius:8px; font-weight:900; cursor:pointer;">PUBLICAR ANÚNCIO</button>
-        </div>
-        <!-- // =============================== -->
-        <!-- // FIM NOVA FUNCIONALIDADE -->
-        <!-- // =============================== -->
-        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer; margin-top:20px;">FECHAR PAINEL</button>
+        <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR PAINEL</button>
     </div>
-
-    <!-- =============================== -->
-    <!-- INÍCIO NOVA FUNCIONALIDADE: MODAIS PERFIL -->
-    <!-- =============================== -->
-    <div id="apexia_profile_viewer" class="apexia_modal" onclick="if(event.target==this)this.style.display='none'">
-        <div class="apexia_profile_view_card">
-            <img id="apexia_v_img" src="">
-            <h2 id="apexia_v_name"></h2>
-            <p id="apexia_v_channel" style="font-size:0.8rem; opacity:0.5; margin-bottom:15px;"></p>
-            <div style="text-align:left; background:rgba(255,255,255,0.05); padding:15px; border-radius:15px; font-size:0.8rem;">
-                <p><b>Idade:</b> <span id="apexia_v_age">---</span></p>
-                <p><b>Nacionalidade:</b> <span id="apexia_v_nat">---</span></p>
-                <p><b>Interesses:</b> <span id="apexia_v_int">---</span></p>
-                <p style="margin-top:10px;"><b>Bio:</b> <span id="apexia_v_bio">---</span></p>
-            </div>
-            <div id="apexia_v_wa_box" style="margin-top:20px;"></div>
-        </div>
-    </div>
-
-    <div id="apexia_my_profile_modal" class="apexia_modal">
-        <div class="apexia_profile_view_card">
-            <h2 style="color:var(--primary)">EDITAR PERFIL</h2>
-            <div id="apexia_input_foto_container">
-                <label style="display:block; margin-bottom:5px;">Foto Personalizada</label>
-                <input type="file" accept="image/*" onchange="apexia_uploadFotoPerfil(this)" style="font-size:0.6rem;">
-            </div>
-            <input type="number" id="apexia_my_age" placeholder="Sua Idade">
-            <input type="text" id="apexia_my_nat" placeholder="Sua Nacionalidade">
-            <input type="text" id="apexia_my_int" placeholder="Interesses">
-            <textarea id="apexia_my_bio" placeholder="Sua biografia..."></textarea>
-            <button onclick="apexia_salvarMeuPerfil()" class="btn-join" style="width:100%">SALVAR</button>
-            <p onclick="document.getElementById('apexia_my_profile_modal').style.display='none'" style="margin-top:15px; cursor:pointer; opacity:0.5; font-size:0.8rem;">Cancelar</p>
-        </div>
-    </div>
-    <!-- =============================== -->
-    <!-- FIM NOVA FUNCIONALIDADE -->
-    <!-- =============================== -->
 
     <!-- APP -->
     <div id="app">
@@ -198,24 +203,17 @@
             </div>
             <div id="members-list"></div>
             <div style="padding:20px; border-top:1px solid var(--border);">
-                <button onclick="document.getElementById('apexia_my_profile_modal').style.display='flex'" style="width:100%; padding:10px; background:#111; color:var(--primary); border:1px solid var(--primary); border-radius:10px; margin-bottom:10px; font-weight:900; cursor:pointer;">MEU PERFIL</button>
                 <button onclick="toggleAdminDrawer()" id="admin-btn" style="display:none; width:100%; padding:10px; background:var(--primary); color:#000; font-weight:900; border:none; border-radius:10px; margin-bottom:10px;">PAINEL GESTÃO</button>
-                <button onclick="sair()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">DESCONECTAR SISTEMA</button>
+                <button onclick="document.getElementById('profile-modal').style.display='flex'" style="width:100%; padding:10px; background:#111; color:var(--primary); border:1px solid var(--primary); border-radius:10px; margin-bottom:10px; font-weight:900; cursor:pointer;">MEU PERFIL</button>
+                <button onclick="apexia_confirmarSaida()" style="color:#555; background:none; border:none; font-size:0.7rem; font-weight:800; cursor:pointer;">DESCONECTAR SISTEMA</button>
             </div>
         </nav>
         <main id="chat-area">
-            <!-- // =============================== -->
-            <!-- // INÍCIO NOVA FUNCIONALIDADE: BANNER VÍDEO -->
-            <!-- // =============================== -->
-            <div id="apexia_video_banner" onclick="">🎥 NOVO VÍDEO DISPONÍVEL! CLIQUE PARA VER</div>
-            <!-- // =============================== -->
-            <!-- // FIM NOVA FUNCIONALIDADE -->
-            <!-- // =============================== -->
             <header>
-                <div style="display:flex; align-items:center;">
-                    <button class="apexia_back_btn" onclick="apexia_voltarConversa()">← VOLTAR</button>
-                    <div style="font-weight:900; font-size:0.8rem;">QG APEXIA ELITE</div>
-                </div>
+                <!-- // ===== INÍCIO AJUSTE: TOGGLE MENU MOBILE ===== // -->
+                <button onclick="apexia_toggle_sidebar()" style="background:none; border:none; color:var(--primary); font-size:1.5rem;">☰</button>
+                <!-- // ===== FIM AJUSTE ===== // -->
+                <div style="font-weight:900; font-size:0.8rem;">QG APEXIA ELITE</div>
                 <button onclick="window.location.href='https://apexia-oficcial.github.io/ApexIA/'" style="background:none; border:none; color:var(--primary); font-size:0.7rem; font-weight:800;">← HUB</button>
             </header>
             <div id="chat-window"></div>
@@ -229,6 +227,22 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- MODAL PERFIL -->
+    <div id="profile-modal">
+        <div class="modal-box">
+            <h2>Meu Perfil <span>Elite</span></h2>
+            <!-- // ===== INÍCIO AJUSTE: CAMPOS EXTRAS PERFIL ===== // -->
+            <input type="text" id="p-nacionalidade" placeholder="Sua Nacionalidade">
+            <input type="number" id="p-age" placeholder="Sua Idade">
+            <input type="text" id="p-interests" placeholder="Interesses (ex: Games, Marketing)">
+            <input type="tel" id="p-whatsapp-contato" placeholder="WhatsApp de Contato (Opcional)">
+            <textarea id="p-bio" rows="4" placeholder="Sua biografia supremo..."></textarea>
+            <button class="btn-join" style="width:100%;" onclick="salvarPerfil()">SALVAR ALTERAÇÕES</button>
+            <!-- // ===== FIM AJUSTE ===== // -->
+            <p onclick="document.getElementById('profile-modal').style.display='none'" style="margin-top:15px; font-size:0.8rem; cursor:pointer; color:#555;">Voltar</p>
+        </div>
     </div>
 
     <script>
@@ -247,90 +261,45 @@
         const db = firebase.database();
         let myProfile = null;
         let base64Proof = "";
-        let replyingTo = null;
-        const msgIds = new Set();
 
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: LÓGICA GERAL
-        // ===============================
-        let apexia_unread = 0;
-        let apexia_temp_photo = "";
-
-        function apexia_voltarConversa() {
-            document.getElementById('sidebar').classList.add('open');
-            apexia_unread = 0;
-            document.title = "ApexiA HQ";
+        // // ===== INÍCIO AJUSTE: FUNÇÕES UX E PERSISTÊNCIA ===== // //
+        function apexia_toggle_sidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
         }
 
-        function apexia_uploadFotoPerfil(input) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => { apexia_temp_photo = reader.result; alert("Foto preparada!"); };
-            if (file) reader.readAsDataURL(file);
+        function apexia_confirmarSaida() {
+            document.getElementById('apexia_logout_confirm').style.display = 'flex';
         }
 
-        function apexia_salvarMeuPerfil() {
-            const up = {
-                age: document.getElementById('apexia_my_age').value,
-                nat: document.getElementById('apexia_my_nat').value,
-                interests: document.getElementById('apexia_my_int').value,
-                bio: document.getElementById('apexia_my_bio').value
+        function salvarPerfil() {
+            const updates = {
+                age: document.getElementById('p-age').value,
+                interests: document.getElementById('p-interests').value,
+                bio: document.getElementById('p-bio').value,
+                nacionalidade: document.getElementById('p-nacionalidade').value || "",
+                waContato: document.getElementById('p-whatsapp-contato').value || ""
             };
-            if(apexia_temp_photo) up.photo = apexia_temp_photo;
-            db.ref("users/" + myProfile.id).update(up).then(() => {
-                alert("Perfil Atualizado!");
-                location.reload();
+            db.ref("users/" + myProfile.id).update(updates).then(() => {
+                // Atualiza localmente e na interface
+                myProfile = {...myProfile, ...updates};
+                localStorage.setItem("apexia_user", JSON.stringify(myProfile));
+                alert("Perfil Supremo Atualizado!");
+                document.getElementById('profile-modal').style.display = 'none';
             });
         }
-
-        function apexia_exibirPerfilUsuario(uid) {
-            db.ref("users/" + uid).once("value", s => {
-                const u = s.val();
-                if(!u) return;
-                document.getElementById('apexia_v_img').src = u.photo;
-                document.getElementById('apexia_v_name').innerText = u.name;
-                document.getElementById('apexia_v_channel').innerText = u.channel;
-                document.getElementById('apexia_v_age').innerText = u.age || "---";
-                document.getElementById('apexia_v_nat').innerText = u.nat || "---";
-                document.getElementById('apexia_v_int').innerText = u.interests || "---";
-                document.getElementById('apexia_v_bio').innerText = u.bio || "Membro Elite.";
-                document.getElementById('apexia_v_wa_box').innerHTML = `<button onclick="window.open('https://wa.me/${u.wa.replace(/\D/g,'')}')" style="width:100%; background:#25D366; color:#fff; border:none; padding:12px; border-radius:50px; font-weight:900; cursor:pointer;">WHATSAPP PRIVADO</button>`;
-                document.getElementById('apexia_profile_viewer').style.display = 'flex';
-            });
-        }
-
-        function apexia_novoVideo() {
-            const title = document.getElementById('apexia_v_title').value;
-            const link = document.getElementById('apexia_v_link').value;
-            const desc = document.getElementById('apexia_v_desc').value;
-            if(!title || !link) return alert("Título e Link necessários!");
-            db.ref("apexia_announcements/video").set({ title, link, desc }).then(() => {
-                alert("Publicado!");
-                toggleAdminDrawer();
-            });
-        }
-        // ===============================
-        // FIM NOVA FUNCIONALIDADE
-        // ===============================
+        // // ===== FIM AJUSTE ===== // //
 
         function previewFile() {
             const file = document.getElementById('reg-photo').files[0];
             const reader = new FileReader();
-            reader.onloadend = () => { base64Proof = reader.result; document.getElementById('file-label').innerText = "✅ Print Carregado"; };
+            reader.onloadend = () => { 
+                base64Proof = reader.result; 
+                document.getElementById('file-label').innerText = "✅ Print Carregado";
+            };
             reader.readAsDataURL(file);
         }
 
-        function solicitarAcesso() {
-            const name = document.getElementById('reg-name').value.trim();
-            const channel = document.getElementById('reg-channel').value.trim();
-            const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
-            if (!name || !channel || wa.length < 9) { alert("Preencha tudo corretamente!"); return; }
-            const isAdmin = wa === ADMIN_PHONE;
-            if(!isAdmin && !base64Proof) { alert("Anexe o print!"); return; }
-
-            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0, createdAt: Date.now() };
-            db.ref("users/" + user.id).set(user).then(() => { localStorage.setItem("apexia_user", JSON.stringify(user)); location.reload(); });
-        }
+        function irParaLoginRapido() { document.getElementById('onboarding').style.display = 'none'; document.getElementById('returning-login').style.display = 'flex'; }
 
         function loginRapido() {
             const wa = document.getElementById('login-whatsapp').value.replace(/\D/g, "");
@@ -343,57 +312,72 @@
             });
         }
 
+        function solicitarAcesso() {
+            const name = document.getElementById('reg-name').value.trim();
+            const channel = document.getElementById('reg-channel').value.trim();
+            const wa = document.getElementById('reg-whatsapp').value.replace(/\D/g, "");
+            if (!name || !channel || wa.length < 9) { alert("Dados incompletos!"); return; }
+            const isAdmin = wa === ADMIN_PHONE;
+            if(!isAdmin && !base64Proof) { alert("Anexe o print!"); return; }
+
+            const user = { id: "u"+Date.now(), name, channel, wa, photo: `https://robohash.org/${name}.png?set=set4`, proof: base64Proof, approved: isAdmin, role: isAdmin?'admin':'member', msgCount: 0, createdAt: Date.now() };
+            db.ref("users/" + user.id).set(user).then(() => { localStorage.setItem("apexia_user", JSON.stringify(user)); location.reload(); });
+        }
+
         window.onload = () => {
             const saved = localStorage.getItem("apexia_user");
-            if (!saved) return;
-            myProfile = JSON.parse(saved);
+            if (!saved) { 
+                document.getElementById('onboarding').style.display="flex"; 
+            } else {
+                const localUser = JSON.parse(saved);
+                // // ===== INÍCIO AJUSTE: PERSISTÊNCIA REAL DO BANCO ===== // //
+                db.ref("users/" + localUser.id).on("value", snap => {
+                    const u = snap.val();
+                    if (!u) { sair(); return; }
+                    myProfile = u;
+                    
+                    if (u.rejectionReason) {
+                        document.getElementById('onboarding').style.display = "none";
+                        document.getElementById('waiting-screen').style.display = "flex";
+                        document.getElementById('rejection-alert').style.display = "block";
+                        document.getElementById('rejection-reason').innerText = u.rejectionReason;
+                        return;
+                    }
+                    if (!u.approved) { 
+                        document.getElementById('onboarding').style.display = "none";
+                        document.getElementById('waiting-screen').style.display = "flex"; 
+                        startTimer(u.createdAt);
+                    } else {
+                        document.getElementById('onboarding').style.display = "none";
+                        document.getElementById('waiting-screen').style.display = "none";
+                        document.getElementById('app').style.display = "flex";
+                        if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
+                        
+                        // Preenche campos do modal com dados do banco
+                        document.getElementById('p-age').value = u.age || "";
+                        document.getElementById('p-interests').value = u.interests || "";
+                        document.getElementById('p-bio').value = u.bio || "";
+                        document.getElementById('p-nacionalidade').value = u.nacionalidade || "";
+                        document.getElementById('p-whatsapp-contato').value = u.waContato || "";
 
-            db.ref("users/" + myProfile.id).on("value", snap => {
-                const u = snap.val();
-                if (!u) { sair(); return; }
-                myProfile = u;
-                if (u.rejectionReason) {
-                    document.getElementById('waiting-screen').style.display = "flex";
-                    document.getElementById('rejection-alert').style.display = "block";
-                    document.getElementById('rejection-reason').innerText = u.rejectionReason;
-                    return;
-                }
-                if (!u.approved) { document.getElementById('waiting-screen').style.display = "flex"; startTimer(u.createdAt); return; }
-
-                document.getElementById('onboarding').style.display = "none";
-                document.getElementById('app').style.display = "flex";
-                if(myProfile.role === 'admin') document.getElementById('admin-btn').style.display = 'block';
-                iniciarSistema();
-            });
-
-            // ===============================
-            // INÍCIO NOVA FUNCIONALIDADE: OUVINTES
-            // ===============================
-            db.ref("apexia_announcements/video").on("value", s => {
-                const v = s.val();
-                if(v) {
-                    const banner = document.getElementById('apexia_video_banner');
-                    banner.style.display = 'block';
-                    banner.innerHTML = `🎥 <b>NOVO VÍDEO:</b> ${v.title} (Clique para assistir)`;
-                    banner.onclick = () => window.open(v.link, '_blank');
-                }
-            });
-            // ===============================
-            // FIM NOVA FUNCIONALIDADE
-            // ===============================
+                        iniciarSistema();
+                    }
+                });
+                // // ===== FIM AJUSTE ===== // //
+            }
         };
 
         function startTimer(created) {
             const end = created + (24 * 60 * 60 * 1000);
             setInterval(() => {
                 const diff = end - Date.now();
-                if(diff <= 0) { document.getElementById('timer').innerText = "00:00:00"; return; }
+                if(diff <= 0) { document.getElementById('timer').innerText = "Processando..."; return; }
                 const h = Math.floor(diff / 3600000), m = Math.floor((diff % 3600000) / 60000), s = Math.floor((diff % 60000) / 1000);
                 document.getElementById('timer').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
             }, 1000);
         }
 
-        function iniciarSistema() { ouvirChat(); setupPresence(); ouvirRanking(); }
+        function iniciarSistema() { ouvirChat(); setupPresence(); ouvirRanking(); if(myProfile.role === 'admin') ouvirPendentes(); }
 
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
@@ -415,29 +399,20 @@
 
         function ouvirChat() {
             db.ref("messages").limitToLast(30).on("child_added", snap => {
-                if (msgIds.has(snap.key)) return;
-                msgIds.add(snap.key);
                 const m = snap.val();
                 const win = document.getElementById('chat-window');
+                const isMe = m.senderId === myProfile.id;
                 const div = document.createElement('div');
-                div.className = `msg ${m.senderId === myProfile.id ? 'sent' : 'received'}`;
+                div.className = `msg ${isMe ? 'sent' : 'received'}`;
                 let html = `<b>${m.senderName}</b><br>${m.text}`;
                 if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
                 div.innerHTML = html;
                 win.appendChild(div);
                 win.scrollTop = win.scrollHeight;
-                
-                // Notificações Push
-                if(m.senderId !== myProfile.id && document.hidden) {
-                    if(Notification.permission === "granted") {
-                        new Notification("ApexiA Community", {body: `${m.senderName}: ${m.text}`});
-                    }
-                }
             });
         }
 
         function toggleAdminDrawer() { const d = document.getElementById('admin-drawer'); d.style.display = d.style.display === 'block' ? 'none' : 'block'; }
-        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
 
         function ouvirPendentes() {
             db.ref("users").on("value", s => {
@@ -452,6 +427,7 @@
         }
 
         function rejeitar(id) { const m = prompt("Motivo:"); if(m) db.ref(`users/${id}`).update({ rejectionReason: m }); }
+        function sair() { localStorage.removeItem("apexia_user"); location.reload(); }
 
         function setupPresence() {
             const statusRef = db.ref(`status/${myProfile.id}`);
@@ -460,26 +436,18 @@
             });
             db.ref('status').on('value', snap => {
                 const list = document.getElementById('members-list'); list.innerHTML = "";
-                snap.forEach(c => { 
-                    const d = c.val(); 
-                    // ===============================
-                    // INÍCIO NOVA FUNCIONALIDADE: CLIQUE MEMBRO
-                    // ===============================
-                    list.innerHTML += `<div class="member-card" onclick="apexia_exibirPerfilUsuario('${c.key}')" style="cursor:pointer;"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">online</small></div></div>`;
-                    // ===============================
-                    // FIM NOVA FUNCIONALIDADE
-                    // ===============================
-                });
+                snap.forEach(c => { const d = c.val(); list.innerHTML += `<div class="member-card"><img src="${d.photo}"> <div><b>${d.name}</b><br><small style="opacity:0.4">online</small></div></div>`; });
             });
         }
 
         function ouvirRanking() {
             db.ref("users").orderByChild("msgCount").limitToLast(3).on("value", s => {
                 const list = document.getElementById('ranking-list'); list.innerHTML = "";
-                s.forEach(c => { const u = c.val(); list.innerHTML = `<div>⭐ ${u.name} (${u.msgCount || 0})</div>` + list.innerHTML; });
+                s.forEach(c => { const u = c.val(); list.innerHTML = `<div>⭐ ${u.name} (${u.msgCount || 0} pts)</div>` + list.innerHTML; });
             });
         }
 
+        // Estrelas de fundo
         const g = document.getElementById('galaxy');
         for (let i = 0; i < 40; i++) {
             const s = document.createElement('div');
@@ -489,6 +457,7 @@
             s.style.top = Math.random() * 100 + '%';
             g.appendChild(s);
         }
+        document.getElementById('chat-input').addEventListener('keypress', e => { if(e.key === 'Enter') enviarMensagem(); });
     </script>
 </body>
 </html>
