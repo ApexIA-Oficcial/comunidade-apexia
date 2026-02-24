@@ -1,3 +1,5 @@
+--- START OF FILE Paste February 24, 2026 - 6:17PM ---
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -177,8 +179,7 @@
         .apexia_pin_close_btn { display: none; align-self: flex-end; background: rgba(255,0,0,0.1); color: #ff4444; border: 1px solid #ff4444; padding: 6px 16px; border-radius: 8px; margin-top: 15px; font-weight: bold; font-size: 0.7rem; }
         .apexia_pin_expanded .apexia_pin_close_btn { display: block !important; }
         /* // ===============================
-           // FIM NOVA FUNCIONALIDADE
-           // =============================== */
+           // FIM NOVA FUNCIONALIDADE // */
     </style>
 </head>
 <body>
@@ -376,11 +377,11 @@
     </div>
 
     <div id="apexia_emoji_panel" style="display:none; position:fixed; background:#111; border:1px solid var(--primary); border-radius:30px; padding:10px 15px; gap:15px; z-index:90000; box-shadow:0 10px 30px rgba(0,0,0,0.8);">
-        <span onclick="apexia_addReaction('👍')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">👍</span>
-        <span onclick="apexia_addReaction('❤️')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">❤️</span>
         <span onclick="apexia_addReaction('😂')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">😂</span>
+        <span onclick="apexia_addReaction('😢')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">😢</span>
+        <span onclick="apexia_addReaction('❤️')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">❤️</span>
+        <span onclick="apexia_addReaction('👍')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">👍</span>
         <span onclick="apexia_addReaction('🔥')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🔥</span>
-        <span onclick="apexia_addReaction('🙏')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🙏</span>
     </div>
 
     <div id="apexia_sms_toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -150%); background:rgba(20,20,20,0.95); border-left:4px solid var(--primary); color:#fff; padding:15px 20px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; gap:12px; align-items:center; min-width:300px; max-width:90vw; cursor:pointer;">
@@ -1159,6 +1160,101 @@
             });
         });
         apexia_observer.observe(document.body, { childList: true, subtree: true });
+
+        // ===============================
+        // FIM NOVA FUNCIONALIDADE
+        // ===============================
+
+        // ===============================
+        // INÍCIO NOVA FUNCIONALIDADE: MÓDULOS DE CORREÇÃO (RESPOSTA, EMOJIS, DATA/HORA, ADMIN)
+        // ===============================
+
+        function apexia_responderComentario(usuarioMensagem, mensagemReferenciada) {
+            apexia_abrirPreviewResposta(usuarioMensagem, mensagemReferenciada);
+        }
+
+        function apexia_exibirEmojis(mensagemId) {
+            const node = document.querySelector(`.msg[data-key="${mensagemId}"]`);
+            if(node) apexia_showEmojiPanel({ target: node }, node);
+        }
+
+        function apexia_formatarDataHora(timestamp) {
+            const d = new Date(timestamp);
+            const dia = d.getDate().toString().padStart(2, '0');
+            const mes = (d.getMonth() + 1).toString().padStart(2, '0');
+            const ano = d.getFullYear();
+            const hora = d.getHours().toString().padStart(2, '0');
+            const min = d.getMinutes().toString().padStart(2, '0');
+            return `${dia}/${mes}/${ano} às ${hora}:${min}`;
+        }
+
+        function apexia_verificarAdmin(usuario) {
+            if (!usuario) return false;
+            return usuario.wa === ADMIN_PHONE;
+        }
+
+        // Script de Auto-Correção Visual (Enforça Admin Exclusivo e Data/Hora Real)
+        const apexia_fix_observer = new MutationObserver((mutations) => {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.classList.contains('msg')) {
+                        const key = node.dataset.key;
+                        if(key) {
+                            db.ref("messages/" + key).once("value", snap => {
+                                const data = snap.val();
+                                if(!data) return;
+                                
+                                // 1. Correção Data e Hora
+                                let timeDiv = node.querySelector('div[style*="font-size:0.55rem"]');
+                                if(timeDiv) {
+                                    timeDiv.innerText = apexia_formatarDataHora(data.timestamp);
+                                    timeDiv.style.opacity = "0.7";
+                                }
+
+                                // 2. Enforçar Admin Exclusivo (Selo Dourado)
+                                const bTag = node.querySelector('b');
+                                if(bTag) {
+                                    const isAdminReal = (data.senderId === myProfile?.id && apexia_verificarAdmin(myProfile)) || (data.wa === ADMIN_PHONE);
+                                    const existingBadge = bTag.querySelector('.apexia_admin_badge');
+                                    
+                                    if(existingBadge && !isAdminReal) {
+                                        existingBadge.remove(); // Remove selos de quem não é o dono
+                                        node.classList.remove('apexia_admin_msg');
+                                        node.style.border = "none";
+                                    } else if(isAdminReal && !existingBadge) {
+                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                        node.classList.add('apexia_admin_msg');
+                                    }
+                                }
+
+                                // 3. Corrigir Pin Permission
+                                const pinBtn = node.querySelector('.apexia_pin_btn');
+                                if(pinBtn) {
+                                    if(!apexia_verificarAdmin(myProfile)) pinBtn.style.display = "none";
+                                    else pinBtn.style.display = "inline-block";
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        apexia_fix_observer.observe(document.getElementById('chat-window'), { childList: true });
+
+        // Aplicação para Lista de Membros (Selo ADMIN Exclusivo)
+        setInterval(() => {
+            document.querySelectorAll('.member-card').forEach(card => {
+                const name = card.querySelector('b')?.innerText;
+                const badge = card.querySelector('.apexia_admin_badge');
+                if(badge && !name.includes('ApexiA') && !card.dataset.isAdminPhone) {
+                    db.ref("users").orderByChild("name").equalTo(name.replace('ADMIN','').trim()).once("value", s => {
+                       const u = Object.values(s.val() || {})[0];
+                       if(u && u.wa === ADMIN_PHONE) card.dataset.isAdminPhone = "true";
+                       else if(badge) badge.remove();
+                    });
+                }
+            });
+        }, 3000);
 
         // ===============================
         // FIM NOVA FUNCIONALIDADE
