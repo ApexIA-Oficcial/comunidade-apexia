@@ -41,7 +41,7 @@
         /* --- SIDEBAR --- */
         #sidebar { width: 280px; background: rgba(8, 8, 8, 0.95); border-right: 1px solid var(--border); display: flex; flex-direction: column; backdrop-filter: blur(10px); transition: 0.3s; }
         #members-list { flex: 1; overflow-y: auto; padding: 10px; }
-        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; cursor: pointer; }
+        .member-card { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; margin-bottom: 8px; background: rgba(255,255,255,0.02); font-size: 0.8rem; cursor: pointer; /* Modificado apenas para indicar o clique */ }
         .member-card img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid var(--primary); object-fit: cover; }
 
         /* --- CHAT AREA --- */
@@ -89,11 +89,11 @@
         @media (max-width: 768px) { #sidebar { position: fixed; transform: translateX(-100%); z-index: 10001; top: 0; bottom: 0; left: 0; } #sidebar.open { transform: translateX(0); } #admin-drawer { width: 100%; } }
 
         /* // ===============================
-           // INÍCIO NOVA FUNCIONALIDADE: CSS Complementar Multi-ajustes
+           // INÍCIO NOVA FUNCIONALIDADE: Estilos Auxiliares
            // =============================== */
         .apexia_foto_preview { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 1px solid var(--primary); margin-top: 10px; display: none; margin-left: auto; margin-right: auto; }
         
-        /* 3) Ajuste visual do chat: Balões menores via Override (!important) */
+        /* Ajuste visual do chat original (preservado do bloco anterior) */
         #chat-window .msg {
             padding: 8px 14px !important;
             font-size: 0.8rem !important;
@@ -104,13 +104,47 @@
         #chat-window .received { border-radius: 2px 14px 14px 14px !important; }
         #chat-window .sent { border-radius: 14px 14px 2px 14px !important; }
         
-        /* 11) Ícone Animado */
+        /* Ícone Animado */
         @keyframes apexia_pulse_vid { 0% { transform:scale(1); opacity:1; } 50% { transform:scale(1.3); opacity:0.6; } 100% { transform:scale(1); opacity:1; } }
         .apexia_anim_icon { display: inline-block; animation: apexia_pulse_vid 1s infinite; color: #FF4444; }
 
         /* Emojis e Reply Hover */
         .apexia_action_btn { display:none; position:absolute; top:-10px; right:10px; background:#222; border:1px solid #444; border-radius:10px; padding:2px 5px; font-size:0.7rem; }
         #chat-window .msg:hover .apexia_action_btn { display:flex; gap:5px; }
+
+        /* // ===============================
+           // INÍCIO NOVA FUNCIONALIDADE: UX, Animações e Zoom
+           // =============================== */
+        /* Transições suaves de Tela */
+        @keyframes apexia_fadeInScreen {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        #onboarding, #waiting-screen, #app, #returning-login { animation: apexia_fadeInScreen 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* Micro animação nos botões interativos e mensagens */
+        button, .btn-join, .member-card { transition: transform 0.1s ease, filter 0.1s ease; }
+        button:active, .btn-join:active { transform: scale(0.96); filter: brightness(0.8); }
+
+        /* Classes auxiliares de Zoom Dinâmico */
+        .apexia_zoom_pequeno .msg { font-size: 0.7rem !important; padding: 6px 10px !important; }
+        .apexia_zoom_grande .msg { font-size: 1.1rem !important; padding: 14px 20px !important; line-height: 1.4; }
+
+        /* CSS Dinâmico do Botão de Controle de Zoom (Injetado via JS) */
+        #apexia_zoom_btn {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--primary);
+            border-radius: 20px; padding: 3px 10px; font-size: 0.65rem; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; gap: 4px; margin-left: 10px; transition: 0.2s;
+        }
+        #apexia_zoom_btn:hover { background: rgba(0, 255, 0, 0.1); }
+
+        /* Spinner Universal p/ Botões */
+        .apexia_spinner {
+            display: inline-block; width: 14px; height: 14px; margin-right: 8px;
+            border: 2px solid rgba(255,255,255,0.3); border-top-color: #000;
+            border-radius: 50%; animation: apexia_spin_btn 0.8s linear infinite; vertical-align: middle;
+        }
+        @keyframes apexia_spin_btn { to { transform: rotate(360deg); } }
         /* // ===============================
            // FIM NOVA FUNCIONALIDADE
            // =============================== */
@@ -149,7 +183,6 @@
     <!-- TELA ESPERA REFORMULADA -->
     <div id="waiting-screen">
         <div class="waiting-card">
-            <!-- // INÍCIO NOVA FUNCIONALIDADE: UI ESPERA MELHORADA // -->
             <div class="loader-ring"></div>
             <h2 style="font-weight: 900; letter-spacing: -1px;">AUDITORIA DE <span style="color:var(--primary)">MEMBRO</span></h2>
             <p style="color: #ccc; font-size: 0.9rem; margin-top: 15px; line-height: 1.6;">
@@ -176,7 +209,6 @@
             <a href="https://wa.me/244931352915?text=Olá, solicitei acesso à Comunidade ApexiA e gostaria de agilizar minha aprovação." target="_blank" class="apexia_support_link">
                 FALAR COM GESTOR NO WHATSAPP
             </a>
-            <!-- // FIM NOVA FUNCIONALIDADE // -->
             <button onclick="sair()" style="margin-top:25px; background:none; border:none; color:#333; text-decoration:underline; cursor:pointer; font-size: 0.7rem;">Cancelar Solicitação</button>
         </div>
     </div>
@@ -206,13 +238,7 @@
             <label for="apexia_foto_input" style="display:block; padding:10px; background:#111; border:1px dashed var(--primary); border-radius:10px; cursor:pointer; margin-top:10px; font-size:0.75rem; color:#aaa;">📸 Escolher Foto Personalizada</label>
             <input type="file" id="apexia_foto_input" accept="image/*" style="display:none" onchange="apexia_uploadFotoPerfil(event)">
 
-            <!-- // ===============================
-                 // INÍCIO NOVA FUNCIONALIDADE: PERSISTÊNCIA NOME PERSONALIZADO
-                 // =============================== -->
             <input type="text" id="apexia_p_name_input" placeholder="Seu Nome / Apelido (Opcional)" style="width:100%; padding:12px; margin-top:10px; background:#000; border:1px solid #333; color:var(--primary); font-weight:bold; border-radius:10px; outline:none;">
-            <!-- // ===============================
-                 // FIM NOVA FUNCIONALIDADE
-                 // =============================== -->
 
             <input type="text" id="p-nacionalidade" placeholder="Sua Nacionalidade">
             <input type="number" id="p-age" placeholder="Sua Idade">
@@ -285,9 +311,6 @@
         </div>
     </div>
 
-    <!-- // ===============================
-         // INÍCIO NOVA FUNCIONALIDADE: Elementos Auxiliares Modais
-         // =============================== -->
     <!-- Lightbox de Imagem -->
     <div id="apexia_lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:100000; align-items:center; justify-content:center; flex-direction:column; backdrop-filter:blur(5px);" onclick="this.style.display='none'">
         <img id="apexia_lightbox_img" style="max-width:95%; max-height:80vh; border-radius:15px; border:2px solid var(--primary); object-fit:contain; box-shadow:0 10px 40px #000;">
@@ -311,9 +334,6 @@
             <span id="apexia_sms_text" style="font-size:0.75rem; color:#ddd; word-break:break-word;">Mensagem</span>
         </div>
     </div>
-    <!-- // ===============================
-         // FIM NOVA FUNCIONALIDADE
-         // =============================== -->
 
     <script>
         const ADMIN_PHONE = "244931352915";
@@ -408,7 +428,6 @@
                     ouvirPendentes();
                 }
                 
-                // Popula o campo de nome no modal extra
                 if(document.getElementById('apexia_p_name_input')) {
                     document.getElementById('apexia_p_name_input').value = myProfile.name || "";
                 }
@@ -669,7 +688,6 @@
                     banner.style.display = 'block';
                     document.getElementById('apexia_video_banner_title').innerText = v.title;
                     document.getElementById('apexia_video_banner_link').href = v.link;
-                    // Format time
                     const d = new Date(v.timestamp);
                     document.getElementById('apexia_video_banner_time').innerText = "Hoje " + d.getHours().toString().padStart(2,'0') + ":" + d.getMinutes().toString().padStart(2,'0');
                 }
@@ -678,28 +696,18 @@
         
         setTimeout(apexia_escutarVideos, 1500);
 
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: MÓDULOS COMPLEMENTARES FINAIS
-        // ===============================
-
-        // 1 e 4 e 5) DOM Observer para injetar Data/Hora, Reposta e Nível de Membro sem alterar o render principal
         const apexia_observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1) {
-                        
-                        // Captura novas mensagens no chat
                         if (node.classList.contains('msg') && !node.dataset.apexiaProcessed) {
                             node.dataset.apexiaProcessed = "true";
-                            
-                            // 1) Injetar Data/Hora
                             const timeSpan = document.createElement('div');
                             timeSpan.style.cssText = "font-size:0.6rem; opacity:0.5; text-align:right; margin-top:2px; font-weight:normal;";
                             const now = new Date();
                             timeSpan.innerText = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
                             node.appendChild(timeSpan);
                             
-                            // 5) Sistema de Resposta (Injeta botão)
                             const replyBtn = document.createElement('div');
                             replyBtn.className = "apexia_action_btn";
                             replyBtn.innerHTML = '↩️ Responder';
@@ -707,7 +715,6 @@
                                 e.stopPropagation();
                                 const senderNode = node.querySelector('b');
                                 const sender = senderNode ? senderNode.innerText : 'Membro';
-                                // Extrai apenas o texto sem spans internos
                                 const clone = node.cloneNode(true);
                                 const b = clone.querySelector('b'); if(b) b.remove();
                                 const txt = clone.innerText.split('\n')[0].substring(0, 30);
@@ -716,12 +723,9 @@
                                 input.focus();
                             };
                             node.appendChild(replyBtn);
-
-                            // 6) Setup de Emoji (Press Longo)
                             apexia_setupLongPress(node);
                         }
 
-                        // Captura membros renderizados na lista
                         if (node.classList.contains('member-card') && !node.dataset.apexiaStars) {
                             node.dataset.apexiaStars = "true";
                             const nameEl = node.querySelector('b');
@@ -731,7 +735,6 @@
                                     if(snap.exists()){
                                         const u = Object.values(snap.val())[0];
                                         const msgs = u.msgCount || 0;
-                                        // 4) Lógica de Membro Ativo
                                         let stars = msgs >= 50 ? '🌟🌟🌟 Elite' : (msgs >= 15 ? '⭐⭐ Ativo' : '⭐ Novato');
                                         const starSpan = document.createElement('span');
                                         starSpan.innerHTML = `<br><small style="font-size:0.6rem; color:var(--gold); font-weight:bold;">${stars}</small>`;
@@ -746,7 +749,6 @@
         });
         apexia_observer.observe(document.body, { childList: true, subtree: true });
 
-        // 2) Modal de Imagem (Lightbox) Global Event Listener
         document.addEventListener('click', (e) => {
             if(e.target.tagName === 'IMG' && e.target.closest('.msg')) {
                 document.getElementById('apexia_lightbox_img').src = e.target.src;
@@ -754,7 +756,6 @@
             }
         });
 
-        // 6) Emojis ao Press Longo e Reações visuais localmente
         let apexia_pressTimer;
         let apexia_targetNode = null;
         function apexia_setupLongPress(node) {
@@ -769,11 +770,9 @@
             apexia_targetNode = node;
             const panel = document.getElementById('apexia_emoji_panel');
             panel.style.display = 'flex';
-            // Centraliza o painel rápido
             panel.style.top = '50%';
             panel.style.left = '50%';
             panel.style.transform = 'translate(-50%, -50%)';
-            // Vibração mobile se disponível
             if(navigator.vibrate) navigator.vibrate(50);
         }
 
@@ -787,14 +786,12 @@
             document.getElementById('apexia_emoji_panel').style.display = 'none';
         }
 
-        // Esconde painel de emoji se clicar fora
         document.addEventListener('click', e => {
             if(!e.target.closest('#apexia_emoji_panel') && !e.target.closest('.msg')) {
                 document.getElementById('apexia_emoji_panel').style.display = 'none';
             }
         });
 
-        // 7) Evento Complementar Visual no Botão Acessar
         const btnJoin = document.querySelector('.btn-join');
         if(btnJoin) {
             btnJoin.addEventListener('click', function() {
@@ -804,7 +801,6 @@
             });
         }
 
-        // 8) Confirmação ao sair usando Event Capture (Bloqueia o onclick original se cancelado)
         window.addEventListener('click', function(e) {
             let btn = e.target.closest('[onclick="sair()"]');
             if (btn) {
@@ -815,9 +811,8 @@
                     e.preventDefault();
                 }
             }
-        }, true); // Fase de captura!
+        }, true);
 
-        // 9) Persistência de Perfil (Nome extraicionado do botão original "Salvar Alterações")
         document.addEventListener('click', e => {
             if(e.target.innerText === 'SALVAR ALTERAÇÕES') {
                 const nameInput = document.getElementById('apexia_p_name_input');
@@ -830,13 +825,11 @@
             }
         });
 
-        // 10) Notificação de Nova Mensagem (Toast Interno paralelo)
         let apexia_toast_initTime = Date.now();
         setTimeout(() => {
             db.ref("messages").limitToLast(1).on("child_added", snap => {
                 const m = snap.val();
                 if(m.timestamp > apexia_toast_initTime && m.senderId !== (myProfile ? myProfile.id : null)) {
-                    // Verifica se não está com a aba aberta diretamente no final do chat
                     const win = document.getElementById('chat-window');
                     const isAtBottom = win.scrollHeight - win.scrollTop <= win.clientHeight + 100;
                     
@@ -847,7 +840,6 @@
                         
                         toast.style.transform = 'translate(-50%, 0)';
                         
-                        // Permite clicar na notificação para ir ao chat e scroll down
                         toast.onclick = () => {
                             toast.style.transform = 'translate(-50%, -150%)';
                             if(window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
@@ -858,8 +850,90 @@
                     }
                 }
             });
-        }, 3000); // Aguarda a carga inicial
+        }, 3000);
 
+        // ===============================
+        // INÍCIO NOVA FUNCIONALIDADE: UX e Zoom
+        // ===============================
+
+        // 1) Controle de Zoom do Chat
+        const apexia_zoomNiveis = ['pequeno', 'medio', 'grande'];
+        const apexia_zoomLabels = ['Pequeno', 'Médio', 'Grande'];
+        let apexia_zoomAtual = 1; // Padrão é médio
+
+        function apexia_aplicarZoom(nivelIndex) {
+            const chatWindow = document.getElementById('chat-window');
+            if(!chatWindow) return;
+            
+            chatWindow.classList.remove('apexia_zoom_pequeno', 'apexia_zoom_grande');
+            
+            if(apexia_zoomNiveis[nivelIndex] === 'pequeno') chatWindow.classList.add('apexia_zoom_pequeno');
+            if(apexia_zoomNiveis[nivelIndex] === 'grande') chatWindow.classList.add('apexia_zoom_grande');
+            
+            const label = document.getElementById('apexia_zoom_label');
+            if(label) label.innerText = apexia_zoomLabels[nivelIndex];
+            
+            localStorage.setItem('apexia_zoom_pref', nivelIndex);
+        }
+
+        function apexia_controleZoomChat() {
+            apexia_zoomAtual = (apexia_zoomAtual + 1) % apexia_zoomNiveis.length;
+            apexia_aplicarZoom(apexia_zoomAtual);
+        }
+
+        // Injeta o botão dinamicamente no header para não alterar o HTML fixo e carrega a preferência
+        document.addEventListener('DOMContentLoaded', () => {
+            const headerDiv = document.querySelector('header div');
+            if(headerDiv) {
+                const zoomBtn = document.createElement('button');
+                zoomBtn.id = 'apexia_zoom_btn';
+                zoomBtn.innerHTML = '🔍 <span id="apexia_zoom_label">Médio</span>';
+                zoomBtn.onclick = apexia_controleZoomChat;
+                headerDiv.appendChild(zoomBtn);
+            }
+
+            const salvo = localStorage.getItem('apexia_zoom_pref');
+            if(salvo !== null) {
+                apexia_zoomAtual = parseInt(salvo);
+                apexia_aplicarZoom(apexia_zoomAtual);
+            }
+        });
+
+        // 2) Feedback Visual de Botões (Estado Carregando Paralelo)
+        function apexia_estadoCarregando(botao) {
+            if(botao.dataset.carregando === 'true') return;
+            
+            const textoOriginal = botao.innerHTML;
+            const larguraOriginal = botao.offsetWidth;
+            
+            botao.dataset.carregando = 'true';
+            botao.style.width = larguraOriginal + 'px'; 
+            botao.style.opacity = '0.7';
+            botao.style.cursor = 'wait';
+            botao.innerHTML = '<span class="apexia_spinner"></span> Aguarde...';
+            
+            botao.style.pointerEvents = 'none';
+            document.body.style.cursor = 'wait';
+
+            setTimeout(() => {
+                botao.innerHTML = textoOriginal;
+                botao.style.width = '';
+                botao.style.opacity = '1';
+                botao.style.cursor = 'pointer';
+                botao.style.pointerEvents = 'auto';
+                botao.dataset.carregando = 'false';
+                document.body.style.cursor = 'default';
+            }, 2500);
+        }
+
+        // Intercepta todos os cliques principais (Fase de captura) e aplica o efeito visual de carregamento
+        document.addEventListener('click', (e) => {
+            const botao = e.target.closest('.btn-join') || e.target.closest('button[onclick="loginRapido()"]') || e.target.closest('button[onclick="solicitarAcesso()"]');
+            if(botao && !botao.id.includes('zoom') && !botao.classList.contains('apexia_back_btn')) {
+                apexia_estadoCarregando(botao);
+            }
+        }, true);
+        
         // ===============================
         // FIM NOVA FUNCIONALIDADE
         // ===============================
