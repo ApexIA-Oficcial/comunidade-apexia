@@ -180,69 +180,6 @@
         .apexia_pin_expanded .apexia_pin_close_btn { display: block !important; }
         /* // ===============================
            // FIM NOVA FUNCIONALIDADE // */
-
-        /* ===============================
-           NOVA FUNCIONALIDADE: Menu de contexto, toast e contador de não lidas
-           =============================== */
-        #apexia_msg_menu {
-            position: fixed;
-            display: none;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(10, 10, 10, 0.96);
-            border: 1px solid var(--primary);
-            border-radius: 14px;
-            padding: 10px 12px;
-            z-index: 120000;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9);
-            min-width: 160px;
-        }
-        #apexia_msg_menu button {
-            background: transparent;
-            border: none;
-            color: #eee;
-            font-size: 0.78rem;
-            text-align: left;
-            padding: 4px 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            border-radius: 8px;
-            transition: background 0.15s, transform 0.1s;
-        }
-        #apexia_msg_menu button span {
-            width: 18px;
-            text-align: center;
-        }
-        #apexia_msg_menu button:hover {
-            background: rgba(0, 255, 0, 0.12);
-            transform: translateX(2px);
-        }
-        #apexia_unread_since_banner {
-            display: none;
-            background: rgba(0, 255, 0, 0.06);
-            border-bottom: 1px solid rgba(0, 255, 0, 0.4);
-            padding: 6px 16px;
-            font-size: 0.72rem;
-            color: #ddd;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            cursor: pointer;
-            z-index: 20;
-        }
-        #apexia_unread_since_banner b {
-            color: var(--primary);
-        }
-        #apexia_unread_since_banner::before {
-            content: "⏱";
-            font-size: 0.8rem;
-            opacity: 0.9;
-        }
-        #apexia_sms_toast.apexia_toast_visible {
-            transform: translate(-50%, 0);
-        }
     </style>
 </head>
 <body>
@@ -390,10 +327,6 @@
                 </div>
             </div>
 
-            <div id="apexia_unread_since_banner">
-                <b id="apexia_unread_since_count">0</b> novas mensagens desde sua última visita
-            </div>
-
             <div id="chat-window"></div>
             
             <!-- // ===============================
@@ -449,15 +382,6 @@
         <span onclick="apexia_addReaction('❤️')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">❤️</span>
         <span onclick="apexia_addReaction('👍')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">👍</span>
         <span onclick="apexia_addReaction('🔥')" style="font-size:1.5rem; cursor:pointer; transition:0.2s;">🔥</span>
-    </div>
-
-    <div id="apexia_msg_menu">
-        <button data-action="emoji"><span>😊</span>Emoji</button>
-        <button data-action="edit"><span>✏️</span>Editar</button>
-        <button data-action="forward"><span>📤</span>Reencaminhar</button>
-        <button data-action="reply"><span>↩️</span>Responder</button>
-        <button data-action="delete"><span>🗑️</span>Apagar</button>
-        <button data-action="pin"><span>📌</span>Fixar</button>
     </div>
 
     <div id="apexia_sms_toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -150%); background:rgba(20,20,20,0.95); border-left:4px solid var(--primary); color:#fff; padding:15px 20px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; gap:12px; align-items:center; min-width:300px; max-width:90vw; cursor:pointer;">
@@ -578,7 +502,6 @@
                 }
 
                 iniciarSistema();
-                apexia_setupLastVisit();
             });
         };
 
@@ -621,11 +544,6 @@
                 const isMe = m.senderId === myProfile.id;
                 const div = document.createElement('div');
                 div.className = `msg ${isMe ? 'sent' : 'received'}`;
-                div.dataset.key = snap.key;
-                div.dataset.senderId = m.senderId || '';
-                div.dataset.senderName = m.senderName || '';
-                div.dataset.text = m.text || '';
-                div.dataset.timestamp = m.timestamp || Date.now();
                 let html = `<b>${m.senderName}</b><br>${m.text}`;
                 if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
                 div.innerHTML = html;
@@ -782,54 +700,6 @@
         let apexia_unread_count = 0;
         let apexia_unread_list = [];
         const apexia_initTime = Date.now();
-        let apexia_lastVisitKey = null;
-        let apexia_toastTimeout = null;
-
-        function apexia_showNewMessageToast(m) {
-            if (!myProfile || !m || m.senderId === myProfile.id) return;
-            const toast = document.getElementById('apexia_sms_toast');
-            if (!toast) return;
-            const nameEl = document.getElementById('apexia_sms_name');
-            const textEl = document.getElementById('apexia_sms_text');
-            if (nameEl) nameEl.innerText = 'Alguém enviou uma mensagem';
-            if (textEl) {
-                const raw = (m.text || '').replace(/\[Resp.*\]\n/, '');
-                const short = raw.length > 80 ? raw.substring(0, 80) + '...' : raw;
-                textEl.innerText = short || 'Nova mensagem';
-            }
-            toast.classList.add('apexia_toast_visible');
-            clearTimeout(apexia_toastTimeout);
-            apexia_toastTimeout = setTimeout(() => {
-                toast.classList.remove('apexia_toast_visible');
-            }, 3000);
-        }
-
-        function apexia_setupLastVisit() {
-            if (!myProfile) return;
-            apexia_lastVisitKey = 'apexia_last_visit_' + myProfile.id;
-            const stored = parseInt(localStorage.getItem(apexia_lastVisitKey) || '0', 10);
-            if (!stored) return;
-
-            db.ref("messages").orderByChild("timestamp").startAt(stored + 1).once("value", snap => {
-                let count = 0;
-                snap.forEach(c => {
-                    const m = c.val();
-                    if (m && m.senderId !== myProfile.id) count++;
-                });
-                const banner = document.getElementById('apexia_unread_since_banner');
-                const countEl = document.getElementById('apexia_unread_since_count');
-                if (banner && countEl && count > 0) {
-                    countEl.innerText = count;
-                    banner.style.display = 'flex';
-                }
-            });
-        }
-
-        window.addEventListener('beforeunload', () => {
-            if (myProfile && apexia_lastVisitKey) {
-                localStorage.setItem(apexia_lastVisitKey, Date.now().toString());
-            }
-        });
 
         function apexia_notificacoes() {
             db.ref("messages").orderByChild("timestamp").limitToLast(1).on("child_added", snap => {
@@ -844,7 +714,6 @@
                         apexia_unread_list.push(m);
                         apexia_updateBadge();
                     }
-                    apexia_showNewMessageToast(m);
                 }
             });
 
@@ -939,132 +808,22 @@
 
         let apexia_pressTimer;
         let apexia_targetNode = null;
-        let apexia_touchStartX_msg = 0;
-        let apexia_touchStartY_msg = 0;
         function apexia_setupLongPress(node) {
-            node.addEventListener('touchstart', (e) => {
-                apexia_touchStartX_msg = e.changedTouches[0].clientX;
-                apexia_touchStartY_msg = e.changedTouches[0].clientY;
-                apexia_pressTimer = setTimeout(() => apexia_showContextMenu(e, node), 600);
-            }, {passive:true});
-            node.addEventListener('touchmove', (e) => {
-                const dx = e.changedTouches[0].clientX - apexia_touchStartX_msg;
-                const dy = e.changedTouches[0].clientY - apexia_touchStartY_msg;
-                if (dx > 60 && Math.abs(dy) < 30) {
-                    clearTimeout(apexia_pressTimer);
-                    apexia_handleSwipeReply(node);
-                }
-            }, {passive:true});
+            node.addEventListener('touchstart', (e) => { apexia_pressTimer = setTimeout(() => apexia_showEmojiPanel(e, node), 600); }, {passive:true});
             node.addEventListener('touchend', () => clearTimeout(apexia_pressTimer));
-            node.addEventListener('mousedown', (e) => { apexia_pressTimer = setTimeout(() => apexia_showContextMenu(e, node), 600); });
+            node.addEventListener('mousedown', (e) => { apexia_pressTimer = setTimeout(() => apexia_showEmojiPanel(e, node), 600); });
             node.addEventListener('mouseup', () => clearTimeout(apexia_pressTimer));
             node.addEventListener('mouseleave', () => clearTimeout(apexia_pressTimer));
         }
 
-        function apexia_showEmojiPanel(node) {
+        function apexia_showEmojiPanel(e, node) {
             apexia_targetNode = node;
             const panel = document.getElementById('apexia_emoji_panel');
-            if (!panel) return;
-            const rect = node.getBoundingClientRect();
             panel.style.display = 'flex';
-            panel.style.top = (rect.top - 50) + 'px';
-            panel.style.left = (rect.left + rect.width / 2) + 'px';
-            panel.style.transform = 'translate(-50%, -100%)';
+            panel.style.top = '50%';
+            panel.style.left = '50%';
+            panel.style.transform = 'translate(-50%, -50%)';
             if(navigator.vibrate) navigator.vibrate(50);
-        }
-
-        function apexia_handleSwipeReply(node) {
-            const nome = node.dataset.senderName || (node.querySelector('b') ? node.querySelector('b').innerText.replace('ADMIN','').trim() : '');
-            const raw = node.dataset.text || node.innerText || '';
-            const texto = raw.replace(/\[Resp.*\]\n/, '');
-            if(nome && texto) {
-                apexia_abrirPreviewResposta(nome, texto);
-            }
-        }
-
-        function apexia_showContextMenu(e, node) {
-            if (!myProfile) return;
-            apexia_targetNode = node;
-            const menu = document.getElementById('apexia_msg_menu');
-            if (!menu) return;
-            const rect = node.getBoundingClientRect();
-            const top = Math.max(10, rect.top - 10);
-            const left = rect.left + rect.width / 2;
-            menu.style.top = top + 'px';
-            menu.style.left = left + 'px';
-            menu.style.transform = 'translateX(-50%)';
-
-            const isOwner = node.dataset.senderId === myProfile.id;
-            const isAdmin = apexia_verificarAdmin(myProfile);
-
-            const btnEdit = menu.querySelector('button[data-action="edit"]');
-            const btnDelete = menu.querySelector('button[data-action="delete"]');
-            const btnPin = menu.querySelector('button[data-action="pin"]');
-
-            if (btnEdit) btnEdit.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
-            if (btnDelete) btnDelete.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
-            if (btnPin) btnPin.style.display = isAdmin ? 'flex' : 'none';
-
-            menu.style.display = 'flex';
-            if (navigator.vibrate) navigator.vibrate(30);
-        }
-
-        function apexia_closeContextMenu() {
-            const menu = document.getElementById('apexia_msg_menu');
-            if (menu) menu.style.display = 'none';
-        }
-
-        function apexia_handleMenuAction(action) {
-            const node = apexia_targetNode;
-            if (!node || !myProfile) return;
-            const key = node.dataset.key;
-            const raw = node.dataset.text || '';
-            const plain = raw.replace(/\[Resp.*\]\n/, '');
-            const senderName = node.dataset.senderName || (node.querySelector('b') ? node.querySelector('b').innerText.replace('ADMIN','').trim() : '');
-            const isOwner = node.dataset.senderId === myProfile.id;
-            const isAdmin = apexia_verificarAdmin(myProfile);
-
-            if (action === 'emoji') {
-                apexia_showEmojiPanel(node);
-            } else if (action === 'reply') {
-                if (senderName && (plain || raw)) {
-                    apexia_abrirPreviewResposta(senderName, plain || raw);
-                }
-            } else if (action === 'forward') {
-                const texto = plain || raw;
-                if (texto) {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(texto).then(() => {
-                            alert('Mensagem copiada para encaminhar em outro lugar.');
-                        }).catch(() => {
-                            alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
-                        });
-                    } else {
-                        alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
-                    }
-                }
-            } else if (action === 'edit') {
-                if (!(isOwner || isAdmin) || !key) return;
-                apexia_modalInterno('prompt', 'Editar mensagem:', (novo) => {
-                    if (novo !== null && novo.trim() !== '') {
-                        db.ref("messages/" + key + "/text").set(novo.trim());
-                    }
-                });
-            } else if (action === 'delete') {
-                if (!(isOwner || isAdmin) || !key) return;
-                apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', (res) => {
-                    if(res) db.ref("messages/" + key).remove();
-                });
-            } else if (action === 'pin') {
-                if (!isAdmin) return;
-                const textoPin = plain || raw;
-                if (textoPin) {
-                    apexia_modalInterno('confirm', 'Fixar esta mensagem no topo?', (res) => {
-                        if (res) db.ref("apexia_pinned").set({ text: textoPin, sender: senderName || 'Admin' });
-                    });
-                }
-            }
-            apexia_closeContextMenu();
         }
 
         function apexia_addReaction(emoji) {
@@ -1079,31 +838,9 @@
 
         document.addEventListener('click', e => {
             if(!e.target.closest('#apexia_emoji_panel') && !e.target.closest('.msg')) {
-                const emojiPanel = document.getElementById('apexia_emoji_panel');
-                if (emojiPanel) emojiPanel.style.display = 'none';
-                apexia_closeContextMenu();
+                document.getElementById('apexia_emoji_panel').style.display = 'none';
             }
         });
-
-        const apexia_msg_menu_el = document.getElementById('apexia_msg_menu');
-        if (apexia_msg_menu_el) {
-            apexia_msg_menu_el.addEventListener('click', (e) => {
-                const btn = e.target.closest('button[data-action]');
-                if (!btn) return;
-                e.stopPropagation();
-                const action = btn.getAttribute('data-action');
-                apexia_handleMenuAction(action);
-            });
-        }
-
-        const apexia_toast_el = document.getElementById('apexia_sms_toast');
-        if (apexia_toast_el) {
-            apexia_toast_el.addEventListener('click', () => {
-                apexia_toast_el.classList.remove('apexia_toast_visible');
-                const win = document.getElementById('chat-window');
-                if (win) win.scrollTop = win.scrollHeight;
-            });
-        }
 
         document.addEventListener('click', e => {
             if(e.target.innerText === 'SALVAR ALTERAÇÕES') {
@@ -1238,17 +975,6 @@
                             pinBanner.classList.remove('apexia_pin_expanded'); e.stopPropagation();
                         } else { pinBanner.classList.add('apexia_pin_expanded'); }
                     }
-                });
-            }
-            const unreadBanner = document.getElementById('apexia_unread_since_banner');
-            if (unreadBanner) {
-                unreadBanner.addEventListener('click', () => {
-                    unreadBanner.style.display = 'none';
-                    if (myProfile && apexia_lastVisitKey) {
-                        localStorage.setItem(apexia_lastVisitKey, Date.now().toString());
-                    }
-                    const cw = document.getElementById('chat-window');
-                    if (cw) cw.scrollTop = cw.scrollHeight;
                 });
             }
         });
@@ -1449,7 +1175,7 @@
 
         function apexia_exibirEmojis(mensagemId) {
             const node = document.querySelector(`.msg[data-key="${mensagemId}"]`);
-            if(node) apexia_showEmojiPanel(node);
+            if(node) apexia_showEmojiPanel({ target: node }, node);
         }
 
         function apexia_formatarDataHora(timestamp) {
