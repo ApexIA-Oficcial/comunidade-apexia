@@ -630,6 +630,20 @@
                 if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
                 div.innerHTML = html;
                 win.appendChild(div);
+
+                // Garante horário visível mesmo se o observador ainda não processou
+                if (!div.querySelector('[data-apexia-time]')) {
+                    const timeSpan = document.createElement('div');
+                    timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
+                    const tDate = new Date(m.timestamp || Date.now());
+                    timeSpan.innerText = tDate.getHours().toString().padStart(2,'0') + ":" + tDate.getMinutes().toString().padStart(2,'0');
+                    timeSpan.setAttribute('data-apexia-time','1');
+                    div.appendChild(timeSpan);
+                }
+
+                // Garante que clique/press em qualquer mensagem abra o menu / swipe
+                try { apexia_setupLongPress(div); } catch(e) {}
+
                 win.scrollTop = win.scrollHeight;
             });
         }
@@ -959,6 +973,13 @@
             node.addEventListener('mousedown', (e) => { apexia_pressTimer = setTimeout(() => apexia_showContextMenu(e, node), 600); });
             node.addEventListener('mouseup', () => clearTimeout(apexia_pressTimer));
             node.addEventListener('mouseleave', () => clearTimeout(apexia_pressTimer));
+
+            // Clique simples também abre o menu de ações para facilitar no desktop
+            node.addEventListener('click', (e) => {
+                // Evita conflito com cliques em imagens ou botões internos
+                if (e.target.closest('img') || e.target.closest('.apexia_action_btn')) return;
+                apexia_showContextMenu(e, node);
+            });
         }
 
         function apexia_showEmojiPanel(node) {
@@ -1331,7 +1352,7 @@
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1) {
                         
-                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
+                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
                             node.dataset.apexiaProcessed = "true";
                             const msgData = apexia_msg_queue.shift(); 
                             if(msgData) {
