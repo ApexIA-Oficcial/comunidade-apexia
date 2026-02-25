@@ -1,10 +1,10 @@
---- START OF FILE Paste February 24, 2026 - 6:17PM ---
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#000000">
+    <link rel="manifest" href="manifest.json">
     <title>ApexiA HQ | Comunidade Suprema</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
@@ -477,6 +477,30 @@
             align-items: center;
             gap: 4px;
         }
+
+        /* Botão de instalação PWA */
+        #apexia_pwa_install {
+            position: fixed;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(5, 15, 5, 0.95);
+            border: 1px solid rgba(0,255,0,0.6);
+            color: var(--primary);
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            z-index: 120001;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            cursor: pointer;
+        }
+        #apexia_pwa_install span:first-child {
+            font-size: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -742,6 +766,12 @@
             <h3 id="apexia_news_modal_title"></h3>
             <p id="apexia_news_modal_desc"></p>
         </div>
+    </div>
+
+    <!-- BOTÃO PWA INSTALAR APP -->
+    <div id="apexia_pwa_install">
+        <span>📲</span>
+        <span>Instalar APEXIA</span>
     </div>
 
     <script>
@@ -1866,6 +1896,40 @@
             apexia_news_index = (apexia_news_index - 1 + apexia_news_items.length) % apexia_news_items.length;
             apexia_renderNewsSlide();
             apexia_startNewsRotation();
+        }
+
+        // =========================
+        // SERVICE WORKER + PWA INSTALL
+        // =========================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+
+        let apexia_pwa_prompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            apexia_pwa_prompt = e;
+            const btn = document.getElementById('apexia_pwa_install');
+            if (btn) {
+                btn.style.display = 'flex';
+            }
+        });
+
+        const apexia_pwa_btn = document.getElementById('apexia_pwa_install');
+        if (apexia_pwa_btn) {
+            apexia_pwa_btn.addEventListener('click', async () => {
+                if (!apexia_pwa_prompt) return;
+                const promptEvent = apexia_pwa_prompt;
+                apexia_pwa_prompt = null;
+                apexia_pwa_btn.style.display = 'none';
+                try {
+                    await promptEvent.prompt();
+                } catch (err) {
+                    // silencioso
+                }
+            });
         }
     </script>
 </body>
