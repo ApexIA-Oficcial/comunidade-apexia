@@ -301,6 +301,182 @@
             box-shadow: 0 0 0 2px rgba(0,255,0,0.7);
             transition: box-shadow 0.4s;
         }
+
+        /* ============================
+           CSS NOVO – CHAT / SLIDES / REGRAS / REAÇÕES
+           ============================ */
+
+        /* Fundo personalizado Apexia na área de mensagens */
+        #chat-window {
+            position: relative;
+        }
+        #chat-window::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(0,255,0,0.12) 0, transparent 55%),
+                radial-gradient(circle at 90% 80%, rgba(0,255,150,0.1) 0, transparent 55%),
+                url('https://apexia-oficcial.github.io/ApexIA/canalapexia.png');
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            background-size: 60% 60%, 70% 70%, 28%;
+            background-position: 0% 0%, 100% 100%, center;
+            opacity: 0.04;
+            mix-blend-mode: screen;
+            animation: apexia_chat_galaxy 26s ease-in-out infinite alternate;
+        }
+
+        @keyframes apexia_chat_galaxy {
+            0% { transform: translate3d(0,0,0) scale(1); }
+            50% { transform: translate3d(0,-4px,0) scale(1.02); }
+            100% { transform: translate3d(0,0,0) scale(1.01); }
+        }
+
+        /* Regra do grupo fixa no topo do chat */
+        .apexia_group_rule {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            background: radial-gradient(circle at 0 0, rgba(0,255,0,0.16) 0, rgba(0,0,0,0.95) 55%);
+            border-bottom: 1px solid rgba(0,255,0,0.4);
+            font-size: 0.78rem;
+            position: relative;
+            z-index: 12;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .apexia_group_rule_icon {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,255,0,0.15);
+            border: 1px solid rgba(0,255,0,0.5);
+            font-size: 1.1rem;
+            animation: apexia_rule_wave 1.4s ease-in-out infinite;
+        }
+        .apexia_group_rule_content {
+            flex: 1;
+            min-width: 0;
+        }
+        .apexia_group_rule_title {
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+        .apexia_group_rule_text {
+            font-size: 0.72rem;
+            color: #ddd;
+        }
+        @keyframes apexia_rule_wave {
+            0% { transform: translateY(0) rotate(0deg); }
+            40% { transform: translateY(-1px) rotate(-12deg); }
+            80% { transform: translateY(0) rotate(6deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+
+        /* Carrossel de notícias (slides) – efeitos suaves topo */
+        #apexia_news_carousel {
+            position: relative;
+            overflow: hidden;
+        }
+        #apexia_news_carousel::before,
+        #apexia_news_carousel::after {
+            content:"";
+            position:absolute;
+            top:0;
+            bottom:0;
+            width:40px;
+            pointer-events:none;
+            background:linear-gradient(to right, rgba(0,0,0,0.9), transparent);
+            opacity:0.7;
+        }
+        #apexia_news_carousel::after {
+            right:0;
+            left:auto;
+            transform:scaleX(-1);
+        }
+        #apexia_news_carousel::before {
+            left:0;
+        }
+        #apexia_news_carousel.apexia_news_fade {
+            animation: apexia_news_fadeIn 0.4s ease;
+        }
+        @keyframes apexia_news_fadeIn {
+            from { opacity:0; transform:translateY(-4px); }
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        /* Modal do slide / anúncio */
+        .apexia_news_modal_box {
+            width: 100%;
+            max-width: 420px;
+            background: radial-gradient(circle at top, rgba(0,255,0,0.16) 0, #050505 55%);
+            border-radius: 22px;
+            border: 1px solid rgba(0,255,0,0.5);
+            padding: 22px 20px 20px;
+            position: relative;
+            box-shadow: 0 18px 45px rgba(0,0,0,0.8);
+        }
+        .apexia_news_modal_box img {
+            width: 100%;
+            max-height: 260px;
+            object-fit: cover;
+            border-radius: 18px;
+            border: 1px solid rgba(0,255,0,0.4);
+            margin-bottom: 12px;
+        }
+        .apexia_news_modal_box h3 {
+            font-size: 0.95rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+        .apexia_news_modal_box p {
+            font-size: 0.8rem;
+            color: #ddd;
+            line-height: 1.5;
+        }
+        .apexia_news_modal_close {
+            position:absolute;
+            top:10px;
+            right:14px;
+            background:rgba(0,0,0,0.6);
+            border:1px solid rgba(255,255,255,0.1);
+            color:#fff;
+            border-radius:999px;
+            width:26px;
+            height:26px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            font-size:1.1rem;
+        }
+
+        /* Reações com emojis abaixo da mensagem */
+        .apexia_reactions_bar {
+            display: none;
+            margin-top: 4px;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .apexia_reaction_chip {
+            font-size: 0.7rem;
+            background: rgba(0,0,0,0.4);
+            border-radius: 999px;
+            padding: 2px 7px 3px;
+            border: 1px solid rgba(255,255,255,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
     </style>
 </head>
 <body>
@@ -459,11 +635,14 @@
                 <br><a id="apexia_video_banner_link" href="#" target="_blank">ASSISTIR AGORA 🚀</a>
             </div>
 
-            <div id="apexia_pin_banner" style="display:none; background:rgba(0,255,0,0.05); border-bottom:1px solid var(--primary); padding:8px 20px; align-items:center; gap:10px; font-size:0.75rem; cursor:pointer;">
-                <span style="font-size:1.2rem;">📌</span>
-                <div style="flex:1; overflow:hidden;">
-                    <b style="color:var(--primary); font-size:0.65rem;">MENSAGEM FIXADA</b><br>
-                    <span id="apexia_pin_text" style="color:#ccc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;"></span>
+            <!-- REGRA DO GRUPO (substitui área de mensagem fixada) -->
+            <div id="apexia_pin_banner" class="apexia_group_rule">
+                <div class="apexia_group_rule_icon">👆</div>
+                <div class="apexia_group_rule_content">
+                    <div class="apexia_group_rule_title">REGRA DO GRUPO</div>
+                    <div class="apexia_group_rule_text">
+                        Leia esta regra com atenção antes de participar do chat. Respeite todos os membros e mantenha o foco nos temas da comunidade.
+                    </div>
                 </div>
             </div>
 
@@ -529,12 +708,11 @@
     </div>
 
     <div id="apexia_msg_menu">
-        <button data-action="emoji"><span>😊</span>Emoji</button>
-        <button data-action="edit"><span>✏️</span>Editar</button>
-        <button data-action="forward"><span>📤</span>Reencaminhar</button>
+        <button data-action="emoji"><span>😊</span>Reagir com emoji</button>
         <button data-action="reply"><span>↩️</span>Responder</button>
+        <button data-action="forward"><span>📤</span>Reencaminhar</button>
+        <button data-action="edit"><span>✏️</span>Editar</button>
         <button data-action="delete"><span>🗑️</span>Apagar</button>
-        <button data-action="pin"><span>📌</span>Fixar</button>
     </div>
 
     <div id="apexia_sms_toast" style="position:fixed; top:20px; left:50%; transform:translate(-50%, -150%); background:rgba(20,20,20,0.95); border-left:4px solid var(--primary); color:#fff; padding:15px 20px; border-radius:12px; z-index:99999; box-shadow:0 10px 30px rgba(0,0,0,0.8); transition:transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); display:flex; gap:12px; align-items:center; min-width:300px; max-width:90vw; cursor:pointer;">
@@ -553,6 +731,16 @@
                 <button id="apexia_modal_btn_cancel" style="display:none; flex:1; padding:12px; background:#222; color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:bold; transition:0.2s;">CANCELAR</button>
                 <button id="apexia_modal_btn_confirm" style="flex:1; padding:12px; background:var(--primary); color:#000; border:none; border-radius:10px; cursor:pointer; font-weight:bold; transition:0.2s;">OK</button>
             </div>
+        </div>
+    </div>
+
+    <!-- MODAL EXPANDIDO PARA SLIDES / ANÚNCIOS -->
+    <div id="apexia_news_modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:120000; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(10px);">
+        <div class="apexia_news_modal_box">
+            <button type="button" class="apexia_news_modal_close">&times;</button>
+            <img id="apexia_news_modal_img" alt="Anúncio" />
+            <h3 id="apexia_news_modal_title"></h3>
+            <p id="apexia_news_modal_desc"></p>
         </div>
     </div>
 
@@ -715,17 +903,10 @@
                 if(m.attachment) html += `<br><img src="${m.attachment}" style="max-width:100%">`;
                 div.innerHTML = html;
                 win.appendChild(div);
-
-                if (!div.querySelector('[data-apexia-time]')) {
-                    const timeSpan = document.createElement('div');
-                    timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
-                    const tDate = new Date(m.timestamp || Date.now());
-                    timeSpan.innerText = tDate.getHours().toString().padStart(2,'0') + ":" + tDate.getMinutes().toString().padStart(2,'0');
-                    timeSpan.setAttribute('data-apexia-time','1');
-                    div.appendChild(timeSpan);
-                }
-
-                try { apexia_setupLongPress(div); } catch(e) {}
+                try {
+                    apexia_setupLongPress(div);
+                    apexia_bindReactionsListener(div, snap.key);
+                } catch(e) {}
 
                 win.scrollTop = win.scrollHeight;
             });
@@ -786,14 +967,6 @@
             s.style.left = Math.random() * 100 + '%';
             s.style.top = Math.random() * 100 + '%';
             g.appendChild(s);
-        }
-
-        function apexia_toggleMenuMobile() {
-            apexia_toggle_sidebar();
-            if (document.getElementById('sidebar').classList.contains('open')) {
-                apexia_unread_count = 0;
-                apexia_updateBadge();
-            }
         }
 
         document.addEventListener('click', (e) => {
@@ -1019,8 +1192,6 @@
             });
         }
         
-        setTimeout(apexia_escutarVideos, 1500);
-
         function apexia_addNews() {
             if (!myProfile || myProfile.wa !== ADMIN_PHONE) {
                 alert('Apenas o ADMIN pode cadastrar destaques.');
@@ -1091,6 +1262,9 @@
             }
 
             box.style.display = 'flex';
+            box.classList.remove('apexia_news_fade');
+            void box.offsetWidth;
+            box.classList.add('apexia_news_fade');
         }
 
         function apexia_startNewsRotation() {
@@ -1129,12 +1303,15 @@
                 btn.style.display = 'none';
             }
 
-            const newsBox = document.getElementById('apexia_news_carousel');
-            if (!newsBox) return;
-            if (this.scrollTop < 40 && apexia_news_items.length) {
-                newsBox.style.display = 'flex';
-            } else {
-                newsBox.style.display = 'none';
+            const ruleBanner = document.getElementById('apexia_pin_banner');
+            if (ruleBanner) {
+                if (this.scrollTop <= 5) {
+                    ruleBanner.style.transform = 'translateY(0)';
+                    ruleBanner.style.opacity = '1';
+                } else {
+                    ruleBanner.style.transform = 'translateY(-100%)';
+                    ruleBanner.style.opacity = '0';
+                }
             }
         });
 
@@ -1198,18 +1375,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             const pinBanner = document.getElementById('apexia_pin_banner');
             if(pinBanner) {
-                const closeBtn = document.createElement('button');
-                closeBtn.className = 'apexia_pin_close_btn';
-                closeBtn.innerText = 'FECHAR ✕';
-                pinBanner.appendChild(closeBtn);
-
-                pinBanner.addEventListener('click', (e) => {
-                    if (window.innerWidth <= 768) {
-                        if (e.target.classList.contains('apexia_pin_close_btn')) {
-                            pinBanner.classList.remove('apexia_pin_expanded'); e.stopPropagation();
-                        } else { pinBanner.classList.add('apexia_pin_expanded'); }
-                    }
-                });
+                pinBanner.style.display = 'flex';
             }
             const unreadBanner = document.getElementById('apexia_unread_since_banner');
             if (unreadBanner) {
@@ -1220,6 +1386,59 @@
                     }
                     const cw = document.getElementById('chat-window');
                     if (cw) cw.scrollTop = cw.scrollHeight;
+                });
+            }
+
+            const newsBox = document.getElementById('apexia_news_carousel');
+            if (newsBox) {
+                newsBox.addEventListener('click', () => {
+                    if (!apexia_news_items.length) return;
+                    const item = apexia_news_items[apexia_news_index % apexia_news_items.length];
+                    const modal = document.getElementById('apexia_news_modal');
+                    if (!modal) return;
+                    const imgEl = document.getElementById('apexia_news_modal_img');
+                    const titleEl = document.getElementById('apexia_news_modal_title');
+                    const descEl = document.getElementById('apexia_news_modal_desc');
+                    titleEl.textContent = item.title || '';
+                    descEl.textContent = item.desc || '';
+                    if (item.image) {
+                        imgEl.src = item.image;
+                        imgEl.style.display = 'block';
+                    } else {
+                        imgEl.style.display = 'none';
+                    }
+                    modal.style.display = 'flex';
+                });
+
+                let newsTouchStartX = 0;
+                newsBox.addEventListener('touchstart', (e) => {
+                    if (!e.touches[0]) return;
+                    newsTouchStartX = e.touches[0].clientX;
+                }, { passive: true });
+                newsBox.addEventListener('touchend', (e) => {
+                    if (!e.changedTouches[0]) return;
+                    const dx = e.changedTouches[0].clientX - newsTouchStartX;
+                    if (Math.abs(dx) > 40) {
+                        if (dx < 0) {
+                            apexia_nextNews();
+                        } else {
+                            apexia_prevNews();
+                        }
+                    }
+                });
+            }
+
+            const newsModal = document.getElementById('apexia_news_modal');
+            if (newsModal) {
+                const closeBtn = newsModal.querySelector('.apexia_news_modal_close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        newsModal.style.display = 'none';
+                    });
+                }
+                newsModal.addEventListener('click', () => {
+                    newsModal.style.display = 'none';
                 });
             }
             setTimeout(apexia_escutarVideos, 1500);
@@ -1241,7 +1460,6 @@
             document.getElementById('apexia_reply_preview').style.display = 'none';
         }
 
-        let apexia_tempIds = [];
         document.querySelector('.send-btn').addEventListener('click', function(e) {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
@@ -1253,25 +1471,6 @@
             if(apexia_reply_data) {
                 finalMsg = `[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n` + text;
             }
-
-            const tempId = "opt_" + Date.now();
-            apexia_tempIds.push({ id: tempId, txt: finalMsg });
-
-            const win = document.getElementById('chat-window');
-            const div = document.createElement('div');
-            div.className = "msg sent apexia_optimistic";
-            div.id = tempId;
-            let displayHTML = `<b>${myProfile.name}</b><br>${finalMsg}`;
-            if(apexia_reply_data) {
-                displayHTML = displayHTML.replace(
-                    `[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n`,
-                    `<span class="apexia_quoted_msg" data-reply-name="${apexia_reply_data.name}" data-reply-snippet="${(apexia_reply_data.text||'').replace(/"/g,'&quot;')}"><b>${apexia_reply_data.name}</b><span>${apexia_reply_data.text}</span></span>`
-                );
-            }
-            div.innerHTML = displayHTML + `<div style="font-size:0.55rem; opacity:0.8; text-align:right; margin-top:4px;">⏳</div>`;
-            win.appendChild(div);
-            win.scrollTop = win.scrollHeight;
-
             db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text: finalMsg, timestamp: firebase.database.ServerValue.TIMESTAMP });
             db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
             
@@ -1283,97 +1482,77 @@
             if(e.key === 'Enter') { e.preventDefault(); document.querySelector('.send-btn').click(); }
         });
 
-        let apexia_msg_queue = [];
-        db.ref("messages").orderByChild("timestamp").limitToLast(50).on("child_added", snap => { apexia_msg_queue.push({ key: snap.key, val: snap.val() }); });
-        
         db.ref("messages").on("child_removed", snap => {
             const msgNode = document.querySelector(`.msg[data-key="${snap.key}"]`);
             if(msgNode) msgNode.remove();
-        });
-
-        db.ref("apexia_pinned").on("value", snap => {
-            const v = snap.val();
-            const banner = document.getElementById('apexia_pin_banner');
-            if(v && v.text) {
-                banner.style.display = 'flex';
-                document.getElementById('apexia_pin_text').innerText = v.sender + ": " + v.text;
-            } else {
-                banner.style.display = 'none';
-            }
         });
 
         const apexia_observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1) {
-                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
+                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed) {
                             node.dataset.apexiaProcessed = "true";
-                            const msgData = apexia_msg_queue.shift(); 
-                            if(msgData) {
-                                node.dataset.key = msgData.key;
-                                if(msgData.val.senderId === myProfile.id) {
-                                    const optIdx = apexia_tempIds.findIndex(o => o.txt === msgData.val.text);
-                                    if(optIdx > -1) {
-                                        const optNode = document.getElementById(apexia_tempIds[optIdx].id);
-                                        if(optNode) optNode.remove();
-                                        apexia_tempIds.splice(optIdx, 1);
-                                    }
-                                }
-                                if(msgData.val.text && msgData.val.text.includes('[Resp.')) {
-                                    const match = msgData.val.text.match(/\[Resp\. (.*?): "(.*?)"\]\n(.*)/s);
-                                    if(match) {
-                                        const nome = match[1];
-                                        let trecho = match[2] || '';
-                                        if (trecho.length > 80) trecho = trecho.substring(0,77)+'...';
-                                        node.innerHTML = `<b>${msgData.val.senderName}</b><br><span class="apexia_quoted_msg" data-reply-name="${nome}" data-reply-snippet="${trecho.replace(/"/g,'&quot;')}" data-parent-key="${msgData.key}"><b>${nome}</b><span>${trecho}</span></span>${match[3]}`;
-                                    }
-                                }
-                                const bTag = node.querySelector('b');
-                                if(bTag) {
-                                    if(msgData.val.senderName.toLowerCase().includes('apexia') || msgData.val.senderName.toLowerCase().includes('admin') || msgData.val.senderId === 'u1711000000000') {
-                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
-                                        node.classList.add('apexia_admin_msg');
-                                    }
-                                }
-                                const timeSpan = document.createElement('div');
-                                timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
-                                const tDate = new Date(msgData.val.timestamp || Date.now());
-                                timeSpan.innerText = tDate.getHours().toString().padStart(2,'0') + ":" + tDate.getMinutes().toString().padStart(2,'0');
-                                node.appendChild(timeSpan);
-                                
-                                const actionContainer = document.createElement('div');
-                                actionContainer.className = "apexia_action_btn";
-                                
-                                const btnResponder = document.createElement('span');
-                                btnResponder.innerHTML = '↩️';
-                                btnResponder.style.cursor = 'pointer';
-                                btnResponder.onclick = (e) => { e.stopPropagation(); apexia_abrirPreviewResposta(msgData.val.senderName, msgData.val.text); };
-                                actionContainer.appendChild(btnResponder);
+                            const key = node.dataset.key;
+                            const senderName = node.dataset.senderName || '';
+                            const text = node.dataset.text || '';
+                            const timestamp = parseInt(node.dataset.timestamp || Date.now(), 10);
 
-                                const btnFixar = document.createElement('span');
-                                btnFixar.className = 'apexia_pin_btn';
-                                btnFixar.innerHTML = '📌';
-                                btnFixar.style.cursor = 'pointer';
-                                btnFixar.onclick = (e) => {
-                                    e.stopPropagation();
-                                    apexia_modalInterno('confirm', 'Fixar esta mensagem no topo?', res => { if(res) db.ref("apexia_pinned").set({ text: msgData.val.text, sender: msgData.val.senderName }); });
-                                };
-                                actionContainer.appendChild(btnFixar);
-
-                                if(myProfile && msgData.val.senderId === myProfile.id) {
-                                    const btnApagar = document.createElement('span');
-                                    btnApagar.innerHTML = '🗑️';
-                                    btnApagar.style.cursor = 'pointer';
-                                    btnApagar.onclick = (e) => {
-                                        e.stopPropagation();
-                                        apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', res => { if(res) db.ref("messages/" + msgData.key).remove(); });
-                                    };
-                                    actionContainer.appendChild(btnApagar);
+                            if(text && text.includes('[Resp.')) {
+                                const match = text.match(/\[Resp\. (.*?): "(.*?)"\]\n(.*)/s);
+                                if(match) {
+                                    const nome = match[1];
+                                    let trecho = match[2] || '';
+                                    if (trecho.length > 80) trecho = trecho.substring(0,77)+'...';
+                                    node.innerHTML = `<b>${senderName}</b><br><span class="apexia_quoted_msg" data-reply-name="${nome}" data-reply-snippet="${trecho.replace(/"/g,'&quot;')}" data-parent-key="${key}"><b>${nome}</b><span>${trecho}</span></span>${match[3]}`;
+                                    node.dataset.text = text;
                                 }
-
-                                node.appendChild(actionContainer);
                             }
+                            const bTag = node.querySelector('b');
+                            if(bTag) {
+                                if(senderName.toLowerCase().includes('apexia') || senderName.toLowerCase().includes('admin') || node.dataset.senderId === 'u1711000000000') {
+                                    if(!bTag.querySelector('.apexia_admin_badge')) {
+                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                    }
+                                    node.classList.add('apexia_admin_msg');
+                                }
+                            }
+                            const timeSpan = document.createElement('div');
+                            timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
+                            const tDate = new Date(timestamp || Date.now());
+                            timeSpan.innerText = tDate.getHours().toString().padStart(2,'0') + ":" + tDate.getMinutes().toString().padStart(2,'0');
+                            node.appendChild(timeSpan);
+                            
+                            const actionContainer = document.createElement('div');
+                            actionContainer.className = "apexia_action_btn";
+                            
+                            const btnResponder = document.createElement('span');
+                            btnResponder.innerHTML = '↩️';
+                            btnResponder.style.cursor = 'pointer';
+                            btnResponder.onclick = (e) => { e.stopPropagation(); apexia_abrirPreviewResposta(senderName, text); };
+                            actionContainer.appendChild(btnResponder);
+
+                            if(myProfile && node.dataset.senderId === myProfile.id) {
+                                const btnApagar = document.createElement('span');
+                                btnApagar.innerHTML = '🗑️';
+                                btnApagar.style.cursor = 'pointer';
+                                btnApagar.onclick = (e) => {
+                                    e.stopPropagation();
+                                    const k = node.dataset.key;
+                                    if(!k) return;
+                                    apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', res => {
+                                        if(res) {
+                                            db.ref("messages/" + k).remove();
+                                            db.ref("messageReactions/" + k).remove();
+                                        }
+                                    });
+                                };
+                                actionContainer.appendChild(btnApagar);
+                            }
+
+                            node.appendChild(actionContainer);
                             apexia_setupLongPress(node);
+                            apexia_bindReactionsListener(node, key);
                         }
 
                         if (node.classList.contains('member-card') && !node.dataset.apexiaStars) {
@@ -1411,7 +1590,7 @@
                             db.ref("messages/" + key).once("value", snap => {
                                 const data = snap.val();
                                 if(!data) return;
-                                let timeDiv = node.querySelector('div[style*="font-size:0.55rem"]');
+                                let timeDiv = node.querySelector('div[style*=\"font-size:0.55rem\"]');
                                 if(timeDiv) {
                                     timeDiv.innerText = apexia_formatarDataHora(data.timestamp);
                                     timeDiv.style.opacity = "0.7";
@@ -1425,14 +1604,9 @@
                                         node.classList.remove('apexia_admin_msg');
                                         node.style.border = "none";
                                     } else if(isAdminReal && !existingBadge) {
-                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                        bTag.innerHTML += `<span class=\"apexia_admin_badge\">ADMIN</span>`;
                                         node.classList.add('apexia_admin_msg');
                                     }
-                                }
-                                const pinBtn = node.querySelector('.apexia_pin_btn');
-                                if(pinBtn) {
-                                    if(!apexia_verificarAdmin(myProfile)) pinBtn.style.display = "none";
-                                    else pinBtn.style.display = "inline-block";
                                 }
                             });
                         }
@@ -1492,6 +1666,206 @@
         function apexia_verificarAdmin(usuario) {
             if (!usuario) return false;
             return usuario.wa === ADMIN_PHONE;
+        }
+
+        // =========================
+        // SISTEMA DE MENU + REAÇÕES
+        // =========================
+        let apexia_menuTargetNode = null;
+        let apexia_reactionTargetKey = null;
+
+        function apexia_openMsgMenu(target, clientX, clientY) {
+            if (!target || !myProfile) return;
+            const menu = document.getElementById('apexia_msg_menu');
+            if (!menu) return;
+
+            apexia_menuTargetNode = target;
+            const key = target.dataset.key || '';
+            const senderId = target.dataset.senderId || '';
+            const isOwner = senderId === myProfile.id;
+            const isAdmin = apexia_verificarAdmin(myProfile) || myProfile.role === 'admin';
+
+            const btnEdit = menu.querySelector('button[data-action="edit"]');
+            const btnDelete = menu.querySelector('button[data-action="delete"]');
+            if (btnEdit) btnEdit.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
+            if (btnDelete) btnDelete.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
+
+            menu.style.display = 'flex';
+            const rect = menu.getBoundingClientRect();
+            let left = clientX;
+            let top = clientY;
+            if (left + rect.width > window.innerWidth) {
+                left = window.innerWidth - rect.width - 10;
+            }
+            if (top + rect.height > window.innerHeight) {
+                top = window.innerHeight - rect.height - 10;
+            }
+            menu.style.left = left + 'px';
+            menu.style.top = top + 'px';
+        }
+
+        function apexia_setupLongPress(msgEl) {
+            if (!msgEl || msgEl.dataset.longPressBound === '1') return;
+            msgEl.dataset.longPressBound = '1';
+
+            let pressTimer = null;
+
+            msgEl.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                apexia_openMsgMenu(msgEl, e.clientX, e.clientY);
+            });
+
+            msgEl.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) return;
+                pressTimer = setTimeout(() => {
+                    apexia_openMsgMenu(msgEl, e.clientX, e.clientY);
+                }, 450);
+            });
+            ['mouseup', 'mouseleave'].forEach(ev => {
+                msgEl.addEventListener(ev, () => {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null;
+                    }
+                });
+            });
+
+            msgEl.addEventListener('touchstart', (e) => {
+                if (!e.touches[0]) return;
+                const touch = e.touches[0];
+                pressTimer = setTimeout(() => {
+                    apexia_openMsgMenu(msgEl, touch.clientX, touch.clientY);
+                }, 450);
+            }, { passive: true });
+
+            msgEl.addEventListener('touchend', () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+            });
+            msgEl.addEventListener('touchmove', () => {
+                if (pressTimer) {
+                    clearTimeout(pressTimer);
+                    pressTimer = null;
+                }
+            });
+        }
+
+        (function apexia_bindMenuActions() {
+            const menu = document.getElementById('apexia_msg_menu');
+            if (!menu) return;
+
+            menu.addEventListener('click', (e) => {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                e.stopPropagation();
+                const action = btn.dataset.action;
+                const msg = apexia_menuTargetNode;
+                menu.style.display = 'none';
+                if (!msg) return;
+                const key = msg.dataset.key || '';
+                const senderName = msg.dataset.senderName || '';
+                const text = msg.dataset.text || '';
+
+                if (action === 'emoji') {
+                    const panel = document.getElementById('apexia_emoji_panel');
+                    if (!panel) return;
+                    apexia_reactionTargetKey = key;
+                    const rect = msg.getBoundingClientRect();
+                    panel.style.display = 'flex';
+                    panel.style.left = (rect.left + rect.width / 2) + 'px';
+                    panel.style.top = (rect.top - 10) + 'px';
+                } else if (action === 'reply') {
+                    apexia_abrirPreviewResposta(senderName, text);
+                } else if (action === 'forward') {
+                    const input = document.getElementById('chat-input');
+                    if (input) {
+                        input.value = `📤 Encaminhado de ${senderName}: ${text}`;
+                        input.focus();
+                    }
+                } else if (action === 'edit') {
+                    apexia_modalInterno('prompt', 'Editar mensagem:', (novo) => {
+                        if (novo !== null && novo.trim() && key) {
+                            db.ref("messages/" + key + "/text").set(novo.trim());
+                        }
+                    });
+                } else if (action === 'delete') {
+                    if (!key) return;
+                    const senderId = msg.dataset.senderId || '';
+                    const isOwner = senderId === myProfile.id;
+                    const isAdmin = apexia_verificarAdmin(myProfile) || myProfile.role === 'admin';
+                    if (!isOwner && !isAdmin) return;
+                    apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', (res) => {
+                        if (res) {
+                            db.ref("messages/" + key).remove();
+                            db.ref("messageReactions/" + key).remove();
+                        }
+                    });
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('#apexia_msg_menu') && !e.target.closest('.msg')) {
+                    menu.style.display = 'none';
+                }
+                const panel = document.getElementById('apexia_emoji_panel');
+                if (panel && !e.target.closest('#apexia_emoji_panel')) {
+                    panel.style.display = 'none';
+                }
+            });
+        })();
+
+        function apexia_addReaction(emoji) {
+            const panel = document.getElementById('apexia_emoji_panel');
+            if (panel) panel.style.display = 'none';
+            if (!myProfile || !emoji || !apexia_reactionTargetKey) return;
+            const ref = db.ref('messageReactions/' + apexia_reactionTargetKey + '/' + emoji + '/' + myProfile.id);
+            ref.set(true);
+        }
+
+        function apexia_bindReactionsListener(msgEl, key) {
+            if (!msgEl || !key || msgEl.dataset.reactionsBound === '1') return;
+            msgEl.dataset.reactionsBound = '1';
+            let bar = msgEl.querySelector('.apexia_reactions_bar');
+            if (!bar) {
+                bar = document.createElement('div');
+                bar.className = 'apexia_reactions_bar';
+                msgEl.appendChild(bar);
+            }
+            db.ref('messageReactions/' + key).on('value', (snap) => {
+                bar.innerHTML = '';
+                if (!snap.exists()) {
+                    bar.style.display = 'none';
+                    return;
+                }
+                const data = snap.val() || {};
+                Object.keys(data).forEach((emoji) => {
+                    const users = data[emoji] || {};
+                    const count = Object.keys(users).length;
+                    if (count > 0) {
+                        const chip = document.createElement('span');
+                        chip.className = 'apexia_reaction_chip';
+                        chip.textContent = emoji + ' ' + count;
+                        bar.appendChild(chip);
+                    }
+                });
+                bar.style.display = bar.childNodes.length ? 'flex' : 'none';
+            });
+        }
+
+        function apexia_nextNews() {
+            if (!apexia_news_items.length) return;
+            apexia_news_index = (apexia_news_index + 1) % apexia_news_items.length;
+            apexia_renderNewsSlide();
+            apexia_startNewsRotation();
+        }
+
+        function apexia_prevNews() {
+            if (!apexia_news_items.length) return;
+            apexia_news_index = (apexia_news_index - 1 + apexia_news_items.length) % apexia_news_items.length;
+            apexia_renderNewsSlide();
+            apexia_startNewsRotation();
         }
     </script>
 </body>
