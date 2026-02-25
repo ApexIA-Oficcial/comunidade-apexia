@@ -127,7 +127,7 @@
         #apexia_video_banner_link { animation: apexia_pulse_conversion 2s infinite !important; background: var(--primary) !important; color: #000 !important; text-transform: uppercase; font-weight: 900 !important; border-radius: 50px !important; padding: 8px 20px !important; display: inline-block; margin-top: 8px; }
 
         /* Melhor Visual da Resposta */
-        .apexia_quoted_msg { background: rgba(0,0,0,0.3) !important; border-left: 4px solid var(--primary) !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-radius: 4px 12px 12px 4px !important; font-size: 0.75rem !important; color: #ddd !important; display: block; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .apexia_quoted_msg { background: rgba(0,0,0,0.3) !important; border-left: 4px solid var(--primary) !important; padding: 8px 12px !important; margin-bottom: 8px !important; border-radius: 4px 12px 12px 4px !important; font-size: 0.75rem !important; color: #ddd !important; display: block; border-top: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); cursor:pointer; }
         .apexia_quoted_msg b { color: var(--primary) !important; display: block; margin-bottom: 3px; font-size: 0.75rem; }
         
         #apexia_reply_preview { background: rgba(15,15,15,0.95) !important; backdrop-filter: blur(10px); border-top: 1px solid rgba(0,255,0,0.3) !important; border-left: 4px solid var(--primary) !important; padding: 12px 20px !important; border-radius: 15px 15px 0 0 !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.5) !important; }
@@ -243,6 +243,64 @@
         #apexia_sms_toast.apexia_toast_visible {
             transform: translate(-50%, 0);
         }
+
+        /* Destaques / Notícias */
+        #apexia_news_carousel {
+            display:none;
+            background: rgba(5, 15, 5, 0.95);
+            border-bottom: 1px solid rgba(0,255,0,0.3);
+            padding: 8px 16px;
+            display:flex;
+            align-items:center;
+            gap: 10px;
+            overflow:hidden;
+        }
+        #apexia_news_carousel_img {
+            width:56px;
+            height:56px;
+            border-radius:12px;
+            object-fit:cover;
+            border:1px solid rgba(0,255,0,0.5);
+            flex-shrink:0;
+        }
+        #apexia_news_carousel_body {
+            flex:1;
+            min-width:0;
+        }
+        #apexia_news_carousel_title {
+            font-size:0.78rem;
+            font-weight:800;
+            color:var(--primary);
+            margin-bottom:2px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+        }
+        #apexia_news_carousel_desc {
+            font-size:0.72rem;
+            color:#ccc;
+            max-height:2.2em;
+            overflow:hidden;
+        }
+        .apexia_news_bullets {
+            display:flex;
+            gap:4px;
+            margin-left:8px;
+        }
+        .apexia_news_dot {
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            background:rgba(255,255,255,0.2);
+        }
+        .apexia_news_dot.active {
+            background:var(--primary);
+        }
+
+        .apexia_reply_highlight {
+            box-shadow: 0 0 0 2px rgba(0,255,0,0.7);
+            transition: box-shadow 0.4s;
+        }
     </style>
 </head>
 <body>
@@ -320,6 +378,16 @@
             <button onclick="apexia_novoVideo()" style="width:100%; padding:10px; background:var(--gold); color:#000; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ENVIAR NOTIFICAÇÃO</button>
         </div>
 
+        <div style="background:#111; padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid var(--primary);">
+            <h4 style="color:var(--primary); margin-bottom:10px; font-size:0.8rem;">📰 NOTÍCIAS / DESTAQUES DA COMUNIDADE</h4>
+            <input type="text" id="apexia_news_title" placeholder="Título da Notícia / Destaque" style="width:100%; padding:10px; margin-bottom:8px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+            <textarea id="apexia_news_desc" placeholder="Descrição curta" rows="2" style="width:100%; padding:10px; margin-bottom:8px; background:#000; border:1px solid #333; color:#ccc; border-radius:8px; resize:none;"></textarea>
+            <label for="apexia_news_img" style="display:block; padding:8px 10px; margin-bottom:8px; font-size:0.75rem; border-radius:8px; border:1px dashed #333; color:#777; cursor:pointer;">📷 Imagem (opcional)</label>
+            <input type="file" id="apexia_news_img" accept="image/*" style="display:none;">
+            <button onclick="apexia_addNews()" style="width:100%; padding:8px; background:rgba(0,255,0,0.15); border:1px solid var(--primary); color:var(--primary); border-radius:999px; font-weight:bold; font-size:0.8rem; cursor:pointer;">+ ADICIONAR SLIDE</button>
+            <p style="margin-top:6px; font-size:0.65rem; color:#666;">Imagens horizontais funcionam melhor. Máx. alguns destaques ativos.</p>
+        </div>
+
         <div id="pending-list"></div>
         <button onclick="toggleAdminDrawer()" style="width:100%; padding:15px; background:#222; border:none; color:#fff; border-radius:15px; cursor:pointer;">FECHAR PAINEL</button>
     </div>
@@ -375,6 +443,15 @@
             <!-- // ===============================
                  // FIM NOVA FUNCIONALIDADE
                  // =============================== -->
+
+            <div id="apexia_news_carousel">
+                <img id="apexia_news_carousel_img" src="" alt="">
+                <div id="apexia_news_carousel_body">
+                    <div id="apexia_news_carousel_title"></div>
+                    <div id="apexia_news_carousel_desc"></div>
+                </div>
+                <div class="apexia_news_bullets" id="apexia_news_bullets"></div>
+            </div>
 
             <div id="apexia_video_banner" style="display:none; background:rgba(255, 215, 0, 0.1); border-bottom:1px solid var(--gold); padding:10px 20px; text-align:center; font-size:0.8rem; z-index:10;">
                 <span class="apexia_anim_icon">🎥</span> <b style="color:var(--gold);">NOVO VÍDEO:</b> <span id="apexia_video_banner_title" style="color:#fff;"></span>
@@ -496,6 +573,16 @@
         let myProfile = null, base64Proof = "", replyingTo = null;
         const msgIds = new Set();
 
+        let apexia_unread_count = 0;
+        let apexia_unread_list = [];
+        const apexia_initTime = Date.now();
+        let apexia_lastVisitKey = null;
+        let apexia_toastTimeout = null;
+
+        let apexia_news_items = [];
+        let apexia_news_index = 0;
+        let apexia_news_timer = null;
+
         function apexia_toggle_sidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function salvarPerfil() {
@@ -569,7 +656,7 @@
                 document.getElementById('app').style.display = "flex";
                 if(myProfile.role === 'admin') {
                     document.getElementById('admin-btn').style.display = 'block';
-                    document.body.classList.add('apexia_is_admin'); // Libera botões restritos
+                    document.body.classList.add('apexia_is_admin');
                     ouvirPendentes();
                 }
                 
@@ -597,10 +684,8 @@
         function enviarMensagem() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if (!text) return;
-            db.ref("messages").push({ senderId: myProfile.id, senderName: myProfile.name, text, timestamp: Date.now() });
-            db.ref(`users/${myProfile.id}/msgCount`).set((myProfile.msgCount || 0) + 1);
-            input.value = "";
+            if (!text || !myProfile) return;
+            document.querySelector('.send-btn').click();
         }
 
         function enviarAnexo() {
@@ -631,7 +716,6 @@
                 div.innerHTML = html;
                 win.appendChild(div);
 
-                // Garante horário visível mesmo se o observador ainda não processou
                 if (!div.querySelector('[data-apexia-time]')) {
                     const timeSpan = document.createElement('div');
                     timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
@@ -641,7 +725,6 @@
                     div.appendChild(timeSpan);
                 }
 
-                // Garante que clique/press em qualquer mensagem abra o menu / swipe
                 try { apexia_setupLongPress(div); } catch(e) {}
 
                 win.scrollTop = win.scrollHeight;
@@ -793,12 +876,6 @@
             });
         }
 
-        let apexia_unread_count = 0;
-        let apexia_unread_list = [];
-        const apexia_initTime = Date.now();
-        let apexia_lastVisitKey = null;
-        let apexia_toastTimeout = null;
-
         function apexia_showNewMessageToast(m) {
             if (!myProfile || !m || m.senderId === myProfile.id) return;
             const toast = document.getElementById('apexia_sms_toast');
@@ -944,6 +1021,99 @@
         
         setTimeout(apexia_escutarVideos, 1500);
 
+        function apexia_addNews() {
+            if (!myProfile || myProfile.wa !== ADMIN_PHONE) {
+                alert('Apenas o ADMIN pode cadastrar destaques.');
+                return;
+            }
+            const titleEl = document.getElementById('apexia_news_title');
+            const descEl = document.getElementById('apexia_news_desc');
+            const imgEl = document.getElementById('apexia_news_img');
+            const title = (titleEl.value || '').trim();
+            const desc = (descEl.value || '').trim();
+            if (!title) { alert('Informe um título para o destaque.'); return; }
+
+            const pushNews = (image) => {
+                db.ref('apexia_news').push({
+                    title,
+                    desc,
+                    image: image || null,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                }).then(() => {
+                    titleEl.value = '';
+                    descEl.value = '';
+                    imgEl.value = '';
+                    alert('Destaque adicionado!');
+                });
+            };
+
+            const file = imgEl.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => pushNews(e.target.result);
+                reader.readAsDataURL(file);
+            } else {
+                pushNews(null);
+            }
+        }
+
+        function apexia_renderNewsSlide() {
+            const box = document.getElementById('apexia_news_carousel');
+            if (!box) return;
+            if (!apexia_news_items.length) {
+                box.style.display = 'none';
+                return;
+            }
+            const item = apexia_news_items[apexia_news_index % apexia_news_items.length];
+            const img = document.getElementById('apexia_news_carousel_img');
+            const title = document.getElementById('apexia_news_carousel_title');
+            const desc = document.getElementById('apexia_news_carousel_desc');
+            const bullets = document.getElementById('apexia_news_bullets');
+
+            if (item.image) {
+                img.src = item.image;
+                img.style.display = 'block';
+            } else {
+                img.style.display = 'none';
+            }
+            title.textContent = item.title || '';
+            let d = item.desc || '';
+            if (d.length > 120) d = d.substring(0,117)+'...';
+            desc.textContent = d;
+
+            bullets.innerHTML = '';
+            if (apexia_news_items.length > 1) {
+                apexia_news_items.forEach((_, idx) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'apexia_news_dot' + (idx === apexia_news_index ? ' active' : '');
+                    bullets.appendChild(dot);
+                });
+            }
+
+            box.style.display = 'flex';
+        }
+
+        function apexia_startNewsRotation() {
+            if (apexia_news_timer) clearInterval(apexia_news_timer);
+            if (!apexia_news_items.length) return;
+            apexia_news_timer = setInterval(() => {
+                apexia_news_index = (apexia_news_index + 1) % apexia_news_items.length;
+                apexia_renderNewsSlide();
+            }, 60000);
+        }
+
+        function apexia_escutarNews() {
+            db.ref('apexia_news').orderByChild('timestamp').limitToLast(10).on('value', snap => {
+                const arr = [];
+                snap.forEach(c => { arr.push(c.val()); });
+                arr.sort((a,b) => (a.timestamp||0)-(b.timestamp||0));
+                apexia_news_items = arr;
+                apexia_news_index = 0;
+                apexia_renderNewsSlide();
+                apexia_startNewsRotation();
+            });
+        }
+
         document.addEventListener('click', (e) => {
             if(e.target.tagName === 'IMG' && e.target.closest('.msg')) {
                 document.getElementById('apexia_lightbox_img').src = e.target.src;
@@ -951,233 +1121,6 @@
             }
         });
 
-        let apexia_pressTimer;
-        let apexia_targetNode = null;
-        let apexia_touchStartX_msg = 0;
-        let apexia_touchStartY_msg = 0;
-        function apexia_setupLongPress(node) {
-            node.addEventListener('touchstart', (e) => {
-                apexia_touchStartX_msg = e.changedTouches[0].clientX;
-                apexia_touchStartY_msg = e.changedTouches[0].clientY;
-                apexia_pressTimer = setTimeout(() => apexia_showContextMenu(e, node), 600);
-            }, {passive:true});
-            node.addEventListener('touchmove', (e) => {
-                const dx = e.changedTouches[0].clientX - apexia_touchStartX_msg;
-                const dy = e.changedTouches[0].clientY - apexia_touchStartY_msg;
-                if (dx > 60 && Math.abs(dy) < 30) {
-                    clearTimeout(apexia_pressTimer);
-                    apexia_handleSwipeReply(node);
-                }
-            }, {passive:true});
-            node.addEventListener('touchend', () => clearTimeout(apexia_pressTimer));
-            node.addEventListener('mousedown', (e) => { apexia_pressTimer = setTimeout(() => apexia_showContextMenu(e, node), 600); });
-            node.addEventListener('mouseup', () => clearTimeout(apexia_pressTimer));
-            node.addEventListener('mouseleave', () => clearTimeout(apexia_pressTimer));
-
-            // Clique simples também abre o menu de ações para facilitar no desktop
-            node.addEventListener('click', (e) => {
-                // Evita conflito com cliques em imagens ou botões internos
-                if (e.target.closest('img') || e.target.closest('.apexia_action_btn')) return;
-                apexia_showContextMenu(e, node);
-            });
-        }
-
-        function apexia_showEmojiPanel(node) {
-            apexia_targetNode = node;
-            const panel = document.getElementById('apexia_emoji_panel');
-            if (!panel) return;
-            const rect = node.getBoundingClientRect();
-            panel.style.display = 'flex';
-            panel.style.top = (rect.top - 50) + 'px';
-            panel.style.left = (rect.left + rect.width / 2) + 'px';
-            panel.style.transform = 'translate(-50%, -100%)';
-            if(navigator.vibrate) navigator.vibrate(50);
-        }
-
-        function apexia_handleSwipeReply(node) {
-            const nome = node.dataset.senderName || (node.querySelector('b') ? node.querySelector('b').innerText.replace('ADMIN','').trim() : '');
-            const raw = node.dataset.text || node.innerText || '';
-            const texto = raw.replace(/\[Resp.*\]\n/, '');
-            if(nome && texto) {
-                apexia_abrirPreviewResposta(nome, texto);
-            }
-        }
-
-        function apexia_showContextMenu(e, node) {
-            if (!myProfile) return;
-            apexia_targetNode = node;
-            const menu = document.getElementById('apexia_msg_menu');
-            if (!menu) return;
-            const rect = node.getBoundingClientRect();
-            const top = Math.max(10, rect.top - 10);
-            const left = rect.left + rect.width / 2;
-            menu.style.top = top + 'px';
-            menu.style.left = left + 'px';
-            menu.style.transform = 'translateX(-50%)';
-
-            const isOwner = node.dataset.senderId === myProfile.id;
-            const isAdmin = apexia_verificarAdmin(myProfile);
-
-            const btnEdit = menu.querySelector('button[data-action="edit"]');
-            const btnDelete = menu.querySelector('button[data-action="delete"]');
-            const btnPin = menu.querySelector('button[data-action="pin"]');
-
-            if (btnEdit) btnEdit.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
-            if (btnDelete) btnDelete.style.display = (isOwner || isAdmin) ? 'flex' : 'none';
-            if (btnPin) btnPin.style.display = isAdmin ? 'flex' : 'none';
-
-            menu.style.display = 'flex';
-            if (navigator.vibrate) navigator.vibrate(30);
-        }
-
-        function apexia_closeContextMenu() {
-            const menu = document.getElementById('apexia_msg_menu');
-            if (menu) menu.style.display = 'none';
-        }
-
-        function apexia_handleMenuAction(action) {
-            const node = apexia_targetNode;
-            if (!node || !myProfile) return;
-            const key = node.dataset.key;
-            const raw = node.dataset.text || '';
-            const plain = raw.replace(/\[Resp.*\]\n/, '');
-            const senderName = node.dataset.senderName || (node.querySelector('b') ? node.querySelector('b').innerText.replace('ADMIN','').trim() : '');
-            const isOwner = node.dataset.senderId === myProfile.id;
-            const isAdmin = apexia_verificarAdmin(myProfile);
-
-            if (action === 'emoji') {
-                apexia_showEmojiPanel(node);
-            } else if (action === 'reply') {
-                if (senderName && (plain || raw)) {
-                    apexia_abrirPreviewResposta(senderName, plain || raw);
-                }
-            } else if (action === 'forward') {
-                const texto = plain || raw;
-                if (texto) {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        navigator.clipboard.writeText(texto).then(() => {
-                            alert('Mensagem copiada para encaminhar em outro lugar.');
-                        }).catch(() => {
-                            alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
-                        });
-                    } else {
-                        alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
-                    }
-                }
-            } else if (action === 'edit') {
-                if (!(isOwner || isAdmin) || !key) return;
-                apexia_modalInterno('prompt', 'Editar mensagem:', (novo) => {
-                    if (novo !== null && novo.trim() !== '') {
-                        db.ref("messages/" + key + "/text").set(novo.trim());
-                    }
-                });
-            } else if (action === 'delete') {
-                if (!(isOwner || isAdmin) || !key) return;
-                apexia_modalInterno('confirm', 'Apagar esta mensagem para todos?', (res) => {
-                    if(res) db.ref("messages/" + key).remove();
-                });
-            } else if (action === 'pin') {
-                if (!isAdmin) return;
-                const textoPin = plain || raw;
-                if (textoPin) {
-                    apexia_modalInterno('confirm', 'Fixar esta mensagem no topo?', (res) => {
-                        if (res) db.ref("apexia_pinned").set({ text: textoPin, sender: senderName || 'Admin' });
-                    });
-                }
-            }
-            apexia_closeContextMenu();
-        }
-
-        function apexia_addReaction(emoji) {
-            if(apexia_targetNode) {
-                const rSpan = document.createElement('span');
-                rSpan.innerText = emoji;
-                rSpan.style.cssText = "background:rgba(255,255,255,0.1); border-radius:10px; padding:2px 5px; font-size:0.7rem; margin-left:5px;";
-                apexia_targetNode.appendChild(rSpan);
-            }
-            document.getElementById('apexia_emoji_panel').style.display = 'none';
-        }
-
-        document.addEventListener('click', e => {
-            if(!e.target.closest('#apexia_emoji_panel') && !e.target.closest('.msg')) {
-                const emojiPanel = document.getElementById('apexia_emoji_panel');
-                if (emojiPanel) emojiPanel.style.display = 'none';
-                apexia_closeContextMenu();
-            }
-        });
-
-        const apexia_msg_menu_el = document.getElementById('apexia_msg_menu');
-        if (apexia_msg_menu_el) {
-            apexia_msg_menu_el.addEventListener('click', (e) => {
-                const btn = e.target.closest('button[data-action]');
-                if (!btn) return;
-                e.stopPropagation();
-                const action = btn.getAttribute('data-action');
-                apexia_handleMenuAction(action);
-            });
-        }
-
-        const apexia_toast_el = document.getElementById('apexia_sms_toast');
-        if (apexia_toast_el) {
-            apexia_toast_el.addEventListener('click', () => {
-                apexia_toast_el.classList.remove('apexia_toast_visible');
-                const win = document.getElementById('chat-window');
-                if (win) win.scrollTop = win.scrollHeight;
-            });
-        }
-
-        document.addEventListener('click', e => {
-            if(e.target.innerText === 'SALVAR ALTERAÇÕES') {
-                const nameInput = document.getElementById('apexia_p_name_input');
-                if(nameInput && nameInput.value.trim() !== '' && myProfile) {
-                    const newName = nameInput.value.trim();
-                    db.ref("users/" + myProfile.id).update({name: newName});
-                    myProfile.name = newName;
-                    localStorage.setItem("apexia_user", JSON.stringify(myProfile));
-                }
-            }
-        });
-
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: Polimentos Visuais, Admin e Otimizações Real-Time
-        // ===============================
-
-        // 1) Digitação Dinâmica via Realtime Database (Módulo Otimizado)
-        let apexia_typingTimeout;
-        document.getElementById('chat-input').addEventListener('input', () => {
-            if(!myProfile) return;
-            db.ref(`typing/${myProfile.id}`).set({ name: myProfile.name, time: Date.now() });
-            clearTimeout(apexia_typingTimeout);
-            apexia_typingTimeout = setTimeout(() => db.ref(`typing/${myProfile.id}`).remove(), 3000);
-        });
-
-        db.ref("typing").on("value", snap => {
-            const typingUsers = [];
-            snap.forEach(c => { if(myProfile && c.key !== myProfile.id) typingUsers.push(c.val().name); });
-            const ind = document.getElementById('typingIndicator');
-            if(typingUsers.length > 0) ind.innerText = typingUsers.join(', ') + " " + (typingUsers.length > 1 ? "estão" : "está") + " digitando...";
-            else ind.innerText = "";
-        });
-
-        // 2) Impede imitação do nome de ADMIN durante o Login/Registro
-        const apexia_reservados = ['admin', 'apexia', 'gestor', 'suporte'];
-        document.addEventListener('click', (e) => {
-            if(e.target.closest('button[onclick="solicitarAcesso()"]')) {
-                const nameInp = document.getElementById('reg-name');
-                const waInp = document.getElementById('reg-whatsapp');
-                if(nameInp && waInp) {
-                    const cleanName = nameInp.value.toLowerCase();
-                    const cleanWa = waInp.value.replace(/\D/g, "");
-                    if(apexia_reservados.some(r => cleanName.includes(r)) && cleanWa !== ADMIN_PHONE) {
-                        e.stopPropagation(); e.preventDefault();
-                        apexia_modalInterno('alert', 'Erro: Este nome é reservado exclusivamente para a Administração.');
-                        return;
-                    }
-                }
-            }
-        }, true); // Captura o clique antes do Firebase atuar
-
-        // Auto-Scroll On Load e Floating Button Event
         document.getElementById('chat-window').addEventListener('scroll', function() {
             const btn = document.getElementById('apexia_scroll_down');
             if(this.scrollHeight - this.scrollTop - this.clientHeight > 150) {
@@ -1185,9 +1128,16 @@
             } else {
                 btn.style.display = 'none';
             }
+
+            const newsBox = document.getElementById('apexia_news_carousel');
+            if (!newsBox) return;
+            if (this.scrollTop < 40 && apexia_news_items.length) {
+                newsBox.style.display = 'flex';
+            } else {
+                newsBox.style.display = 'none';
+            }
         });
-        
-        // Verifica display do app p/ scroll automático inicial
+
         const apexia_autoScrollCheck = setInterval(() => {
             if(document.getElementById('app').style.display === 'flex') {
                 const cw = document.getElementById('chat-window');
@@ -1272,13 +1222,17 @@
                     if (cw) cw.scrollTop = cw.scrollHeight;
                 });
             }
+            setTimeout(apexia_escutarVideos, 1500);
+            setTimeout(apexia_escutarNews, 1800);
         });
 
         let apexia_reply_data = null;
         function apexia_abrirPreviewResposta(nome, texto) {
-            apexia_reply_data = { name: nome, text: texto.split('\n')[0].substring(0, 40) };
+            apexia_reply_data = { name: nome, text: texto.split('\n')[0].substring(0, 60) };
             document.getElementById('apexia_reply_name').innerText = nome;
-            document.getElementById('apexia_reply_text').innerText = apexia_reply_data.text + "...";
+            let t = apexia_reply_data.text;
+            if (t.length > 60) t = t.substring(0,57)+'...';
+            document.getElementById('apexia_reply_text').innerText = t;
             document.getElementById('apexia_reply_preview').style.display = 'block';
             document.getElementById('chat-input').focus();
         }
@@ -1287,7 +1241,6 @@
             document.getElementById('apexia_reply_preview').style.display = 'none';
         }
 
-        // Intercepta e implementa a Envio Otimista
         let apexia_tempIds = [];
         document.querySelector('.send-btn').addEventListener('click', function(e) {
             const input = document.getElementById('chat-input');
@@ -1304,14 +1257,16 @@
             const tempId = "opt_" + Date.now();
             apexia_tempIds.push({ id: tempId, txt: finalMsg });
 
-            // UI Otimista - Exibe Imediatamente
             const win = document.getElementById('chat-window');
             const div = document.createElement('div');
             div.className = "msg sent apexia_optimistic";
             div.id = tempId;
             let displayHTML = `<b>${myProfile.name}</b><br>${finalMsg}`;
             if(apexia_reply_data) {
-                displayHTML = displayHTML.replace(`[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n`, `<span class="apexia_quoted_msg"><b>${apexia_reply_data.name}</b><span>${apexia_reply_data.text}</span></span>`);
+                displayHTML = displayHTML.replace(
+                    `[Resp. ${apexia_reply_data.name}: "${apexia_reply_data.text}"]\n`,
+                    `<span class="apexia_quoted_msg" data-reply-name="${apexia_reply_data.name}" data-reply-snippet="${(apexia_reply_data.text||'').replace(/"/g,'&quot;')}"><b>${apexia_reply_data.name}</b><span>${apexia_reply_data.text}</span></span>`
+                );
             }
             div.innerHTML = displayHTML + `<div style="font-size:0.55rem; opacity:0.8; text-align:right; margin-top:4px;">⏳</div>`;
             win.appendChild(div);
@@ -1351,14 +1306,11 @@
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === 1) {
-                        
-                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
+                        if (node.classList.contains('msg') && !node.dataset.apexiaProcessed && !node.classList.contains('apexia_optimistic')) {
                             node.dataset.apexiaProcessed = "true";
                             const msgData = apexia_msg_queue.shift(); 
                             if(msgData) {
                                 node.dataset.key = msgData.key;
-                                
-                                // Remove o elemento otimista antigo correspondente quando a mensagem real chega
                                 if(msgData.val.senderId === myProfile.id) {
                                     const optIdx = apexia_tempIds.findIndex(o => o.txt === msgData.val.text);
                                     if(optIdx > -1) {
@@ -1367,24 +1319,22 @@
                                         apexia_tempIds.splice(optIdx, 1);
                                     }
                                 }
-                                
-                                // Formatar Citação WhatsApp Style com as novas classes
-                                if(msgData.val.text.includes('[Resp.')) {
+                                if(msgData.val.text && msgData.val.text.includes('[Resp.')) {
                                     const match = msgData.val.text.match(/\[Resp\. (.*?): "(.*?)"\]\n(.*)/s);
                                     if(match) {
-                                        node.innerHTML = `<b>${msgData.val.senderName}</b><br><span class="apexia_quoted_msg"><b>${match[1]}</b><span>${match[2]}</span></span>${match[3]}`;
+                                        const nome = match[1];
+                                        let trecho = match[2] || '';
+                                        if (trecho.length > 80) trecho = trecho.substring(0,77)+'...';
+                                        node.innerHTML = `<b>${msgData.val.senderName}</b><br><span class="apexia_quoted_msg" data-reply-name="${nome}" data-reply-snippet="${trecho.replace(/"/g,'&quot;')}" data-parent-key="${msgData.key}"><b>${nome}</b><span>${trecho}</span></span>${match[3]}`;
                                     }
                                 }
-
-                                // Identidade Visual ADMIN (Mensagens)
                                 const bTag = node.querySelector('b');
                                 if(bTag) {
-                                    if(msgData.val.senderName.toLowerCase().includes('apexia') || msgData.val.senderName.toLowerCase().includes('admin') || msgData.val.senderId === 'u1711000000000' /* fallback id admin se houver */) {
+                                    if(msgData.val.senderName.toLowerCase().includes('apexia') || msgData.val.senderName.toLowerCase().includes('admin') || msgData.val.senderId === 'u1711000000000') {
                                         bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
                                         node.classList.add('apexia_admin_msg');
                                     }
                                 }
-
                                 const timeSpan = document.createElement('div');
                                 timeSpan.style.cssText = "font-size:0.55rem; opacity:0.5; text-align:right; margin-top:4px; font-weight:normal;";
                                 const tDate = new Date(msgData.val.timestamp || Date.now());
@@ -1400,7 +1350,6 @@
                                 btnResponder.onclick = (e) => { e.stopPropagation(); apexia_abrirPreviewResposta(msgData.val.senderName, msgData.val.text); };
                                 actionContainer.appendChild(btnResponder);
 
-                                // Botão de Fixar Apenas visível estruturalmente. O CSS restringe aos Admin.
                                 const btnFixar = document.createElement('span');
                                 btnFixar.className = 'apexia_pin_btn';
                                 btnFixar.innerHTML = '📌';
@@ -1435,12 +1384,9 @@
                                 db.ref("users").orderByChild("name").equalTo(mName).once("value", snap => {
                                     if(snap.exists()){
                                         const u = Object.values(snap.val())[0];
-                                        
-                                        // Identidade Visual ADMIN na Lista
                                         if(u.role === 'admin' || u.wa === ADMIN_PHONE) {
                                             nameEl.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
                                         }
-
                                         const msgs = u.msgCount || 0;
                                         let stars = msgs >= 50 ? '🌟🌟🌟 Elite' : (msgs >= 15 ? '⭐⭐ Ativo' : '⭐ Novato');
                                         const starSpan = document.createElement('span');
@@ -1456,22 +1402,82 @@
         });
         apexia_observer.observe(document.body, { childList: true, subtree: true });
 
-        // ===============================
-        // FIM NOVA FUNCIONALIDADE
-        // ===============================
+        const apexia_fix_observer = new MutationObserver((mutations) => {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1 && node.classList.contains('msg')) {
+                        const key = node.dataset.key;
+                        if(key) {
+                            db.ref("messages/" + key).once("value", snap => {
+                                const data = snap.val();
+                                if(!data) return;
+                                let timeDiv = node.querySelector('div[style*="font-size:0.55rem"]');
+                                if(timeDiv) {
+                                    timeDiv.innerText = apexia_formatarDataHora(data.timestamp);
+                                    timeDiv.style.opacity = "0.7";
+                                }
+                                const bTag = node.querySelector('b');
+                                if(bTag) {
+                                    const isAdminReal = (data.senderId === myProfile?.id && apexia_verificarAdmin(myProfile)) || (data.wa === ADMIN_PHONE);
+                                    const existingBadge = bTag.querySelector('.apexia_admin_badge');
+                                    if(existingBadge && !isAdminReal) {
+                                        existingBadge.remove();
+                                        node.classList.remove('apexia_admin_msg');
+                                        node.style.border = "none";
+                                    } else if(isAdminReal && !existingBadge) {
+                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
+                                        node.classList.add('apexia_admin_msg');
+                                    }
+                                }
+                                const pinBtn = node.querySelector('.apexia_pin_btn');
+                                if(pinBtn) {
+                                    if(!apexia_verificarAdmin(myProfile)) pinBtn.style.display = "none";
+                                    else pinBtn.style.display = "inline-block";
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+        apexia_fix_observer.observe(document.getElementById('chat-window'), { childList: true });
 
-        // ===============================
-        // INÍCIO NOVA FUNCIONALIDADE: MÓDULOS DE CORREÇÃO (RESPOSTA, EMOJIS, DATA/HORA, ADMIN)
-        // ===============================
+        setInterval(() => {
+            document.querySelectorAll('.member-card').forEach(card => {
+                const name = card.querySelector('b')?.innerText;
+                const badge = card.querySelector('.apexia_admin_badge');
+                if(badge && !name.includes('ApexiA') && !card.dataset.isAdminPhone) {
+                    db.ref("users").orderByChild("name").equalTo(name.replace('ADMIN','').trim()).once("value", s => {
+                       const u = Object.values(s.val() || {})[0];
+                       if(u && u.wa === ADMIN_PHONE) card.dataset.isAdminPhone = "true";
+                       else if(badge) badge.remove();
+                    });
+                }
+            });
+        }, 3000);
 
-        function apexia_responderComentario(usuarioMensagem, mensagemReferenciada) {
-            apexia_abrirPreviewResposta(usuarioMensagem, mensagemReferenciada);
-        }
-
-        function apexia_exibirEmojis(mensagemId) {
-            const node = document.querySelector(`.msg[data-key="${mensagemId}"]`);
-            if(node) apexia_showEmojiPanel(node);
-        }
+        document.getElementById('chat-window').addEventListener('click', (e) => {
+            const quote = e.target.closest('.apexia_quoted_msg');
+            if (!quote) return;
+            const name = quote.getAttribute('data-reply-name') || '';
+            const snippet = quote.getAttribute('data-reply-snippet') || '';
+            if (!name || !snippet) return;
+            const msgs = document.querySelectorAll('#chat-window .msg');
+            let target = null;
+            msgs.forEach(m => {
+                if (target) return;
+                const sender = m.dataset.senderName || '';
+                const txt = m.dataset.text || '';
+                if (sender === name && txt && txt.indexOf(snippet.substring(0,10)) !== -1) {
+                    target = m;
+                }
+            });
+            if (target) {
+                target.classList.add('apexia_reply_highlight');
+                target.scrollIntoView({behavior:'smooth', block:'center'});
+                setTimeout(() => { target.classList.remove('apexia_reply_highlight'); }, 2000);
+            }
+        });
 
         function apexia_formatarDataHora(timestamp) {
             const d = new Date(timestamp);
@@ -1487,73 +1493,6 @@
             if (!usuario) return false;
             return usuario.wa === ADMIN_PHONE;
         }
-
-        // Script de Auto-Correção Visual (Enforça Admin Exclusivo e Data/Hora Real)
-        const apexia_fix_observer = new MutationObserver((mutations) => {
-            mutations.forEach(m => {
-                m.addedNodes.forEach(node => {
-                    if (node.nodeType === 1 && node.classList.contains('msg')) {
-                        const key = node.dataset.key;
-                        if(key) {
-                            db.ref("messages/" + key).once("value", snap => {
-                                const data = snap.val();
-                                if(!data) return;
-                                
-                                // 1. Correção Data e Hora
-                                let timeDiv = node.querySelector('div[style*="font-size:0.55rem"]');
-                                if(timeDiv) {
-                                    timeDiv.innerText = apexia_formatarDataHora(data.timestamp);
-                                    timeDiv.style.opacity = "0.7";
-                                }
-
-                                // 2. Enforçar Admin Exclusivo (Selo Dourado)
-                                const bTag = node.querySelector('b');
-                                if(bTag) {
-                                    const isAdminReal = (data.senderId === myProfile?.id && apexia_verificarAdmin(myProfile)) || (data.wa === ADMIN_PHONE);
-                                    const existingBadge = bTag.querySelector('.apexia_admin_badge');
-                                    
-                                    if(existingBadge && !isAdminReal) {
-                                        existingBadge.remove(); // Remove selos de quem não é o dono
-                                        node.classList.remove('apexia_admin_msg');
-                                        node.style.border = "none";
-                                    } else if(isAdminReal && !existingBadge) {
-                                        bTag.innerHTML += `<span class="apexia_admin_badge">ADMIN</span>`;
-                                        node.classList.add('apexia_admin_msg');
-                                    }
-                                }
-
-                                // 3. Corrigir Pin Permission
-                                const pinBtn = node.querySelector('.apexia_pin_btn');
-                                if(pinBtn) {
-                                    if(!apexia_verificarAdmin(myProfile)) pinBtn.style.display = "none";
-                                    else pinBtn.style.display = "inline-block";
-                                }
-                            });
-                        }
-                    }
-                });
-            });
-        });
-        apexia_fix_observer.observe(document.getElementById('chat-window'), { childList: true });
-
-        // Aplicação para Lista de Membros (Selo ADMIN Exclusivo)
-        setInterval(() => {
-            document.querySelectorAll('.member-card').forEach(card => {
-                const name = card.querySelector('b')?.innerText;
-                const badge = card.querySelector('.apexia_admin_badge');
-                if(badge && !name.includes('ApexiA') && !card.dataset.isAdminPhone) {
-                    db.ref("users").orderByChild("name").equalTo(name.replace('ADMIN','').trim()).once("value", s => {
-                       const u = Object.values(s.val() || {})[0];
-                       if(u && u.wa === ADMIN_PHONE) card.dataset.isAdminPhone = "true";
-                       else if(badge) badge.remove();
-                    });
-                }
-            });
-        }, 3000);
-
-        // ===============================
-        // FIM NOVA FUNCIONALIDADE
-        // ===============================
     </script>
 </body>
 </html>
